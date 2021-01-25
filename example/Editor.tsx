@@ -1,20 +1,37 @@
 import "./style.css"
 import "../node_modules/prosemirror-view/style/prosemirror.css"
+import "../node_modules/prosemirror-tables/style/tables.css"
 
 import React, { FC } from "react";
 import { RemirrorProvider, useManager, useRemirror } from "@remirror/react";
+import Menu from './Menu';
+import { CorePreset } from "@remirror/preset-core"
 
-const EXTENSIONS = () => [];
+import {
+    TableExtension,
+    TableRowExtension,
+    TableHeaderExtension,
+    TableCellExtension,
+} from "../"
+
+const EXTENSIONS = () => [
+    new CorePreset(),
+    new TableExtension(),
+    new TableRowExtension(),
+    new TableHeaderExtension(),
+    new TableCellExtension(),
+];
 
 /**
  * This component contains the editor and any toolbars/chrome it requires.
  */
 const SmallEditor: FC = () => {
-    const { getRootProps } = useRemirror();
+    const { getRootProps, commands } = useRemirror();
 
     return (
         <div  >
             <div   {...getRootProps()} />
+            <Menu createTable={() => commands.createTable({})} />
         </div>
     );
 };

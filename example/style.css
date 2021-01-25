@@ -1,4 +1,13 @@
 .ProseMirror {
     border: 1px solid red;
     min-height: 400px;
+    padding: 32px;
+}
+
+.ProseMirror td {
+    border: solid 1px black;
+}
+
+.ProseMirror th {
+    border: solid 1px black;
 }
