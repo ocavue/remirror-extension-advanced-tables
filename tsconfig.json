@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "module": "commonjs",
+        "strict": true,
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "noEmit": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "jsx": "react"
+    },
+    "include": [
+        "src",
+        "example"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+    ],
+}
