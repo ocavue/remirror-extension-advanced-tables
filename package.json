@@ -1,5 +1,32 @@
 {
-  "name": "yarn2-boilerplate",
+  "name": "remirror-experimental-extension-tables",
   "license": "MIT",
-  "scripts": {}
+  "scripts": {},
+  "dependencies": {
+    "@remirror/core": "^1.0.0-next.60",
+    "@remirror/core-utils": "^1.0.0-next.60",
+    "@remirror/dev": "^1.0.0-next.60",
+    "@remirror/extension-paragraph": "^1.0.0-next.60",
+    "@remirror/extension-react-component": "^1.0.0-next.60",
+    "@remirror/extension-text": "^1.0.0-next.60",
+    "@remirror/pm": "^1.0.0-next.60",
+    "@remirror/preset-core": "^1.0.0-next.60",
+    "@remirror/preset-table": "^1.0.0-next.60",
+    "@remirror/react": "^1.0.0-next.60"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "typescript": "^4.1.3"
+  },
+  "peerDependencies": {
+    "react": "^16 || ^17",
+    "react-dom": "^16 || ^17"
+  },
+  "browserslist": [
+    "> 1%",
+    "not dead",
+    "not op_mini all"
+  ]
 }
