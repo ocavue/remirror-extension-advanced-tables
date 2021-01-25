@@ -1,3 +1,8 @@
+:root {
+    --table-border-color: rgb(171, 175, 179);
+    --table-dark-background-color: rgb(244, 245, 246);
+}
+
 .ProseMirror {
     border: 1px solid red;
     min-height: 400px;
@@ -5,9 +10,10 @@
 }
 
 .ProseMirror td {
-    border: solid 1px black;
+    border: solid 1px var(--table-border-color);
 }
 
 .ProseMirror th {
-    border: solid 1px black;
+    border: solid 1px var(--table-border-color);
+    background-color: var(--table-dark-background-color);
 }
