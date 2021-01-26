@@ -19,17 +19,53 @@
     background-color: var(--table-dark-background-color);
 }
 
-.ProseMirror .remirror-table-controller {
-    background-color: rgba(106, 172, 238, 0.486);
-    width: 100%;
+.remirror-table-controller-wrapper {
+    position: relative;
+    padding: 0px;
+    margin: 0px;
+
+    overflow: auto;
+}
+
+.remirror-table-col-controller {
     height: var(--table-controller-width);
 
-    display: block;
-    position: relative;
-    top: 0px;
+    left: var(--table-controller-width);
+    top:0px;
+
+    position: absolute;
+    background-color: lightblue;
     z-index: 1000;
 }
 
-.ProseMirror .remirror-table-wrapper {
-    padding-left: var(--table-controller-width);
+.remirror-table-row-controller {
+    width: var(--table-controller-width);
+
+    top: var(--table-controller-width);
+    left: 0px;
+
+    position: absolute;
+    background-color: lightgreen;
+    z-index: 1000;
+}
+
+.remirror-table-corner-controller {
+    width: var(--table-controller-width);
+    height: var(--table-controller-width);
+
+    top: 0px;
+    left: 0px;
+
+    position: absolute;
+    background-color: lightcoral;
+    z-index: 1000;
+}
+
+.remirror-table-measurer {
+    margin-left: var(--table-controller-width);
+    margin-top: var(--table-controller-width);
+}
+
+.remirror-table-wrapper {
+    padding: 0px;
 }

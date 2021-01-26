@@ -1,4 +1,4 @@
-import React, { RefCallback } from 'react';
+import React, { useRef, useLayoutEffect, useState } from 'react';
 import { NodeViewComponentProps, ReactComponentExtension } from "@remirror/extension-react-component"
 import {
     TableCellExtension as RemirrorTableCellExtension,
@@ -9,12 +9,24 @@ import {
 import { ComponentType } from "react";
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 
-const TableController: React.FC<{ tableNode: ProsemirrorNode }> = ({ }) => {
-    return <div className="remirror-table-controller" >
-        controller
-        <button onClick={() => {}}>test</button>
-    </div>;
+const TableRowController: React.FC<{ tableHeight: number }> = ({ tableHeight }) => {
+    return <div className="remirror-table-row-controller" style={{ height: `${tableHeight}px` }}>
+        1
+    </div>
 }
+
+const TableColController: React.FC<{ tableWidth: number }> = ({ tableWidth }) => {
+    return <div className="remirror-table-col-controller" style={{ width: `${tableWidth}px` }}>
+        2
+    </div>
+}
+
+const TableCornerController: React.FC<{}> = ({ }) => {
+    return <div className="remirror-table-corner-controller" style={{}}>
+        3
+    </div>
+}
+
 
 export class TableExtension extends RemirrorTableExtension {
     get name() {
@@ -30,9 +42,42 @@ export class TableExtension extends RemirrorTableExtension {
             return null
         }
 
-        return <div className="remirror-table-controller-wrapper">
-            <TableController tableNode={node} />
-            <div className="remirror-table-wrapper" ref={forwardRef}></div>
+        const wrapperRef = useRef<HTMLDivElement | null>(null)
+        const measurerRef = useRef<HTMLDivElement | null>(null)
+
+        const [tableWidth, setTableWidth] = useState(0)
+        const [tableHeight, setTableHeight] = useState(0)
+
+        let tableWidthRef = useRef(0)
+        let tableHeightRef = useRef(0)
+
+        useLayoutEffect(() => {
+            let measurerDOM = measurerRef.current
+            if (!measurerDOM) return
+
+            setTableWidth(measurerDOM.clientWidth)
+            setTableHeight(measurerDOM.clientHeight)
+
+            tableWidthRef.current = measurerDOM.clientWidth
+            tableHeightRef.current = measurerDOM.clientHeight
+
+            console.log("measurerDOM:",measurerDOM.clientWidth, measurerDOM.offsetWidth, measurerDOM.scrollWidth)
+
+        }, [])
+
+        console.log({
+            tableWidth,
+            tableHeight
+        })
+
+        return <div className="remirror-table-controller-wrapper" ref={wrapperRef}>
+            <TableColController tableWidth={tableWidthRef.current} />
+            <TableRowController tableHeight={tableHeightRef.current} />
+            <TableCornerController />
+
+            <div className="remirror-table-measurer" ref={measurerRef}>
+                <div className="remirror-table-wrapper" ref={forwardRef}></div>
+            </div>
         </div>;
     };
 }
