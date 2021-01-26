@@ -1,11 +1,11 @@
 import {
     TableCellExtension as RemirrorTableCellExtension,
-    TableExtension as RemirrorTablleExtension,
+    TableExtension as RemirrorTableExtension,
     TableHeaderCellExtension as RemirrorTableHeaderCellExtension,
     TableRowExtension as RemirrorTableRowExtension
 } from "@remirror/preset-table"
 
-export class TableExtension extends RemirrorTablleExtension {
+export class TableExtension extends RemirrorTableExtension {
     get name() {
         return "table" as const
     }
