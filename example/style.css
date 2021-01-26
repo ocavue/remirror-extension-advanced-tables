@@ -1,6 +1,7 @@
 :root {
     --table-border-color: rgb(171, 175, 179);
     --table-dark-background-color: rgb(244, 245, 246);
+    --table-controller-width: 20px;
 }
 
 .ProseMirror {
@@ -16,4 +17,19 @@
 .ProseMirror th {
     border: solid 1px var(--table-border-color);
     background-color: var(--table-dark-background-color);
+}
+
+.ProseMirror .remirror-table-controller {
+    background-color: rgba(106, 172, 238, 0.486);
+    width: 100%;
+    height: var(--table-controller-width);
+
+    display: block;
+    position: relative;
+    top: 0px;
+    z-index: 1000;
+}
+
+.ProseMirror .remirror-table-wrapper {
+    padding-left: var(--table-controller-width);
 }

@@ -13,9 +13,11 @@ import {
     TableHeaderExtension,
     TableCellExtension,
 } from "../"
+import { ReactComponentExtension } from "@remirror/extension-react-component";
 
 const EXTENSIONS = () => [
     new CorePreset(),
+    new ReactComponentExtension(),
     new TableExtension(),
     new TableRowExtension(),
     new TableHeaderExtension(),
