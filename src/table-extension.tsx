@@ -34,12 +34,17 @@ type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: E
 
 export class TableView implements NodeView {
     node: ProsemirrorNode
-    cellMinWidth: number
+    cellMinWidth: number = 10
+    showControllers: boolean = false
+
     root: HTMLElement
     tableMeasurer: HTMLElement
     table: HTMLElement
     colgroup: HTMLElement
     tbody: HTMLElement
+    rowController: HTMLElement
+    colController: HTMLElement
+    cornerController: HTMLElement
 
     get dom(): HTMLElement {
         return this.root
@@ -57,26 +62,59 @@ export class TableView implements NodeView {
         this.colgroup = h('colgroup', { 'class': "remirror-table-colgroup" })
         this.table = h('table', { 'class': 'remirror-table' }, this.colgroup, this.tbody)
         this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer' }, this.table)
+
+        this.rowController = h('div', { 'class': "remirror-table-row-controller", 'style': 'height: 100px; display: none;' })
+        this.colController = h('div', { 'class': "remirror-table-col-controller", 'style': 'width: 100px; display: none;' })
+        this.cornerController = h('div', { 'class': "remirror-table-corner-controller", 'style': 'display: none;' })
+
         this.root = h(
             'div', { 'class': 'remirror-table-controller-wrapper' },
-            h('div', { 'class': "remirror-table-row-controller", 'style': 'height: 100px' }),
-            h('div', { 'class': "remirror-table-col-controller", 'style': 'width: 100px' }),
-            h('div', { 'class': "remirror-table-corner-controller" }),
+
+            this.rowController,
+            this.colController,
+            this.cornerController,
             this.tableMeasurer,
         )
 
         updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth)
+
     }
 
     update(node: ProsemirrorNode) {
-        if (node.type != this.node.type) return false
+        if (node.type != this.node.type) {
+            return false
+        }
         this.node = node
+
         updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
+        this.showControllers = true
+        this.updateControllers()
         return true
     }
 
     ignoreMutation(record: ProsemirrorMutationRecord) {
         return record.type == "attributes" && (record.target == this.table || this.colgroup.contains(record.target))
+    }
+
+    private updateControllers() {
+        if (this.showControllers) {
+
+            let tableHeight = this.table?.clientHeight
+            let tableWidth = this.table?.clientWidth
+
+            this.rowController.style.height = `${tableHeight}px`
+            this.colController.style.width = `${tableWidth}px`
+
+            this.rowController.style.display = 'block'
+            this.colController.style.display = 'block'
+            this.cornerController.style.display = 'block'
+
+            // console.debug('[TableView.setTableSize]', { h: tableHeight, w: tableWidth })
+        } else {
+            this.rowController.style.display = 'none'
+            this.colController.style.display = 'none'
+            this.cornerController.style.display = 'none'
+        }
     }
 }
 
