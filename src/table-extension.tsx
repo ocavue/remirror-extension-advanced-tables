@@ -1,13 +1,15 @@
-import React, { useRef, useLayoutEffect, useState } from 'react';
-import { NodeViewComponentProps, ReactComponentExtension } from "@remirror/extension-react-component"
+import { EditorView, NodeView, NodeViewMethod } from '@remirror/core';
+import { NodeViewComponentProps } from '@remirror/extension-react-component';
+import { Node as ProsemirrorNode, Schema } from '@remirror/pm/model';
 import {
     TableCellExtension as RemirrorTableCellExtension,
     TableExtension as RemirrorTableExtension,
     TableHeaderCellExtension as RemirrorTableHeaderCellExtension,
     TableRowExtension as RemirrorTableRowExtension
-} from "@remirror/preset-table"
-import { ComponentType } from "react";
-import { Node as ProsemirrorNode } from '@remirror/pm/model';
+} from "@remirror/preset-table";
+import { updateColumnsOnResize } from 'prosemirror-tables';
+import React, { ComponentType } from 'react';
+import { h } from './utils/jsx';
 
 const TableRowController: React.FC<{ tableHeight: number }> = ({ tableHeight }) => {
     return <div className="remirror-table-row-controller" style={{ height: `${tableHeight}px` }}>
@@ -28,11 +30,60 @@ const TableCornerController: React.FC<{}> = ({ }) => {
 }
 
 
+type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: Element }
+
+export class TableView implements NodeView {
+    node: ProsemirrorNode
+    cellMinWidth: number
+    dom: HTMLElement
+    tableMeasurer: HTMLElement
+    table: HTMLElement
+    colgroup: HTMLElement
+    contentDOM: HTMLElement
+
+    constructor(node: ProsemirrorNode, cellMinWidth: number) {
+        this.node = node
+        this.cellMinWidth = cellMinWidth
+
+        this.contentDOM = h('tbody', { 'class': "re-rrrrrr-tbody" })
+        this.colgroup = h('colgroup', { 'class': "re-rrrrrr-colgroup" })
+        this.table = h('table', { 'class': 're-b' }, this.colgroup, this.contentDOM)
+        this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer'}, this.table)
+        this.dom = h(
+            'div', { 'class': 'remirror-table-controller-wrapper' },
+            h('div', { 'class': "remirror-table-row-controller", 'style': 'height: 100px' }),
+            h('div', { 'class': "remirror-table-col-controller", 'style': 'width: 100px' }),
+            h('div', { 'class': "remirror-table-corner-controller" }),
+            this.tableMeasurer,
+        )
+
+        updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth)
+    }
+
+    update(node: ProsemirrorNode) {
+        if (node.type != this.node.type) return false
+        this.node = node
+        updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
+        return true
+    }
+
+    ignoreMutation(record: ProsemirrorMutationRecord) {
+        return record.type == "attributes" && (record.target == this.table || this.colgroup.contains(record.target))
+    }
+}
+
 export class TableExtension extends RemirrorTableExtension {
     get name() {
         return "table" as const
     }
 
+    createNodeViews = (): NodeViewMethod => {
+        return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number)) => {
+            return new TableView(node, 10)
+        }
+    }
+
+    /*
     ReactComponent: ComponentType<NodeViewComponentProps> = ({ node, forwardRef, selected }) => {
         console.log("node:", node)
         // console.log("forwardRef:", forwardRef)
@@ -61,7 +112,7 @@ export class TableExtension extends RemirrorTableExtension {
             tableWidthRef.current = measurerDOM.clientWidth
             tableHeightRef.current = measurerDOM.clientHeight
 
-            console.log("measurerDOM:",measurerDOM.clientWidth, measurerDOM.offsetWidth, measurerDOM.scrollWidth)
+            console.log("measurerDOM:", measurerDOM.clientWidth, measurerDOM.offsetWidth, measurerDOM.scrollWidth)
 
         }, [])
 
@@ -80,6 +131,7 @@ export class TableExtension extends RemirrorTableExtension {
             </div>
         </div>;
     };
+    */
 }
 
 export class TableRowExtension extends RemirrorTableRowExtension {
