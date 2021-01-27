@@ -35,21 +35,29 @@ type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: E
 export class TableView implements NodeView {
     node: ProsemirrorNode
     cellMinWidth: number
-    dom: HTMLElement
+    root: HTMLElement
     tableMeasurer: HTMLElement
     table: HTMLElement
     colgroup: HTMLElement
-    contentDOM: HTMLElement
+    tbody: HTMLElement
+
+    get dom(): HTMLElement {
+        return this.root
+    }
+
+    get contentDOM(): HTMLElement {
+        return this.tbody
+    }
 
     constructor(node: ProsemirrorNode, cellMinWidth: number) {
         this.node = node
         this.cellMinWidth = cellMinWidth
 
-        this.contentDOM = h('tbody', { 'class': "re-rrrrrr-tbody" })
-        this.colgroup = h('colgroup', { 'class': "re-rrrrrr-colgroup" })
-        this.table = h('table', { 'class': 're-b' }, this.colgroup, this.contentDOM)
+        this.tbody = h('tbody', { 'class': "remirror-table-tbody" })
+        this.colgroup = h('colgroup', { 'class': "remirror-table-colgroup" })
+        this.table = h('table', { 'class': 'remirror-table' }, this.colgroup, this.tbody)
         this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer' }, this.table)
-        this.dom = h(
+        this.root = h(
             'div', { 'class': 'remirror-table-controller-wrapper' },
             h('div', { 'class': "remirror-table-row-controller", 'style': 'height: 100px' }),
             h('div', { 'class': "remirror-table-col-controller", 'style': 'width: 100px' }),
