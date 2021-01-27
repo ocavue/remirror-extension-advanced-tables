@@ -1,6 +1,6 @@
-import { EditorView, NodeView, NodeViewMethod } from '@remirror/core';
+import { ApplySchemaAttributes, DOMOutputSpec, EditorView, NodeExtensionSpec, NodeView, NodeViewMethod } from '@remirror/core';
 import { NodeViewComponentProps } from '@remirror/extension-react-component';
-import { Node as ProsemirrorNode, Schema } from '@remirror/pm/model';
+import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import {
     TableCellExtension as RemirrorTableCellExtension,
     TableExtension as RemirrorTableExtension,
@@ -8,7 +8,7 @@ import {
     TableRowExtension as RemirrorTableRowExtension
 } from "@remirror/preset-table";
 import { updateColumnsOnResize } from 'prosemirror-tables';
-import React, { ComponentType } from 'react';
+import React, { ComponentType, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { h } from './utils/jsx';
 
 const TableRowController: React.FC<{ tableHeight: number }> = ({ tableHeight }) => {
@@ -48,7 +48,7 @@ export class TableView implements NodeView {
         this.contentDOM = h('tbody', { 'class': "re-rrrrrr-tbody" })
         this.colgroup = h('colgroup', { 'class': "re-rrrrrr-colgroup" })
         this.table = h('table', { 'class': 're-b' }, this.colgroup, this.contentDOM)
-        this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer'}, this.table)
+        this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer' }, this.table)
         this.dom = h(
             'div', { 'class': 'remirror-table-controller-wrapper' },
             h('div', { 'class': "remirror-table-row-controller", 'style': 'height: 100px' }),
@@ -84,11 +84,15 @@ export class TableExtension extends RemirrorTableExtension {
     }
 
     /*
-    ReactComponent: ComponentType<NodeViewComponentProps> = ({ node, forwardRef, selected }) => {
-        console.log("node:", node)
-        // console.log("forwardRef:", forwardRef)
-        console.log("selected:", selected)
+    createNodeSpec(extra: ApplySchemaAttributes) {
+        let spec = super.createNodeSpec(extra)
+        spec.toDOM = (node: ProsemirrorNode): DOMOutputSpec => {
+            return ['table', ['colgroup'], ['tbody', extra.dom(node), 0]] as any;
+        }
+        return spec
+    }
 
+    ReactComponent: ComponentType<NodeViewComponentProps> = ({ node, forwardRef, selected }) => {
         if (node?.type?.name !== "table") {
             return null
         }
@@ -102,7 +106,7 @@ export class TableExtension extends RemirrorTableExtension {
         let tableWidthRef = useRef(0)
         let tableHeightRef = useRef(0)
 
-        useLayoutEffect(() => {
+        useEffect(() => {
             let measurerDOM = measurerRef.current
             if (!measurerDOM) return
 
@@ -112,9 +116,20 @@ export class TableExtension extends RemirrorTableExtension {
             tableWidthRef.current = measurerDOM.clientWidth
             tableHeightRef.current = measurerDOM.clientHeight
 
-            console.log("measurerDOM:", measurerDOM.clientWidth, measurerDOM.offsetWidth, measurerDOM.scrollWidth)
+            if (!measurerRef.current) return
 
-        }, [])
+            let table = measurerRef.current.children[0]?.children[0]
+            if (!table || table.tagName?.toLowerCase() !== "table") return
+
+            let colgroup = table.children[0]
+            let tbody = table.children[1]
+            if (!colgroup || colgroup.tagName?.toLowerCase() !== "colgroup") return
+            if (!tbody || tbody.tagName?.toLowerCase() !== "tbody") return
+
+            updateColumnsOnResize(node, colgroup, table, 10)
+
+            console.debug('updateColumnsOnResize')
+        }, [node])
 
         console.log({
             tableWidth,
