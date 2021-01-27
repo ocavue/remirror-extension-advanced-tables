@@ -2,7 +2,8 @@
   "name": "remirror-experimental-extension-tables",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel index.html"
+    "dev": "parcel index.html",
+    "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@remirror/core": "^1.0.0-next.60",
