@@ -110,7 +110,7 @@ export class TableView implements NodeView {
         this.colController.style.width = `${size.tableWidth}px`
 
         const rowControllerCells: HTMLElement[] = size.rowHeights.map((height, index): HTMLElement => {
-            let cell = h('div', { "class": "remirror-table-controller__row-cell", style: `height: ${height}px` }, `${index}`) as any;
+            let cell = h('div', { "class": "remirror-table-controller__row-cell", style: `height: ${height}px` }) as any;
 
             // TODO: register custom callback function. UGLY!
             cell[REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] = (tablePos: number) => {
@@ -132,7 +132,7 @@ export class TableView implements NodeView {
             return cell
         })
         const colControllerCells: HTMLElement[] = size.colWidths.map((width, index): HTMLElement => {
-            let cell = h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }, `${index}`) as any;
+            let cell = h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }) as any;
 
             cell[REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] = (tablePos: number) => {
                 const [rowIndex, colIndex] = [0 , index]
