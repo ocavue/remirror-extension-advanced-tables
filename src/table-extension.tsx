@@ -35,7 +35,7 @@ type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: E
 export class TableView implements NodeView {
     root: HTMLElement
     tableMeasurer: HTMLElement
-    table: HTMLElement
+    table: HTMLTableElement
     colgroup: HTMLElement
     tbody: HTMLElement
     rowController: HTMLElement
@@ -56,7 +56,7 @@ export class TableView implements NodeView {
 
         this.tbody = h('tbody', { 'class': "remirror-table-tbody" })
         this.colgroup = h('colgroup', { 'class': "remirror-table-colgroup" })
-        this.table = h('table', { 'class': 'remirror-table' }, this.colgroup, this.tbody)
+        this.table = h('table', { 'class': 'remirror-table' }, this.colgroup, this.tbody) as HTMLTableElement
         this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer' }, this.table)
 
         this.rowController = h('div', { 'class': "remirror-table-controller__row", 'style': 'height: 100px' })
@@ -100,16 +100,71 @@ export class TableView implements NodeView {
     }
 
     private updateControllers(node: ProsemirrorNode) {
-        let tableHeight = this.table?.clientHeight
-        let tableWidth = this.table?.clientWidth
+        let size = this.getTableSize()
+        console.debug(`[TableView.updateControllers] `, size)
 
-        console.debug(`[TableView.updateControllers] `, { tableHeight, tableWidth })
+        this.rowController.style.height = `${size.tableHeight}px`
+        this.colController.style.width = `${size.tableWidth}px`
 
-        this.rowController.style.height = `${tableHeight}px`
-        this.colController.style.width = `${tableWidth}px`
+        const rowControllerCells = size.rowHeights.map((height, index) => h('div', { style: `height: ${height}px` }, `${index}`))
+        const colControllerCells = size.colWidths.map((width, index) => h('div', { style: `width: ${width}px` }, `${index}`))
+
+        replaceChildren(this.rowController, rowControllerCells)
+        replaceChildren(this.colController, colControllerCells)
+    }
+
+    private getTableSize() {
+        let rect = this.table.getBoundingClientRect()
+
+        return {
+            tableHeight: rect.height,
+            tableWidth: rect.width,
+            rowHeights: getRowHeights(this.table),
+            colWidths: getColWidths(this.table),
+        }
     }
 }
 
+export function getRowHeights(table: HTMLTableElement) {
+    const heights: number[] = [];
+
+    if (table?.lastChild) {
+        const rows = (table.lastChild).childNodes;
+
+        for (let i = 0, count = rows.length; i < count; i++) {
+            const row = rows[i] as HTMLTableRowElement;
+            heights[i] = row.getBoundingClientRect().height + 1;
+        }
+    }
+
+    return heights;
+};
+
+export function getColWidths(table: HTMLTableElement) {
+    const widths: number[] = [];
+
+    if (table?.lastChild?.lastChild) {
+        const row = table.lastChild.lastChild as HTMLTableRowElement;
+        const cells = row.childNodes
+
+        for (let i = 0, count = cells.length; i < count; i++) {
+            const cell = cells[i] as HTMLTableCellElement
+            widths[i] = cell.getBoundingClientRect().width
+        }
+    }
+
+    return widths;
+};
+
+// TODO: this function's performance should be very bad
+export function replaceChildren(container: HTMLElement, children: HTMLElement[]) {
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    for (let child of children) {
+        container.appendChild(child)
+    }
+}
 
 export type TableContollerPluginState = { debugCounter: number, tableNode?: ProsemirrorNode, }
 

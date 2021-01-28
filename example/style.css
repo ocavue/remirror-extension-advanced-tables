@@ -38,7 +38,7 @@
     z-index: 1000;
 
     display: none;
-
+    flex-direction: row;
 }
 
 .remirror-table-controller__row {
@@ -52,7 +52,7 @@
     z-index: 1000;
 
     display: none;
-
+    flex-direction: column;
 }
 
 .remirror-table-controller__corner {
@@ -67,12 +67,11 @@
     z-index: 1000;
 
     display: none;
-
 }
 
-.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__col { display: block;}
-.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__row { display: block;}
-.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__corner { display: block;}
+.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__col { display: flex;}
+.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__row { display: flex;}
+.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__corner { display: flex;}
 
 .remirror-table-measurer {
     margin-left: var(--table-controller-width);

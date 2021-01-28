@@ -1,4 +1,4 @@
-function createElement(tag: string, attributes: Record<string, any>, ...children: HTMLElement[]): HTMLElement {
+function createElement(tag: string, attributes: Record<string, any>, ...children: Array<HTMLElement|string>): HTMLElement {
     let dom = document.createElement(tag);
     for (let [key, value] of Object.entries(attributes)) {
         dom.setAttribute(key, value)
