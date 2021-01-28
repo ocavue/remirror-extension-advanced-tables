@@ -12,7 +12,7 @@ import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tabl
 import React from 'react';
 import { h } from './utils/jsx';
 
-const REMIRROR_EVENT_TABLE_CLICK_CALLBACK = "__remirrorTableClickEvent__"
+const REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK = "REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK"
 
 const TableRowController: React.FC<{ tableHeight: number }> = ({ tableHeight }) => {
     return <div className="remirror-table-controller--row" style={{ height: `${tableHeight}px` }}>
@@ -113,18 +113,18 @@ export class TableView implements NodeView {
             let cell = h('div', { "class": "remirror-table-controller__row-cell", style: `height: ${height}px` }, `${index}`) as any;
 
             // TODO: register custom callback function. UGLY!
-            cell[REMIRROR_EVENT_TABLE_CLICK_CALLBACK] = (tablePos: number) => {
+            cell[REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] = (tablePos: number) => {
                 const [rowIndex, colIndex] = [index, 0]
                 let map = TableMap.get(this.node)
                 const cellIndex = map.width * rowIndex + colIndex;
                 const posInTable = map.map[cellIndex + 1];
-                console.debug(`[TableView.REMIRROR_EVENT_TABLE_CLICK_CALLBACK] posInTable:${posInTable} tablePos:${tablePos}`)
+                console.debug(`[TableView.REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] posInTable:${posInTable} tablePos:${tablePos} map:`, map)
                 const pos = tablePos + posInTable + 1
                 let tr = this.view.state.tr
                 const $pos = tr.doc.resolve(pos);
-                console.debug(`[TableView.REMIRROR_EVENT_TABLE_CLICK_CALLBACK] pos: ${pos} $pos:`, $pos)
+                console.debug(`[TableView.REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] pos: ${pos} $pos:`, $pos)
                 let selection = CellSelection.rowSelection($pos) as unknown as Selection
-                console.debug(`[TableView.REMIRROR_EVENT_TABLE_CLICK_CALLBACK] selection:`, selection)
+                console.debug(`[TableView.REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] selection:`, selection)
                 tr = tr.setSelection(selection)
                 this.view.dispatch(tr)
                 return 0
@@ -132,7 +132,21 @@ export class TableView implements NodeView {
             return cell
         })
         const colControllerCells: HTMLElement[] = size.colWidths.map((width, index): HTMLElement => {
-            let cell = h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }, `${index}`)
+            let cell = h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }, `${index}`) as any;
+
+            cell[REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] = (tablePos: number) => {
+                const [rowIndex, colIndex] = [0 , index]
+                let map = TableMap.get(this.node)
+                const cellIndex = map.width * rowIndex + colIndex;
+                const posInTable = map.map[cellIndex];
+                console.debug(`[TableView.REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK] posInTable:${posInTable} tablePos:${tablePos} map:`, map)
+                const pos = tablePos + posInTable + 1
+                let tr = this.view.state.tr
+                const $pos = tr.doc.resolve(pos);
+                let selection = CellSelection.colSelection($pos) as unknown as Selection
+                tr = tr.setSelection(selection)
+                this.view.dispatch(tr)
+            }
             return cell
         })
 
@@ -279,10 +293,12 @@ export class TableExtension extends RemirrorTableExtension {
             if (nodeWithPosition) {
                 let { node: tableNode, pos } = nodeWithPosition
                 console.debug(`[TableView.click] tableNode:`, tableNode)
-                let fn = event.target && (event.target as any)[REMIRROR_EVENT_TABLE_CLICK_CALLBACK]
-                if (fn && typeof fn === 'function') {
-                    console.debug(`[TableView.click] fn`)
-                    fn(pos)
+                if (event.target) {
+                    let fn = (event.target as any)[REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK]
+                    if (fn && typeof fn === 'function') {
+                        console.debug(`[TableView.click] fn`)
+                        fn(pos)
+                    }
                 }
             }
         }
