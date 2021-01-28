@@ -113,6 +113,7 @@ export class TableView implements NodeView {
         replaceChildren(this.colController, colControllerCells)
     }
 
+    // TODO: prosemirror-tables has a `TableMap` class which can provide the table size.
     private getTableSize() {
         let rect = this.table.getBoundingClientRect()
 
@@ -156,7 +157,7 @@ export function getColWidths(table: HTMLTableElement) {
     return widths;
 };
 
-// TODO: this function's performance should be very bad
+// TODO: this function's performance should be very bad. Maybe we should use some kind of dom diff algorithm.
 export function replaceChildren(container: HTMLElement, children: HTMLElement[]) {
     while (container.firstChild) {
         container.removeChild(container.firstChild);
