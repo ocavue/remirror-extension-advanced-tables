@@ -34,14 +34,13 @@
     top:0px;
 
     position: absolute;
-    background-color: lightblue;
+    background-color: var(--table-dark-background-color);
     z-index: 1000;
 
     display: none;
     flex-direction: row;
 
     &-cell {
-        background-color: aliceblue;
         border: solid 1px var(--table-border-color);
         border-bottom: none;
     }
@@ -54,14 +53,13 @@
     left: 0px;
 
     position: absolute;
-    background-color: lightgreen;
+    background-color: var(--table-dark-background-color);
     z-index: 1000;
 
     display: none;
     flex-direction: column;
 
     &-cell {
-        background-color: aliceblue;
         border: solid 1px var(--table-border-color);
         border-right: none;
     }
@@ -75,10 +73,11 @@
     left: 0px;
 
     position: absolute;
-    background-color: lightcoral;
+    background-color: var(--table-dark-background-color);
     z-index: 1000;
 
     display: none;
+    border: solid 1px var(--table-border-color);
 }
 
 .remirror-table-controller-wrapper--show-controllers .remirror-table-controller__col { display: flex;}
