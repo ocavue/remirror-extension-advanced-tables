@@ -1,6 +1,6 @@
-import { ApplySchemaAttributes, DOMOutputSpec, EditorView, NodeExtensionSpec, NodeView, NodeViewMethod } from '@remirror/core';
-import { NodeViewComponentProps } from '@remirror/extension-react-component';
+import { ApplySchemaAttributes, CreatePluginReturn, EditorState, EditorView, findParentNodeOfType, NodeView } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
+import { Decoration, DecorationSet } from '@remirror/pm/view';
 import {
     TableCellExtension as RemirrorTableCellExtension,
     TableExtension as RemirrorTableExtension,
@@ -8,17 +8,17 @@ import {
     TableRowExtension as RemirrorTableRowExtension
 } from "@remirror/preset-table";
 import { updateColumnsOnResize } from 'prosemirror-tables';
-import React, { ComponentType, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React from 'react';
 import { h } from './utils/jsx';
 
 const TableRowController: React.FC<{ tableHeight: number }> = ({ tableHeight }) => {
-    return <div className="remirror-table-row-controller" style={{ height: `${tableHeight}px` }}>
+    return <div className="remirror-table-controller--row" style={{ height: `${tableHeight}px` }}>
         1
     </div>
 }
 
 const TableColController: React.FC<{ tableWidth: number }> = ({ tableWidth }) => {
-    return <div className="remirror-table-col-controller" style={{ width: `${tableWidth}px` }}>
+    return <div className="remirror-table-controller--col" style={{ width: `${tableWidth}px` }}>
         2
     </div>
 }
@@ -33,10 +33,6 @@ const TableCornerController: React.FC<{}> = ({ }) => {
 type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: Element }
 
 export class TableView implements NodeView {
-    node: ProsemirrorNode
-    cellMinWidth: number = 10
-    showControllers: boolean = false
-
     root: HTMLElement
     tableMeasurer: HTMLElement
     table: HTMLElement
@@ -46,6 +42,8 @@ export class TableView implements NodeView {
     colController: HTMLElement
     cornerController: HTMLElement
 
+    mounted: boolean = false
+
     get dom(): HTMLElement {
         return this.root
     }
@@ -54,18 +52,16 @@ export class TableView implements NodeView {
         return this.tbody
     }
 
-    constructor(node: ProsemirrorNode, cellMinWidth: number) {
-        this.node = node
-        this.cellMinWidth = cellMinWidth
+    constructor(public node: ProsemirrorNode, public cellMinWidth: number, public decorations: Decoration[]) {
 
         this.tbody = h('tbody', { 'class': "remirror-table-tbody" })
         this.colgroup = h('colgroup', { 'class': "remirror-table-colgroup" })
         this.table = h('table', { 'class': 'remirror-table' }, this.colgroup, this.tbody)
         this.tableMeasurer = h('div', { 'class': 'remirror-table-measurer' }, this.table)
 
-        this.rowController = h('div', { 'class': "remirror-table-row-controller", 'style': 'height: 100px; display: none;' })
-        this.colController = h('div', { 'class': "remirror-table-col-controller", 'style': 'width: 100px; display: none;' })
-        this.cornerController = h('div', { 'class': "remirror-table-corner-controller", 'style': 'display: none;' })
+        this.rowController = h('div', { 'class': "remirror-table-controller__row", 'style': 'height: 100px' })
+        this.colController = h('div', { 'class': "remirror-table-controller__col", 'style': 'width: 100px' })
+        this.cornerController = h('div', { 'class': "remirror-table-controller__corner" })
 
         this.root = h(
             'div', { 'class': 'remirror-table-controller-wrapper' },
@@ -76,19 +72,26 @@ export class TableView implements NodeView {
             this.tableMeasurer,
         )
 
-        updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth)
+        // TODO: add a event listener to detect `this.root` insertion
+        // see also: https://davidwalsh.name/detect-node-insertion
+        this.updateControllers(node)
 
+        console.debug(`[TableView.constructor] decorations:`, this.decorations)
+
+        updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth)
     }
 
-    update(node: ProsemirrorNode) {
+    update(node: ProsemirrorNode, decorations: Decoration[]) {
         if (node.type != this.node.type) {
             return false
         }
+
+        this.decorations = decorations
         this.node = node
 
+        console.debug(`[TableView.update] decorations:`, this.decorations)
         updateColumnsOnResize(node, this.colgroup, this.table, this.cellMinWidth)
-        this.showControllers = true
-        this.updateControllers()
+        this.updateControllers(node)
         return true
     }
 
@@ -96,26 +99,70 @@ export class TableView implements NodeView {
         return record.type == "attributes" && (record.target == this.table || this.colgroup.contains(record.target))
     }
 
-    private updateControllers() {
-        if (this.showControllers) {
+    private updateControllers(node: ProsemirrorNode) {
+        let tableHeight = this.table?.clientHeight
+        let tableWidth = this.table?.clientWidth
 
-            let tableHeight = this.table?.clientHeight
-            let tableWidth = this.table?.clientWidth
-
-            this.rowController.style.height = `${tableHeight}px`
-            this.colController.style.width = `${tableWidth}px`
-
-            this.rowController.style.display = 'block'
-            this.colController.style.display = 'block'
-            this.cornerController.style.display = 'block'
-
-            // console.debug('[TableView.setTableSize]', { h: tableHeight, w: tableWidth })
-        } else {
-            this.rowController.style.display = 'none'
-            this.colController.style.display = 'none'
-            this.cornerController.style.display = 'none'
-        }
+        this.rowController.style.height = `${tableHeight}px`
+        this.colController.style.width = `${tableWidth}px`
     }
+}
+
+
+export type TableContollerPluginState = { debugCounter: number, tableNode?: ProsemirrorNode, }
+
+export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPluginState> {
+    return {
+
+        /*
+        state: {
+            init: (config, state): TableContollerPluginState => {
+                console.debug(`[TableContollerPlugin.init]`)
+                return { debugCounter: 0 }
+            },
+            apply: (tr, oldPluginState, oldEditorState, newEditorState): TableContollerPluginState => {
+                return newPluginState
+            },
+        },
+        */
+
+        props: {
+            nodeViews: {
+                'table': (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
+                    return new TableView(node, 10, decorations)
+                }
+            },
+
+            handleDOMEvents: {
+                mousedown: () => {
+                    console.debug(`[TableContollerPlugin.mousedown]`)
+                    return false;
+                },
+            },
+
+            decorations: (state: EditorState) => {
+
+                let tableNodeResult = findParentNodeOfType({ types: 'table', selection: state.selection })
+
+                console.debug(`[TableContollerPlugin.decorations] tableNodeResult: ${tableNodeResult?.start}-${tableNodeResult?.end}`)
+                if (tableNodeResult) {
+
+
+                    const decoration = Decoration.node(
+                        tableNodeResult.start - 1, // Not sure why do I need '-1' here.
+                        tableNodeResult.end,
+                        { class: 'remirror-table-controller-wrapper--show-controllers' },
+                    );
+
+                    console.debug(`[TableContollerPlugin.decorations] creating decorations:`, decoration)
+                    return DecorationSet.create(state.doc, [decoration])
+
+                }
+
+                return null
+            },
+        },
+    };
 }
 
 export class TableExtension extends RemirrorTableExtension {
@@ -123,11 +170,23 @@ export class TableExtension extends RemirrorTableExtension {
         return "table" as const
     }
 
-    createNodeViews = (): NodeViewMethod => {
-        return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number)) => {
-            return new TableView(node, 10)
-        }
+    // createNodeViews = (): NodeViewMethod => {
+    //     return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
+    //         const getPluginState = (): TableContollerPluginState => this.getPluginState(view.state)
+    //         return new TableView(node, 10, getPluginState, decorations)
+    //     }
+    // }
+
+    createPlugin(): CreatePluginReturn<TableContollerPluginState> {
+        return newTableContollerPlugin()
     }
+
+    createNodeSpec(extra: ApplySchemaAttributes) {
+        let spec = super.createNodeSpec(extra)
+        console.debug(`[TableView.createNodeSpec]`, spec)
+        return spec
+    }
+
 
     /*
     createNodeSpec(extra: ApplySchemaAttributes) {

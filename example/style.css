@@ -6,7 +6,7 @@
 
 .ProseMirror {
     border: 1px solid red;
-    min-height: 400px;
+    min-height: 300px;
     padding: 32px;
 }
 
@@ -27,7 +27,7 @@
     overflow: auto;
 }
 
-.remirror-table-col-controller {
+.remirror-table-controller__col {
     height: var(--table-controller-width);
 
     left: var(--table-controller-width);
@@ -36,9 +36,12 @@
     position: absolute;
     background-color: lightblue;
     z-index: 1000;
+
+    display: none;
+
 }
 
-.remirror-table-row-controller {
+.remirror-table-controller__row {
     width: var(--table-controller-width);
 
     top: var(--table-controller-width);
@@ -47,9 +50,12 @@
     position: absolute;
     background-color: lightgreen;
     z-index: 1000;
+
+    display: none;
+
 }
 
-.remirror-table-corner-controller {
+.remirror-table-controller__corner {
     width: var(--table-controller-width);
     height: var(--table-controller-width);
 
@@ -59,7 +65,14 @@
     position: absolute;
     background-color: lightcoral;
     z-index: 1000;
+
+    display: none;
+
 }
+
+.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__col { display: block;}
+.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__row { display: block;}
+.remirror-table-controller-wrapper--show-controllers .remirror-table-controller__corner { display: block;}
 
 .remirror-table-measurer {
     margin-left: var(--table-controller-width);
