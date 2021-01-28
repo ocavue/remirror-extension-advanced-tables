@@ -103,6 +103,8 @@ export class TableView implements NodeView {
         let tableHeight = this.table?.clientHeight
         let tableWidth = this.table?.clientWidth
 
+        console.debug(`[TableView.updateControllers] `, { tableHeight, tableWidth })
+
         this.rowController.style.height = `${tableHeight}px`
         this.colController.style.width = `${tableWidth}px`
     }
