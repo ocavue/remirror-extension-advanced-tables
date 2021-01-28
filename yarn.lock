@@ -7637,6 +7637,7 @@ fsevents@~2.3.1:
     "@types/react": "*"
     "@types/react-dom": "*"
     parcel: ^1.12.4
+    prosemirror-tables: ^1.1.1
     react: ^17.0.1
     react-dom: ^17.0.1
     sass: ^1.32.5
