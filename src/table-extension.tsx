@@ -106,8 +106,8 @@ export class TableView implements NodeView {
         this.rowController.style.height = `${size.tableHeight}px`
         this.colController.style.width = `${size.tableWidth}px`
 
-        const rowControllerCells = size.rowHeights.map((height, index) => h('div', { style: `height: ${height}px` }, `${index}`))
-        const colControllerCells = size.colWidths.map((width, index) => h('div', { style: `width: ${width}px` }, `${index}`))
+        const rowControllerCells = size.rowHeights.map((height, index) => h('div', { "class": "remirror-table-controller__row-cell", style: `height: ${height}px` }, `${index}`))
+        const colControllerCells = size.colWidths.map((width, index) => h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }, `${index}`))
 
         replaceChildren(this.rowController, rowControllerCells)
         replaceChildren(this.colController, colControllerCells)

@@ -39,6 +39,12 @@
 
     display: none;
     flex-direction: row;
+
+    &-cell {
+        background-color: aliceblue;
+        border: solid 1px var(--table-border-color);
+        border-bottom: none;
+    }
 }
 
 .remirror-table-controller__row {
@@ -53,6 +59,12 @@
 
     display: none;
     flex-direction: column;
+
+    &-cell {
+        background-color: aliceblue;
+        border: solid 1px var(--table-border-color);
+        border-right: none;
+    }
 }
 
 .remirror-table-controller__corner {

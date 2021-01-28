@@ -1,4 +1,4 @@
-import "./style.css"
+import "./style.scss"
 import "../node_modules/prosemirror-view/style/prosemirror.css"
 import "../node_modules/prosemirror-tables/style/tables.css"
 
