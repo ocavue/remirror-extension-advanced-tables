@@ -6,6 +6,7 @@ import React, { FC } from "react";
 import { RemirrorProvider, useManager, useRemirror } from "@remirror/react";
 import Menu from './Menu';
 import { CorePreset } from "@remirror/preset-core"
+import { ProsemirrorDevTools } from "@remirror/dev"
 
 import {
     TableExtension,
@@ -47,6 +48,7 @@ const SmallEditorContainer: FC = () => {
             manager={extensionManager}
         >
             <SmallEditor />
+            < ProsemirrorDevTools />
         </RemirrorProvider>
     );
 };
