@@ -1,4 +1,5 @@
-import { ApplySchemaAttributes, CreatePluginReturn, EditorState, EditorView, findParentNodeOfType, NodeView } from '@remirror/core';
+import { ApplySchemaAttributes, CreatePluginReturn, EditorState, EditorView, findParentNodeOfType, NodeView, Selection } from '@remirror/core';
+import type { ClickHandler, ClickHandlerState, CreateEventHandlers } from '@remirror/extension-events';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
 import {
@@ -7,9 +8,11 @@ import {
     TableHeaderCellExtension as RemirrorTableHeaderCellExtension,
     TableRowExtension as RemirrorTableRowExtension
 } from "@remirror/preset-table";
-import { updateColumnsOnResize } from 'prosemirror-tables';
+import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import React from 'react';
 import { h } from './utils/jsx';
+
+const REMIRROR_EVENT_TABLE_CLICK_CALLBACK = "__remirrorTableClickEvent__"
 
 const TableRowController: React.FC<{ tableHeight: number }> = ({ tableHeight }) => {
     return <div className="remirror-table-controller--row" style={{ height: `${tableHeight}px` }}>
@@ -52,7 +55,7 @@ export class TableView implements NodeView {
         return this.tbody
     }
 
-    constructor(public node: ProsemirrorNode, public cellMinWidth: number, public decorations: Decoration[]) {
+    constructor(public node: ProsemirrorNode, public cellMinWidth: number, public decorations: Decoration[], public view: EditorView) {
 
         this.tbody = h('tbody', { 'class': "remirror-table-tbody" })
         this.colgroup = h('colgroup', { 'class': "remirror-table-colgroup" })
@@ -106,14 +109,37 @@ export class TableView implements NodeView {
         this.rowController.style.height = `${size.tableHeight}px`
         this.colController.style.width = `${size.tableWidth}px`
 
-        const rowControllerCells = size.rowHeights.map((height, index) => h('div', { "class": "remirror-table-controller__row-cell", style: `height: ${height}px` }, `${index}`))
-        const colControllerCells = size.colWidths.map((width, index) => h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }, `${index}`))
+        const rowControllerCells: HTMLElement[] = size.rowHeights.map((height, index): HTMLElement => {
+            let cell = h('div', { "class": "remirror-table-controller__row-cell", style: `height: ${height}px` }, `${index}`) as any;
+
+            // TODO: register custom callback function. UGLY!
+            cell[REMIRROR_EVENT_TABLE_CLICK_CALLBACK] = (tablePos: number) => {
+                const [rowIndex, colIndex] = [index, 0]
+                let map = TableMap.get(this.node)
+                const cellIndex = map.width * rowIndex + colIndex;
+                const posInTable = map.map[cellIndex + 1];
+                console.debug(`[TableView.REMIRROR_EVENT_TABLE_CLICK_CALLBACK] posInTable:${posInTable} tablePos:${tablePos}`)
+                const pos = tablePos + posInTable + 1
+                let tr = this.view.state.tr
+                const $pos = tr.doc.resolve(pos);
+                console.debug(`[TableView.REMIRROR_EVENT_TABLE_CLICK_CALLBACK] pos: ${pos} $pos:`, $pos)
+                let selection = CellSelection.rowSelection($pos) as unknown as Selection
+                console.debug(`[TableView.REMIRROR_EVENT_TABLE_CLICK_CALLBACK] selection:`, selection)
+                tr = tr.setSelection(selection)
+                this.view.dispatch(tr)
+                return 0
+            }
+            return cell
+        })
+        const colControllerCells: HTMLElement[] = size.colWidths.map((width, index): HTMLElement => {
+            let cell = h('div', { "class": "remirror-table-controller__col-cell", style: `width: ${width}px` }, `${index}`)
+            return cell
+        })
 
         replaceChildren(this.rowController, rowControllerCells)
         replaceChildren(this.colController, colControllerCells)
     }
 
-    // TODO: prosemirror-tables has a `TableMap` class which can provide the table size.
     private getTableSize() {
         let rect = this.table.getBoundingClientRect()
 
@@ -187,7 +213,7 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
         props: {
             nodeViews: {
                 'table': (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
-                    return new TableView(node, 10, decorations)
+                    return new TableView(node, 10, decorations, view)
                 }
             },
 
@@ -245,6 +271,23 @@ export class TableExtension extends RemirrorTableExtension {
         return spec
     }
 
+
+    createEventHandlers(): CreateEventHandlers {
+        const click: ClickHandler = (event: MouseEvent, clickState: ClickHandlerState) => {
+            let nodeWithPosition = clickState.getNode('table')
+            console.debug(`[TableView.click] nodeWithPosition:`, nodeWithPosition)
+            if (nodeWithPosition) {
+                let { node: tableNode, pos } = nodeWithPosition
+                console.debug(`[TableView.click] tableNode:`, tableNode)
+                let fn = event.target && (event.target as any)[REMIRROR_EVENT_TABLE_CLICK_CALLBACK]
+                if (fn && typeof fn === 'function') {
+                    console.debug(`[TableView.click] fn`)
+                    fn(pos)
+                }
+            }
+        }
+        return { click }
+    }
 
     /*
     createNodeSpec(extra: ApplySchemaAttributes) {
