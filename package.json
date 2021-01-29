@@ -4,8 +4,9 @@
   "version": "0.1.1",
   "scripts": {
     "dev": "parcel index.html",
-    "build": "tsc -p tsconfig.build.json",
-    "publish": "mkdir -p lib && rm -rf lib && yarn build && yarn npm publish"
+    "build:ts": "mkdir -p lib && rm -rf lib && tsc -p tsconfig.build.json",
+    "build:scss": "touch style/table.css && rm style/*.css* && sass style/table.scss style/table.css",
+    "publish": "yarn build:ts && yarn build:scss && yarn npm publish"
   },
   "index": "lib/index.js",
   "types": "lib/index.d.ts",
