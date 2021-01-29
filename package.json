@@ -5,8 +5,13 @@
   "scripts": {
     "dev": "parcel index.html",
     "build": "tsc -p tsconfig.build.json",
-    "publish": "yarn npm publish"
+    "publish": "yarn build && yarn npm publish"
   },
+  "index": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "dependencies": {
     "@remirror/core": "^1.0.0-next.60",
     "@remirror/core-utils": "^1.0.0-next.60",
