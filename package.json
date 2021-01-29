@@ -1,7 +1,7 @@
 {
   "name": "remirror-experimental-extension-tables",
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "scripts": {
     "dev": "parcel index.html",
     "build:ts": "mkdir -p lib && rm -rf lib && tsc -p tsconfig.build.json",
