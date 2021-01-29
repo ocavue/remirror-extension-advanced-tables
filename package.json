@@ -10,7 +10,10 @@
   "index": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "src",
+    "style",
+    "tsconfig.json"
   ],
   "dependencies": {
     "@remirror/core": "^1.0.0-next.60",

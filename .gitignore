@@ -1,4 +1,6 @@
 /lib
+/style/table.css
+/style/table.css.map
 
 /.yarn/*
 !/.yarn/releases
