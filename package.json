@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "parcel index.html",
     "build": "tsc -p tsconfig.build.json",
-    "publish": "yarn build && yarn npm publish"
+    "publish": "mkdir -p lib && rm -rf lib && yarn build && yarn npm publish"
   },
   "index": "lib/index.js",
   "types": "lib/index.d.ts",
