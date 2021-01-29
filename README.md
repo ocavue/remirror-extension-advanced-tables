@@ -2,10 +2,12 @@
 
 ## Roadmap
 
-1. Based on remirror `next`, develop the features and release the first version.
-2. After remirror `beta` is released, migrate the underlying implementation to remirror `beta`.
+1. Based on remirror `next`, develop the features and release version `v1`.
+2. After remirror `beta` is released, migrate the underlying implementation to remirror `beta` and release version `v2`.
 3. Merge the code into the remirror repository and release it as an official remirror package.
-4. Archive this repository
+4. Archive this repository.
+
+The goal is to keep the identical API between each step and make the migration as smooth as possible.
 
 ## Usage
 
