@@ -1,14 +1,13 @@
-function createElement(tag: string, attributes: Record<string, any>, ...children: Array<HTMLElement|string>): HTMLElement {
-    let dom = document.createElement(tag);
-    for (let [key, value] of Object.entries(attributes)) {
-        dom.setAttribute(key, value)
-    }
-    dom.append(...children)
+function createElement(tag: string, attributes: Record<string, any>, ...children: Array<HTMLElement | string>): HTMLElement {
+  const dom = document.createElement(tag);
+  for (const [key, value] of Object.entries(attributes)) {
+    dom.setAttribute(key, value);
+  }
+  dom.append(...children);
 
-
-    return dom
+  return dom;
 }
 
-const h = createElement
+const h = createElement;
 
-export {createElement, h}
+export { createElement, h };
