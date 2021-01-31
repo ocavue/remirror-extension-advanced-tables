@@ -1,10 +1,15 @@
-function createElement(tag: string, attributes: Record<string, any>, ...children: Array<HTMLElement | string>): HTMLElement {
+function createElement<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  attributes?: Record<string, any>,
+  ...children: Array<Element | string>
+) {
   const dom = document.createElement(tag);
-  for (const [key, value] of Object.entries(attributes)) {
-    dom.setAttribute(key, value);
+  if (attributes) {
+    for (const [key, value] of Object.entries(attributes)) {
+      dom.setAttribute(key, value);
+    }
   }
   dom.append(...children);
-
   return dom;
 }
 
