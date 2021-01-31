@@ -1,4 +1,4 @@
-import { ApplySchemaAttributes, CreatePluginReturn } from '@remirror/core';
+import { ApplySchemaAttributes, CreatePluginReturn, Decoration, EditorView, NodeViewMethod, ProsemirrorNode } from '@remirror/core';
 import type { ClickHandler, ClickHandlerState, CreateEventHandlers } from '@remirror/extension-events';
 import {
   TableCellExtension as RemirrorTableCellExtension,
@@ -8,18 +8,18 @@ import {
 } from '@remirror/preset-table';
 import { REMIRROR_TABLE_CONTROLLER_CLICK_CALLBACK } from './const';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
+import { TableView } from './table-view';
 
 export class TableExtension extends RemirrorTableExtension {
   get name() {
     return 'table' as const;
   }
 
-  // createNodeViews = (): NodeViewMethod => {
-  //     return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
-  //         const getPluginState = (): TableContollerPluginState => this.getPluginState(view.state)
-  //         return new TableView(node, 10, getPluginState, decorations)
-  //     }
-  // }
+  createNodeViews = (): NodeViewMethod => {
+    return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
+      return new TableView(node, 10, decorations, view);
+    };
+  };
 
   createPlugin(): CreatePluginReturn<TableContollerPluginState> {
     return newTableContollerPlugin();

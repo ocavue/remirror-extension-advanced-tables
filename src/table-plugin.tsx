@@ -1,7 +1,6 @@
-import { CreatePluginReturn, EditorState, EditorView, findParentNodeOfType } from '@remirror/core';
+import { CreatePluginReturn, EditorState, findParentNodeOfType } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
-import { TableView } from './table-view';
 
 export type TableContollerPluginState = { debugCounter: number; tableNode?: ProsemirrorNode };
 
@@ -17,15 +16,9 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
                 return newPluginState
             },
         },
-        */
+    */
 
     props: {
-      nodeViews: {
-        table: (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
-          return new TableView(node, 10, decorations, view);
-        },
-      },
-
       handleDOMEvents: {
         mousedown: () => {
           console.debug(`[TableContollerPlugin.mousedown]`);
