@@ -72,11 +72,16 @@ export class TableView implements NodeView {
     const tableHeaderCells: Array<HTMLTableCellElement | HTMLTableHeaderCellElement> = [];
 
     if (this.isControllersInjected()) {
-      tableHeaderCells.push(...range(this.map.width).map(() => h('th')));
+      tableHeaderCells.push(...range(this.map.width).map(() => h('th', {}, h('div'))));
     } else {
       tableHeaderCells.push(
         ...range(this.map.width).map((i) => {
-          const th = h('th');
+          /*
+          By CSS 2.1 rules, the height of a table cell is “the minimum height required by the content”.
+          Thus, you need to restrict the height indirectly using inner markup, normally a div element
+          (<td><div>content</div></td>).
+          */
+          const th = h('th', {}, h('div'));
           if (i === 0) {
             th.onclick = () =>
               onClickController({
