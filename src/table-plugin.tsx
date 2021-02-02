@@ -19,12 +19,14 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
     */
 
     props: {
+      /*
       handleDOMEvents: {
         mousedown: () => {
           console.debug(`[TableContollerPlugin.mousedown]`);
           return false;
         },
       },
+      */
 
       decorations: (state: EditorState) => {
         const tableNodeResult = findParentNodeOfType({
@@ -39,8 +41,6 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
             tableNodeResult.end,
             { class: 'remirror-table-controller-wrapper--show-controllers' },
           );
-
-          console.debug(`[TableContollerPlugin.decorations] creating decorations:`, decoration);
           return DecorationSet.create(state.doc, [decoration]);
         }
 

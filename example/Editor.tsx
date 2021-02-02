@@ -8,7 +8,7 @@ import Menu from './Menu';
 import { CorePreset } from '@remirror/preset-core';
 import { ProsemirrorDevTools } from '@remirror/dev';
 
-import { TableExtension, TableRowExtension, TableHeaderExtension, TableCellExtension } from '../';
+import { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension } from '../';
 import { ReactComponentExtension } from '@remirror/extension-react-component';
 
 const EXTENSIONS = () => [
@@ -16,7 +16,7 @@ const EXTENSIONS = () => [
   new ReactComponentExtension(),
   new TableExtension(),
   new TableRowExtension(),
-  new TableHeaderExtension(),
+  new TableHeaderCellExtension(),
   new TableCellExtension(),
 ];
 
@@ -29,7 +29,7 @@ const SmallEditor: FC = () => {
   return (
     <div>
       <div {...getRootProps()} />
-      <Menu createTable={() => commands.createTable({})} />
+      <Menu createTable={() => commands.createTable({ columnsCount: 3, rowsCount: 3, withHeaderRow: false })} />
     </div>
   );
 };

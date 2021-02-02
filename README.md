@@ -1,5 +1,7 @@
 # remirror-experimental-extension-tables
 
+ 
+
 ## Roadmap
 
 1. Based on remirror `next`, develop the features and release version `v1`.
@@ -22,7 +24,7 @@ Then, in your codebase:
 ```ts
 import "node_modules/remirror-experimental-extension-tables/style/table.css" // you can also use `style/table.scss` if your bundler support it.
 
-import { TableExtension, TableRowExtension, TableHeaderExtension, TableCellExtension } from 'remirror-experimental-extension-tables'
+import { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension } from 'remirror-experimental-extension-tables'
 ```
 
 ## Development
@@ -33,3 +35,10 @@ $ yarn install
 # run the example in the browser
 $ yarn dev
 ```
+
+## Features
+
+Please check https://github.com/ocavue/remirror-experimental-extension-tables/issues/3 for some demo.
+
+
+
