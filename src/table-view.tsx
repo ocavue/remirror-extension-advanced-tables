@@ -139,30 +139,32 @@ export class TableView implements NodeView {
   private injectControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {
     const headerControllerCells: ProsemirrorNode[] = range(this.map.width + 1).map((i) => {
       if (i === 0) {
-        const getOnClickControllerParams = (): OnClickControllerParams => ({
-          getPos: this.getPos,
-          map: this.map,
-          view: this.view,
-          rowIndex: 0,
-          colIndex: 0,
-          type: ControllerType.CORNER_CONTROLLER,
-        });
         return schema.nodes.tableControllerCell.create({
           controllerType: ControllerType.CORNER_CONTROLLER,
-          getOnClickControllerParams: getOnClickControllerParams,
+          onclick: () => {
+            onClickController({
+              getPos: this.getPos,
+              map: this.map,
+              view: this.view,
+              rowIndex: 0,
+              colIndex: 0,
+              type: ControllerType.CORNER_CONTROLLER,
+            });
+          },
         });
       } else {
-        const getOnClickControllerParams = (): OnClickControllerParams => ({
-          getPos: this.getPos,
-          map: this.map,
-          view: this.view,
-          rowIndex: 0,
-          colIndex: i,
-          type: ControllerType.COLUMN_CONTROLLER,
-        });
         return schema.nodes.tableControllerCell.create({
           controllerType: ControllerType.COLUMN_CONTROLLER,
-          getOnClickControllerParams: getOnClickControllerParams,
+          onclick: () => {
+            onClickController({
+              getPos: this.getPos,
+              map: this.map,
+              view: this.view,
+              rowIndex: 0,
+              colIndex: i,
+              type: ControllerType.COLUMN_CONTROLLER,
+            });
+          },
         });
       }
     });
@@ -172,17 +174,18 @@ export class TableView implements NodeView {
 
     const oldRows = oldTable.content;
     oldRows.forEach((oldRow, _, index) => {
-      const getOnClickControllerParams = (): OnClickControllerParams => ({
-        getPos: this.getPos,
-        map: this.map,
-        view: this.view,
-        rowIndex: index + 1,
-        colIndex: 0,
-        type: ControllerType.ROW_CONTROLLER,
-      });
       const controllerCell = schema.nodes.tableControllerCell.create({
         controllerType: ControllerType.ROW_CONTROLLER,
-        getOnClickControllerParams: getOnClickControllerParams,
+        onclick: () => {
+          onClickController({
+            getPos: this.getPos,
+            map: this.map,
+            view: this.view,
+            rowIndex: index + 1,
+            colIndex: 0,
+            type: ControllerType.ROW_CONTROLLER,
+          });
+        },
       });
       const oldCells = oldRow.content;
       const newCells = Fragment.from(controllerCell).append(oldCells);
@@ -218,11 +221,9 @@ export class TableControllerCellView implements NodeView {
     this.div.contentEditable = 'false';
     this.th.contentEditable = 'false';
 
-    if (node.attrs.getOnClickControllerParams) {
+    if (node.attrs.onclick) {
       this.th.onclick = (e) => {
-        console.debug(`TableControllerCellView onclick`);
-
-        onClickController(node.attrs.getOnClickControllerParams());
+        node.attrs.onclick();
         e.preventDefault();
       };
     }
