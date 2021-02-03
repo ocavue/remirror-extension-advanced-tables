@@ -1,4 +1,12 @@
-import { ApplySchemaAttributes, CreatePluginReturn, Decoration, EditorView, NodeViewMethod, ProsemirrorNode } from '@remirror/core';
+import {
+  ApplySchemaAttributes,
+  CreatePluginReturn,
+  Decoration,
+  EditorView,
+  NodeViewMethod,
+  ProsemirrorNode,
+  ProsemirrorPlugin,
+} from '@remirror/core';
 import {
   TableCellExtension as RemirrorTableCellExtension,
   TableExtension as RemirrorTableExtension,
@@ -6,6 +14,8 @@ import {
   TableRowExtension as RemirrorTableRowExtension,
 } from '@remirror/preset-table';
 import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
+import { tableEditing } from 'prosemirror-tables';
+import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
 import { TableHeaderCellView, TableView } from './table-view';
 
@@ -22,6 +32,19 @@ export class TableExtension extends RemirrorTableExtension {
 
   createPlugin(): CreatePluginReturn<TableContollerPluginState> {
     return newTableContollerPlugin();
+  }
+
+  /**
+   * Add the table plugins to the editor.
+   */
+  createExternalPlugins(): ProsemirrorPlugin[] {
+    const plugins = [tableEditing()];
+
+    if (this.options.resizable) {
+      plugins.push(columnResizing({ firstResizableColumn: 1 }));
+    }
+
+    return plugins;
   }
 
   createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
