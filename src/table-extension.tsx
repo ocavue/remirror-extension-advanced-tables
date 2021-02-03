@@ -55,6 +55,7 @@ export class TableExtension extends RemirrorTableExtension {
         ...extra.defaults(),
         isControllersInjected: { default: false },
         previewSelection: { default: false },
+        previewSelectionColumn: { default: -1 },
       },
       content: 'tableRow+',
       tableRole: 'table',

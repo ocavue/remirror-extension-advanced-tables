@@ -1,8 +1,9 @@
 :root {
-    --table-border-color: rgb(171, 175, 179);
-    --table-hightlight-border-color: rgb(0, 103, 206);
-    --table-hightlight-background-color: rgb(50, 128, 206);
-    --table-dark-background-color: rgb(244, 245, 246);
+    --table-border-color: rgba(171, 175, 179, 1);
+    --table-hightlight-border-color: rgba(0, 103, 206, 1);
+    --table-hightlight-background-color: rgba(50, 128, 206, 1);
+    --table-dark-background-color: rgba(220, 222, 224, 0.5);
+    --table-preview-selection-background-color: rgba(169, 200, 231, 0.5);
     --table-controller-width: 12px;
 }
 
@@ -83,10 +84,14 @@
     overflow: hidden;
 }
 
-.remirror-table--selected td, .remirror-table--selected th {
-    background-color: yellow!important;
+.remirror-table--selected  {
+    background-color: var(--table-preview-selection-background-color);
 }
 
 .remirror-table-row--selected {
-    background-color: lightskyblue!important;
+    background-color: var(--table-preview-selection-background-color);
+}
+
+.remirror-table-col--selected {
+    background-color: var(--table-preview-selection-background-color);
 }

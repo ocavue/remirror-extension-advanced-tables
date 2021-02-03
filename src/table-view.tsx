@@ -69,7 +69,11 @@ export class TableView implements NodeView {
   }
 
   private render() {
-    const colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, h('col'));
+    const cols = range(this.map.width).map(() => h('col'));
+    if (this.previewSelectionColumn() !== -1) {
+      cols[this.previewSelectionColumn()]?.classList.add('remirror-table-col--selected');
+    }
+    const colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, ...cols);
     const table = h(
       'table',
       { class: `remirror-table ${this.previewSelection() ? 'remirror-table--selected' : ''}` },
@@ -105,6 +109,10 @@ export class TableView implements NodeView {
     return this.node.attrs.previewSelection;
   }
 
+  private previewSelectionColumn(): number {
+    return this.node.attrs.previewSelectionColumn;
+  }
+
   private injectControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {
     const headerControllerCells: ProsemirrorNode[] = range(this.map.width + 1).map((i) => {
       if (i === 0) {
@@ -118,9 +126,8 @@ export class TableView implements NodeView {
         return schema.nodes.tableControllerCell.create({
           controllerType: ControllerType.COLUMN_CONTROLLER,
           onclick: () => selectColumn(this.view, this.getPos(), this.map, i),
-          // onmouseleave: () => {
-          //   this.view.dispatch(this.view.state.tr.setNodeMarkup(this.getPos(), undefined, { previewSelection: false }));
-          // },
+          onmouseenter: () => previewSelectColumn(this.view, this.getPos(), i),
+          onmouseleave: () => previewLeaveColumn(this.view, this.getPos()),
         });
       }
     });
@@ -262,6 +269,13 @@ function previewLeaveRow(view: EditorView, tablePos: number, map: TableMap, rowI
   const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
   const rowPos = tablePos + posInTable;
   view.dispatch(view.state.tr.setNodeMarkup(rowPos, undefined, { previewSelection: false }));
+}
+
+function previewSelectColumn(view: EditorView, tablePos: number, columnIndex: number) {
+  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelectionColumn: columnIndex }));
+}
+function previewLeaveColumn(view: EditorView, tablePos: number) {
+  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelectionColumn: -1 }));
 }
 
 function previewSelectTable(view: EditorView, tablePos: number) {
