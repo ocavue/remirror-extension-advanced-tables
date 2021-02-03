@@ -58,17 +58,23 @@
     background-color: var(--table-hightlight-background-color);
 }
 
-tr > :first-child {
+.remirror-table-row-controller {
     width: var(--table-controller-width);
 }
 
-.remirror-table-thead > .remirror-table-controller {
+.remirror-table-column-controller {
     height: var(--table-controller-width);
-    max-height: var(--table-controller-width);
+}
+.remirror-table-column-controller > div {
+    height: var(--table-controller-width);
     overflow: hidden;
 }
 
-.remirror-table-thead > .remirror-table-controller > th > div {
-    height: var(--table-controller-width - 1);
+.remirror-table-corner-controller {
+    width: var(--table-controller-width);
+    height: var(--table-controller-width);
+}
+.remirror-table-corner-controller > div {
+    height: var(--table-controller-width);
     overflow: hidden;
 }

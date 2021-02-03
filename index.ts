@@ -1,1 +1,7 @@
-export { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension } from './src/table-extension';
+export {
+  TableExtension,
+  TableRowExtension,
+  TableHeaderCellExtension,
+  TableCellExtension,
+  TableControllerCellExtension,
+} from './src/table-extension';

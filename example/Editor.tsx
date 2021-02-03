@@ -8,7 +8,7 @@ import Menu from './Menu';
 import { CorePreset } from '@remirror/preset-core';
 import { ProsemirrorDevTools } from '@remirror/dev';
 
-import { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension } from '../';
+import { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension, TableControllerCellExtension } from '../';
 import { ReactComponentExtension } from '@remirror/extension-react-component';
 
 const EXTENSIONS = () => [
@@ -18,6 +18,7 @@ const EXTENSIONS = () => [
   new TableRowExtension(),
   new TableHeaderCellExtension(),
   new TableCellExtension(),
+  new TableControllerCellExtension(),
 ];
 
 /**

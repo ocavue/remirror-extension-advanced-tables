@@ -3,6 +3,7 @@ import {
   CreatePluginReturn,
   Decoration,
   EditorView,
+  NodeExtension,
   NodeViewMethod,
   ProsemirrorNode,
   ProsemirrorPlugin,
@@ -17,7 +18,7 @@ import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/ta
 import { tableEditing } from 'prosemirror-tables';
 import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
-import { TableHeaderCellView, TableView } from './table-view';
+import { TableControllerCellView, TableView } from './table-view';
 
 export class TableExtension extends RemirrorTableExtension {
   get name() {
@@ -70,6 +71,12 @@ export class TableRowExtension extends RemirrorTableRowExtension {
   get name() {
     return 'tableRow' as const;
   }
+
+  createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
+    const spec = super.createNodeSpec(extra);
+    spec.content = '(tableCell | tableHeaderCell | tableControllerCell)*';
+    return spec;
+  }
 }
 
 export class TableHeaderCellExtension extends RemirrorTableHeaderCellExtension {
@@ -77,18 +84,13 @@ export class TableHeaderCellExtension extends RemirrorTableHeaderCellExtension {
     return 'tableHeaderCell' as const;
   }
 
-  createNodeViews = (): NodeViewMethod => {
-    return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
-      return new TableHeaderCellView(node, view, getPos as () => number, decorations);
-    };
-  };
-
   createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
     const spec = super.createNodeSpec(extra);
     spec.attrs = {
       ...spec.attrs,
       isRowController: { default: false },
-      getOnClickControllerParams: { default: null },
+      isColumnController: { default: false },
+      isCornerController: { default: false },
     };
     return spec;
   }
@@ -98,4 +100,39 @@ export class TableCellExtension extends RemirrorTableCellExtension {
   get name() {
     return 'tableCell' as const;
   }
+}
+
+export class TableControllerCellExtension extends NodeExtension {
+  get name() {
+    return 'tableControllerCell' as const;
+  }
+
+  createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
+    const cellAttrs = {
+      ...extra.defaults(),
+      colspan: { default: 1 },
+      rowspan: { default: 1 },
+      colwidth: { default: null },
+      background: { default: null },
+
+      getOnClickControllerParams: { default: null },
+      controllerType: { default: false },
+    };
+
+    return {
+      isolating: true,
+      content: `block*`,
+      attrs: cellAttrs,
+      tableRole: 'header_cell',
+      toDOM(node) {
+        return ['th', 0];
+      },
+    };
+  }
+
+  createNodeViews = (): NodeViewMethod => {
+    return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
+      return new TableControllerCellView(node, view, getPos as () => number, decorations);
+    };
+  };
 }

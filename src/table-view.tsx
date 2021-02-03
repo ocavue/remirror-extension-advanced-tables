@@ -43,7 +43,7 @@ export class TableView implements NodeView {
 
         view.state.selection;
         tr = tr.setNodeMarkup(getPos(), undefined, { isControllersInjected: true });
-        tr = this.injectRowControllers(tr, node, getPos(), view.state.schema);
+        tr = this.injectControllers(tr, node, getPos(), view.state.schema);
         view.dispatch(tr);
       }, 0); // TODO: better way to do the injection then setTimeout?
       // TODO: add a event listener to detect `this.root` insertion
@@ -69,48 +69,48 @@ export class TableView implements NodeView {
   }
 
   private render() {
-    const tableHeaderCells: Array<HTMLTableCellElement | HTMLTableHeaderCellElement> = [];
+    // const tableHeaderCells: Array<HTMLTableCellElement | HTMLTableHeaderCellElement> = [];
 
-    if (this.isControllersInjected()) {
-      tableHeaderCells.push(...range(this.map.width).map(() => h('th', {}, h('div'))));
-    } else {
-      tableHeaderCells.push(
-        ...range(this.map.width).map((i) => {
-          /*
-          By CSS 2.1 rules, the height of a table cell is “the minimum height required by the content”.
-          Thus, you need to restrict the height indirectly using inner markup, normally a div element
-          (<td><div>content</div></td>).
-          */
-          const th = h('th', {}, h('div'));
-          if (i === 0) {
-            th.onclick = () =>
-              onClickController({
-                rowIndex: 0,
-                colIndex: 0,
-                type: ControllerType.CORNER_CONTROLLER,
-                getPos: this.getPos,
-                map: this.map,
-                view: this.view,
-              });
-          } else {
-            th.onclick = () =>
-              onClickController({
-                rowIndex: 0,
-                colIndex: i,
-                type: ControllerType.COL_CONTROLLER,
-                getPos: this.getPos,
-                map: this.map,
-                view: this.view,
-              });
-          }
-          return th;
-        }),
-      );
-    }
+    // if (this.isControllersInjected()) {
+    //   tableHeaderCells.push(...range(this.map.width).map(() => h('th', {}, h('div'))));
+    // } else {
+    //   tableHeaderCells.push(
+    //     ...range(this.map.width).map((i) => {
+    //       /*
+    //       By CSS 2.1 rules, the height of a table cell is “the minimum height required by the content”.
+    //       Thus, you need to restrict the height indirectly using inner markup, normally a div element
+    //       (<td><div>content</div></td>).
+    //       */
+    //       const th = h('th', {}, h('div'));
+    //       if (i === 0) {
+    //         th.onclick = () =>
+    //           onClickController({
+    //             rowIndex: 0,
+    //             colIndex: 0,
+    //             type: ControllerType.CORNER_CONTROLLER,
+    //             getPos: this.getPos,
+    //             map: this.map,
+    //             view: this.view,
+    //           });
+    //       } else {
+    //         th.onclick = () =>
+    //           onClickController({
+    //             rowIndex: 0,
+    //             colIndex: i,
+    //             type: ControllerType.COLUMN_CONTROLLER,
+    //             getPos: this.getPos,
+    //             map: this.map,
+    //             view: this.view,
+    //           });
+    //       }
+    //       return th;
+    //     }),
+    //   );
+    // }
 
-    const thead = h('thead', { class: 'remirror-table-thead' }, h('tr', { class: 'remirror-table-controller' }, ...tableHeaderCells));
+    // const thead = h('thead', { class: 'remirror-table-thead' }, h('tr', { class: 'remirror-table-controller' }, ...tableHeaderCells));
     const colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, h('col'));
-    const table = h('table', { class: 'remirror-table' }, colgroup, thead, this.tbody);
+    const table = h('table', { class: 'remirror-table' }, colgroup, this.tbody);
 
     if (!this.root) {
       this.root = h('div', { class: 'remirror-table-controller-wrapper' }, table);
@@ -136,25 +136,52 @@ export class TableView implements NodeView {
     return this.node.attrs.isControllersInjected;
   }
 
-  private injectRowControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {
+  private injectControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {
+    const headerControllerCells: ProsemirrorNode[] = range(this.map.width + 1).map((i) => {
+      if (i === 0) {
+        const getOnClickControllerParams = (): OnClickControllerParams => ({
+          getPos: this.getPos,
+          map: this.map,
+          view: this.view,
+          rowIndex: 0,
+          colIndex: 0,
+          type: ControllerType.CORNER_CONTROLLER,
+        });
+        return schema.nodes.tableControllerCell.create({
+          controllerType: ControllerType.CORNER_CONTROLLER,
+          getOnClickControllerParams: getOnClickControllerParams,
+        });
+      } else {
+        const getOnClickControllerParams = (): OnClickControllerParams => ({
+          getPos: this.getPos,
+          map: this.map,
+          view: this.view,
+          rowIndex: 0,
+          colIndex: i,
+          type: ControllerType.COLUMN_CONTROLLER,
+        });
+        return schema.nodes.tableControllerCell.create({
+          controllerType: ControllerType.COLUMN_CONTROLLER,
+          getOnClickControllerParams: getOnClickControllerParams,
+        });
+      }
+    });
+
+    const crotrollerRow: ProsemirrorNode = schema.nodes.tableRow.create({}, headerControllerCells);
+    const newRowsArray: ProsemirrorNode[] = [crotrollerRow];
+
     const oldRows = oldTable.content;
-
-    const newRowsArray: ProsemirrorNode[] = [];
-    // let newTable: ProsemirrorNode;
-
     oldRows.forEach((oldRow, _, index) => {
-      debug('injectRowControllers index:', index);
-
       const getOnClickControllerParams = (): OnClickControllerParams => ({
         getPos: this.getPos,
         map: this.map,
         view: this.view,
-        rowIndex: index,
+        rowIndex: index + 1,
         colIndex: 0,
         type: ControllerType.ROW_CONTROLLER,
       });
-      const controllerCell = schema.nodes.tableHeaderCell.create({
-        isRowController: true,
+      const controllerCell = schema.nodes.tableControllerCell.create({
+        controllerType: ControllerType.ROW_CONTROLLER,
         getOnClickControllerParams: getOnClickControllerParams,
       });
       const oldCells = oldRow.content;
@@ -175,19 +202,29 @@ export class TableView implements NodeView {
   }
 }
 
-export class TableHeaderCellView implements NodeView {
+export class TableControllerCellView implements NodeView {
   private th: HTMLTableHeaderCellElement;
+  private div: HTMLDivElement;
 
   constructor(public node: ProsemirrorNode, public view: EditorView, public getPos: () => number, decorations: Decoration[]) {
-    this.th = h('th', { class: 'remirror-table-controller' });
+    const controllerType = node.attrs.controllerType;
+    let className = '';
+    if (controllerType === ControllerType.ROW_CONTROLLER) className = 'remirror-table-row-controller';
+    else if (controllerType === ControllerType.COLUMN_CONTROLLER) className = 'remirror-table-column-controller';
+    else if (controllerType === ControllerType.CORNER_CONTROLLER) className = 'remirror-table-corner-controller';
 
-    if (node.attrs.isRowController) {
-      if (node.attrs.getOnClickControllerParams) {
-        this.th.onclick = (e) => {
-          onClickController(node.attrs.getOnClickControllerParams());
-          e.preventDefault();
-        };
-      }
+    this.div = h('div');
+    this.th = h('th', { class: 'remirror-table-controller ' + className }, this.div);
+    this.div.contentEditable = 'false';
+    this.th.contentEditable = 'false';
+
+    if (node.attrs.getOnClickControllerParams) {
+      this.th.onclick = (e) => {
+        console.debug(`TableControllerCellView onclick`);
+
+        onClickController(node.attrs.getOnClickControllerParams());
+        e.preventDefault();
+      };
     }
   }
 
@@ -196,7 +233,7 @@ export class TableHeaderCellView implements NodeView {
   }
 
   get contentDOM(): HTMLElement {
-    return this.th;
+    return this.div;
   }
 }
 
@@ -233,7 +270,7 @@ function onClickController({ rowIndex, colIndex, type, getPos, map, view }: OnCl
     const selection = CellSelection.rowSelection($pos);
     tr = tr.setSelection((selection as unknown) as Selection); // TODO: https://github.com/ProseMirror/prosemirror-tables/pull/126
     view.dispatch(tr);
-  } else if (type === ControllerType.COL_CONTROLLER) {
+  } else if (type === ControllerType.COLUMN_CONTROLLER) {
     const posInTable = map.map[cellIndex];
     const pos = tablePos + posInTable + 1;
     const $pos = tr.doc.resolve(pos);
