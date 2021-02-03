@@ -54,6 +54,7 @@ export class TableExtension extends RemirrorTableExtension {
       attrs: {
         ...extra.defaults(),
         isControllersInjected: { default: false },
+        previewSelection: { default: false },
       },
       content: 'tableRow+',
       tableRole: 'table',
@@ -88,9 +89,6 @@ export class TableHeaderCellExtension extends RemirrorTableHeaderCellExtension {
     const spec = super.createNodeSpec(extra);
     spec.attrs = {
       ...spec.attrs,
-      isRowController: { default: false },
-      isColumnController: { default: false },
-      isCornerController: { default: false },
     };
     return spec;
   }
@@ -116,6 +114,8 @@ export class TableControllerCellExtension extends NodeExtension {
       background: { default: null },
 
       onclick: { default: null },
+      onmouseenter: { default: null },
+      onmouseleave: { default: null },
       controllerType: { default: false },
     };
 

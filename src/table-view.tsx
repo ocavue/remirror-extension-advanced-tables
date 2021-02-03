@@ -69,48 +69,13 @@ export class TableView implements NodeView {
   }
 
   private render() {
-    // const tableHeaderCells: Array<HTMLTableCellElement | HTMLTableHeaderCellElement> = [];
-
-    // if (this.isControllersInjected()) {
-    //   tableHeaderCells.push(...range(this.map.width).map(() => h('th', {}, h('div'))));
-    // } else {
-    //   tableHeaderCells.push(
-    //     ...range(this.map.width).map((i) => {
-    //       /*
-    //       By CSS 2.1 rules, the height of a table cell is “the minimum height required by the content”.
-    //       Thus, you need to restrict the height indirectly using inner markup, normally a div element
-    //       (<td><div>content</div></td>).
-    //       */
-    //       const th = h('th', {}, h('div'));
-    //       if (i === 0) {
-    //         th.onclick = () =>
-    //           onClickController({
-    //             rowIndex: 0,
-    //             colIndex: 0,
-    //             type: ControllerType.CORNER_CONTROLLER,
-    //             getPos: this.getPos,
-    //             map: this.map,
-    //             view: this.view,
-    //           });
-    //       } else {
-    //         th.onclick = () =>
-    //           onClickController({
-    //             rowIndex: 0,
-    //             colIndex: i,
-    //             type: ControllerType.COLUMN_CONTROLLER,
-    //             getPos: this.getPos,
-    //             map: this.map,
-    //             view: this.view,
-    //           });
-    //       }
-    //       return th;
-    //     }),
-    //   );
-    // }
-
-    // const thead = h('thead', { class: 'remirror-table-thead' }, h('tr', { class: 'remirror-table-controller' }, ...tableHeaderCells));
     const colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, h('col'));
-    const table = h('table', { class: 'remirror-table' }, colgroup, this.tbody);
+    const table = h(
+      'table',
+      { class: `remirror-table ${this.previewSelection() ? 'remirror-table--selected' : ''}` },
+      colgroup,
+      this.tbody,
+    ); // TODO: don't need to re-create a table node
 
     if (!this.root) {
       this.root = h('div', { class: 'remirror-table-controller-wrapper' }, table);
@@ -136,35 +101,29 @@ export class TableView implements NodeView {
     return this.node.attrs.isControllersInjected;
   }
 
+  private previewSelection(): boolean {
+    return this.node.attrs.previewSelection;
+  }
+
   private injectControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {
     const headerControllerCells: ProsemirrorNode[] = range(this.map.width + 1).map((i) => {
       if (i === 0) {
         return schema.nodes.tableControllerCell.create({
           controllerType: ControllerType.CORNER_CONTROLLER,
-          onclick: () => {
-            onClickController({
-              getPos: this.getPos,
-              map: this.map,
-              view: this.view,
-              rowIndex: 0,
-              colIndex: 0,
-              type: ControllerType.CORNER_CONTROLLER,
-            });
-          },
+          onclick: () => selectTable(this.view, this.getPos(), this.map),
+          onmouseenter: () => previewSelectTable(this.view, this.getPos()),
+          onmouseleave: () => previewLeaveTable(this.view, this.getPos()),
         });
       } else {
         return schema.nodes.tableControllerCell.create({
           controllerType: ControllerType.COLUMN_CONTROLLER,
-          onclick: () => {
-            onClickController({
-              getPos: this.getPos,
-              map: this.map,
-              view: this.view,
-              rowIndex: 0,
-              colIndex: i,
-              type: ControllerType.COLUMN_CONTROLLER,
-            });
-          },
+          onclick: () => selectColumn(this.view, this.getPos(), this.map, i),
+          // onmouseenter: () => {
+          //   this.view.dispatch(this.view.state.tr.setNodeMarkup(this.getPos(), undefined, { previewSelection: true }));
+          // },
+          // onmouseleave: () => {
+          //   this.view.dispatch(this.view.state.tr.setNodeMarkup(this.getPos(), undefined, { previewSelection: false }));
+          // },
         });
       }
     });
@@ -176,16 +135,7 @@ export class TableView implements NodeView {
     oldRows.forEach((oldRow, _, index) => {
       const controllerCell = schema.nodes.tableControllerCell.create({
         controllerType: ControllerType.ROW_CONTROLLER,
-        onclick: () => {
-          onClickController({
-            getPos: this.getPos,
-            map: this.map,
-            view: this.view,
-            rowIndex: index + 1,
-            colIndex: 0,
-            type: ControllerType.ROW_CONTROLLER,
-          });
-        },
+        onclick: () => selectRow(this.view, this.getPos(), this.map, index + 1),
       });
       const oldCells = oldRow.content;
       const newCells = Fragment.from(controllerCell).append(oldCells);
@@ -227,6 +177,18 @@ export class TableControllerCellView implements NodeView {
         e.preventDefault();
       };
     }
+    if (node.attrs.onmouseenter) {
+      this.th.onmouseenter = (e) => {
+        node.attrs.onmouseenter();
+        e.preventDefault();
+      };
+    }
+    if (node.attrs.onmouseleave) {
+      this.th.onmouseleave = (e) => {
+        node.attrs.onmouseleave();
+        e.preventDefault();
+      };
+    }
   }
 
   get dom(): HTMLElement {
@@ -250,45 +212,54 @@ export function replaceChildren(container: HTMLElement, children: HTMLElement[])
   }
 }
 
-type OnClickControllerParams = {
-  type: ControllerType;
-  rowIndex: number;
-  colIndex: number;
-  getPos: () => number;
-  map: TableMap;
-  view: EditorView;
-};
+function getCellIndex(map: TableMap, rowIndex: number, colIndex: number): number {
+  return map.width * rowIndex + colIndex;
+}
 
-function onClickController({ rowIndex, colIndex, type, getPos, map, view }: OnClickControllerParams) {
-  const tablePos = getPos();
-  const cellIndex = map.width * rowIndex + colIndex;
+function selectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
+  const cellIndex = getCellIndex(map, rowIndex, 0);
   let tr = view.state.tr;
+  const posInTable = map.map[cellIndex + 1];
+  const pos = tablePos + posInTable + 1;
+  const $pos = tr.doc.resolve(pos);
+  const selection = CellSelection.rowSelection($pos);
+  tr = tr.setSelection((selection as unknown) as Selection); // TODO: https://github.com/ProseMirror/prosemirror-tables/pull/126
+  view.dispatch(tr);
+}
 
-  if (type === ControllerType.ROW_CONTROLLER) {
-    const posInTable = map.map[cellIndex + 1];
-    const pos = tablePos + posInTable + 1;
-    const $pos = tr.doc.resolve(pos);
-    const selection = CellSelection.rowSelection($pos);
-    tr = tr.setSelection((selection as unknown) as Selection); // TODO: https://github.com/ProseMirror/prosemirror-tables/pull/126
-    view.dispatch(tr);
-  } else if (type === ControllerType.COLUMN_CONTROLLER) {
-    const posInTable = map.map[cellIndex];
-    const pos = tablePos + posInTable + 1;
-    const $pos = tr.doc.resolve(pos);
-    const selection = CellSelection.colSelection($pos);
+function selectColumn(view: EditorView, tablePos: number, map: TableMap, colIndex: number) {
+  const cellIndex = getCellIndex(map, 0, colIndex);
+  let tr = view.state.tr;
+  const posInTable = map.map[cellIndex];
+  const pos = tablePos + posInTable + 1;
+  const $pos = tr.doc.resolve(pos);
+  const selection = CellSelection.colSelection($pos);
+  tr = tr.setSelection((selection as unknown) as Selection);
+  view.dispatch(tr);
+}
+
+function selectTable(view: EditorView, tablePos: number, map: TableMap) {
+  if (map.map.length > 0) {
+    let tr = view.state.tr;
+    const firstCellPosInTable = map.map[0];
+    const lastCellPosInTable = map.map[map.map.length - 1];
+    const firstCellPos = tablePos + firstCellPosInTable + 1;
+    const lastCellPos = tablePos + lastCellPosInTable + 1;
+    const $firstCellPos = tr.doc.resolve(firstCellPos);
+    const $lastCellPos = tr.doc.resolve(lastCellPos);
+    const selection = new CellSelection($firstCellPos, $lastCellPos);
     tr = tr.setSelection((selection as unknown) as Selection);
     view.dispatch(tr);
-  } else {
-    if (map.map.length > 0) {
-      const firstCellPosInTable = map.map[0];
-      const lastCellPosInTable = map.map[map.map.length - 1];
-      const firstCellPos = tablePos + firstCellPosInTable + 1;
-      const lastCellPos = tablePos + lastCellPosInTable + 1;
-      const $firstCellPos = tr.doc.resolve(firstCellPos);
-      const $lastCellPos = tr.doc.resolve(lastCellPos);
-      const selection = new CellSelection($firstCellPos, $lastCellPos);
-      tr = tr.setSelection((selection as unknown) as Selection);
-      view.dispatch(tr);
-    }
   }
+}
+
+function previewSelectRow(view: EditorView, tablePos: number) {}
+
+function previewSelectColumn(view: EditorView) {}
+
+function previewSelectTable(view: EditorView, tablePos: number) {
+  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelection: true }));
+}
+function previewLeaveTable(view: EditorView, tablePos: number) {
+  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelection: false }));
 }

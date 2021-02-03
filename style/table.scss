@@ -82,3 +82,7 @@
     height: var(--table-controller-width);
     overflow: hidden;
 }
+
+.remirror-table--selected td, .remirror-table--selected th {
+    background-color: yellow!important;
+}
