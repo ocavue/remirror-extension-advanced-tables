@@ -118,9 +118,6 @@ export class TableView implements NodeView {
         return schema.nodes.tableControllerCell.create({
           controllerType: ControllerType.COLUMN_CONTROLLER,
           onclick: () => selectColumn(this.view, this.getPos(), this.map, i),
-          // onmouseenter: () => {
-          //   this.view.dispatch(this.view.state.tr.setNodeMarkup(this.getPos(), undefined, { previewSelection: true }));
-          // },
           // onmouseleave: () => {
           //   this.view.dispatch(this.view.state.tr.setNodeMarkup(this.getPos(), undefined, { previewSelection: false }));
           // },
@@ -136,6 +133,8 @@ export class TableView implements NodeView {
       const controllerCell = schema.nodes.tableControllerCell.create({
         controllerType: ControllerType.ROW_CONTROLLER,
         onclick: () => selectRow(this.view, this.getPos(), this.map, index + 1),
+        onmouseenter: () => previewSelectRow(this.view, this.getPos(), this.map, index + 1),
+        onmouseleave: () => previewLeaveRow(this.view, this.getPos(), this.map, index + 1),
       });
       const oldCells = oldRow.content;
       const newCells = Fragment.from(controllerCell).append(oldCells);
@@ -253,9 +252,17 @@ function selectTable(view: EditorView, tablePos: number, map: TableMap) {
   }
 }
 
-function previewSelectRow(view: EditorView, tablePos: number) {}
+function previewSelectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
+  const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
+  const rowPos = tablePos + posInTable;
+  view.dispatch(view.state.tr.setNodeMarkup(rowPos, undefined, { previewSelection: true }));
+}
 
-function previewSelectColumn(view: EditorView) {}
+function previewLeaveRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
+  const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
+  const rowPos = tablePos + posInTable;
+  view.dispatch(view.state.tr.setNodeMarkup(rowPos, undefined, { previewSelection: false }));
+}
 
 function previewSelectTable(view: EditorView, tablePos: number) {
   view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelection: true }));

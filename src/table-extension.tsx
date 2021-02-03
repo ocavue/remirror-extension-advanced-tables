@@ -76,6 +76,23 @@ export class TableRowExtension extends RemirrorTableRowExtension {
   createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
     const spec = super.createNodeSpec(extra);
     spec.content = '(tableCell | tableHeaderCell | tableControllerCell)*';
+    spec.attrs = {
+      ...spec.attrs,
+      previewSelection: { default: false },
+    };
+    spec.toDOM = (node) => {
+      const attrs = {
+        ...extra.dom(node),
+      };
+      if (node.attrs.previewSelection) {
+        if (attrs.class) {
+          attrs.class = `${attrs.class} remirror-table-row--selected`;
+        } else {
+          attrs.class = `remirror-table-row--selected`;
+        }
+      }
+      return ['tr', attrs, 0];
+    };
     return spec;
   }
 }
