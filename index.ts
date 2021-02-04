@@ -5,3 +5,5 @@ export {
   TableCellExtension,
   TableControllerCellExtension,
 } from './src/table-extension';
+
+export { TableCellMenu } from './src/TableCellMenu';

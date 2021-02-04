@@ -1152,6 +1152,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.10.5":
+  version: 7.12.13
+  resolution: "@babel/runtime@npm:7.12.13"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 52e8ac97f5686fc0718592542b5aab4b231e52b89f432d81c5d7a03d43891b187c7cc3cf2ccc7b99a967c9d7c33afe3815dc04db6185017cb3933b6c8b1f535a
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:>=7, @babel/template@npm:^7.10.4, @babel/template@npm:^7.12.7, @babel/template@npm:^7.4.4":
   version: 7.12.7
   resolution: "@babel/template@npm:7.12.7"
@@ -1504,7 +1513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/core-utils@npm:1.0.0-next.60, @remirror/core-utils@npm:^1.0.0-next.60":
+"@remirror/core-utils@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/core-utils@npm:1.0.0-next.60"
   dependencies:
@@ -1525,7 +1534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/core@npm:^1.0.0-next.60":
+"@remirror/core@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/core@npm:1.0.0-next.60"
   dependencies:
@@ -1543,7 +1552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/dev@npm:^1.0.0-next.60":
+"@remirror/dev@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/dev@npm:1.0.0-next.60"
   dependencies:
@@ -1570,6 +1579,23 @@ __metadata:
     "@remirror/core": 1.0.0-next.60
     "@remirror/pm": 1.0.0-next.60
   checksum: fb7a291c2697b021da2939aa9666b47c70762007ad43fe78e867041c4ca02688702c26ffe3c2d5592b2b45220076d8d98b1b0d5ec7cc0a8c39acf2f2622d7763
+  languageName: node
+  linkType: hard
+
+"@remirror/extension-emoji@npm:1.0.0-next.60":
+  version: 1.0.0-next.60
+  resolution: "@remirror/extension-emoji@npm:1.0.0-next.60"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    "@types/emoji-regex": ^8.0.0
+    "@types/match-sorter": ^5.0.0
+    emoji-regex: ^9.2.0
+    escape-string-regexp: ^4.0.0
+    match-sorter: ^5.0.0
+  peerDependencies:
+    "@remirror/core": 1.0.0-next.60
+    "@remirror/pm": 1.0.0-next.60
+  checksum: aad21b4e88c8e4e64481c0a4e9157c5183e31bcb58e8b3aac53bb3b0a5b5df75c5f63e700d10c482dba6f6b74dd12ff7e44cd3b00428bf31c601507281915f90
   languageName: node
   linkType: hard
 
@@ -1610,7 +1636,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/extension-paragraph@npm:1.0.0-next.60, @remirror/extension-paragraph@npm:^1.0.0-next.60":
+"@remirror/extension-mention-atom@npm:1.0.0-next.60":
+  version: 1.0.0-next.60
+  resolution: "@remirror/extension-mention-atom@npm:1.0.0-next.60"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    "@remirror/extension-events": 1.0.0-next.60
+  peerDependencies:
+    "@remirror/core": 1.0.0-next.60
+    "@remirror/pm": 1.0.0-next.60
+  checksum: f316f1401d56a48b7244114138548b5d9f1dd0fc30d1776e236e00bff15dfa90e9a6fd99ff5c22d199b5c238867fe29a08dbc48cb12653219a468f08ddfeb323
+  languageName: node
+  linkType: hard
+
+"@remirror/extension-mention@npm:1.0.0-next.60":
+  version: 1.0.0-next.60
+  resolution: "@remirror/extension-mention@npm:1.0.0-next.60"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    "@remirror/extension-events": 1.0.0-next.60
+    escape-string-regexp: ^4.0.0
+  peerDependencies:
+    "@remirror/core": 1.0.0-next.60
+    "@remirror/pm": 1.0.0-next.60
+  checksum: 69eba6edcffc5a7f28ce57f0c95187a9c73eeeb7e49eb4fc5d9be7601aa51698e71b7c8f76a779399a48a1f1432bb7b3146e69a5914defb154962af8f2eac663
+  languageName: node
+  linkType: hard
+
+"@remirror/extension-paragraph@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/extension-paragraph@npm:1.0.0-next.60"
   dependencies:
@@ -1648,7 +1701,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/extension-react-component@npm:1.0.0-next.60, @remirror/extension-react-component@npm:^1.0.0-next.60":
+"@remirror/extension-react-component@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/extension-react-component@npm:1.0.0-next.60"
   dependencies:
@@ -1681,7 +1734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/extension-text@npm:1.0.0-next.60, @remirror/extension-text@npm:^1.0.0-next.60":
+"@remirror/extension-text@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/extension-text@npm:1.0.0-next.60"
   dependencies:
@@ -1707,7 +1760,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/pm@npm:1.0.0-next.60, @remirror/pm@npm:^1.0.0-next.60":
+"@remirror/pm@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/pm@npm:1.0.0-next.60"
   dependencies:
@@ -1742,7 +1795,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/preset-core@npm:1.0.0-next.60, @remirror/preset-core@npm:^1.0.0-next.60":
+"@remirror/preset-core@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/preset-core@npm:1.0.0-next.60"
   dependencies:
@@ -1782,7 +1835,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/preset-table@npm:^1.0.0-next.60":
+"@remirror/preset-table@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/preset-table@npm:1.0.0-next.60"
   dependencies:
@@ -1793,6 +1846,48 @@ __metadata:
     "@remirror/core": 1.0.0-next.60
     "@remirror/pm": 1.0.0-next.60
   checksum: 0e0722be703ccef75df3f673225ce9d4031bd02e7bc99fa9bf53b2c7d1a51bc3eb46048a0e4edf934fb59d1bc4163a864482211b418281e5145cf3694192c410
+  languageName: node
+  linkType: hard
+
+"@remirror/react-hooks@npm:1.0.0-next.60":
+  version: 1.0.0-next.60
+  resolution: "@remirror/react-hooks@npm:1.0.0-next.60"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    "@remirror/i18n": 1.0.0-next.60
+    "@remirror/react-utils": 1.0.0-next.60
+    type-fest: ^0.18.0
+    use-isomorphic-layout-effect: ^1.1.0
+  peerDependencies:
+    "@remirror/core": 1.0.0-next.60
+    "@remirror/extension-emoji": 1.0.0-next.60
+    "@remirror/extension-events": 1.0.0-next.60
+    "@remirror/extension-history": 1.0.0-next.60
+    "@remirror/extension-mention": 1.0.0-next.60
+    "@remirror/extension-mention-atom": 1.0.0-next.60
+    "@remirror/extension-positioner": 1.0.0-next.60
+    "@remirror/pm": 1.0.0-next.60
+    "@remirror/react": 1.0.0-next.60
+    "@types/react": ^16.8.0
+    "@types/react-dom": ^16.8.0
+    react: ^16.8.0 || ^17
+    react-dom: ^16.8.0 || ^17
+  peerDependenciesMeta:
+    "@remirror/extension-mention":
+      optional: true
+    "@remirror/extension-mention-atom":
+      optional: true
+    "@remirror/extension-positioner":
+      optional: true
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 38bc829ddf9d40ac63ae1ad4793fcce192b827a2b8037ded60ed123350e336d38ec7c8fc104da42efdba804d3838857a07d21c557b36f1c2995975daacf00a4d
   languageName: node
   linkType: hard
 
@@ -1811,7 +1906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remirror/react@npm:1.0.0-next.60, @remirror/react@npm:^1.0.0-next.60":
+"@remirror/react@npm:1.0.0-next.60":
   version: 1.0.0-next.60
   resolution: "@remirror/react@npm:1.0.0-next.60"
   dependencies:
@@ -1863,6 +1958,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/emoji-regex@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@types/emoji-regex@npm:8.0.0"
+  checksum: 66659e5e80f2fb4beef7305e2865121df5ea0a028bda1b000b2ff0930e2cb214b4ded35988479992904e01226dd07b036bfc99f15986ff4189f5b666c9a768cd
+  languageName: node
+  linkType: hard
+
 "@types/js-cookie@npm:2.2.6":
   version: 2.2.6
   resolution: "@types/js-cookie@npm:2.2.6"
@@ -1874,6 +1976,13 @@ __metadata:
   version: 7.0.7
   resolution: "@types/json-schema@npm:7.0.7"
   checksum: b9d2c509fa4e0b82f58e73f5e6ab76c60ff1884ba41bb82f37fb1cece226d4a3e5a62fedf78a43da0005373a6713d9abe61c1e592906402c41c08ad6ab26d52b
+  languageName: node
+  linkType: hard
+
+"@types/match-sorter@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@types/match-sorter@npm:5.0.0"
+  checksum: d65b969ffbc0c01119ecb26fcabc1a174488274ad4bc0c1835e19de5d591adf15d6241355f6f2b2cd1af74fd1f73005c1ff215cb88cb992f5359487a6c3c8e21
   languageName: node
   linkType: hard
 
@@ -4107,6 +4216,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"emoji-regex@npm:^9.2.0":
+  version: 9.2.1
+  resolution: "emoji-regex@npm:9.2.1"
+  checksum: d6b126ad5756ded4f54e7dbb859f6c352318c7a7b83bee9161965c8d9ae7fd96cfab7fc381f27f236efecc1bd9573bad0d1e0428444dae1e075dc7cc66507df1
+  languageName: node
+  linkType: hard
+
 "emojis-list@npm:^3.0.0":
   version: 3.0.0
   resolution: "emojis-list@npm:3.0.0"
@@ -6319,6 +6435,16 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"match-sorter@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "match-sorter@npm:5.0.0"
+  dependencies:
+    "@babel/runtime": ^7.10.5
+    remove-accents: 0.4.2
+  checksum: 5fde89dae89d646239d788634aa14b87ffeff3923814226ca3b59607f7bcbe3870ec429deaae980cbf2d00b6d31a62cde6095ae5c8cfd7ef4a6ec6f5e7a97669
+  languageName: node
+  linkType: hard
+
 "md5.js@npm:^1.3.4":
   version: 1.3.5
   resolution: "md5.js@npm:1.3.5"
@@ -8396,16 +8522,20 @@ fsevents@~2.3.1:
   resolution: "remirror-experimental-extension-tables@workspace:."
   dependencies:
     "@babel/core": ^7.12.10
-    "@remirror/core": ^1.0.0-next.60
-    "@remirror/core-utils": ^1.0.0-next.60
-    "@remirror/dev": ^1.0.0-next.60
-    "@remirror/extension-paragraph": ^1.0.0-next.60
-    "@remirror/extension-react-component": ^1.0.0-next.60
-    "@remirror/extension-text": ^1.0.0-next.60
-    "@remirror/pm": ^1.0.0-next.60
-    "@remirror/preset-core": ^1.0.0-next.60
-    "@remirror/preset-table": ^1.0.0-next.60
-    "@remirror/react": ^1.0.0-next.60
+    "@remirror/core": 1.0.0-next.60
+    "@remirror/core-utils": 1.0.0-next.60
+    "@remirror/dev": 1.0.0-next.60
+    "@remirror/extension-emoji": 1.0.0-next.60
+    "@remirror/extension-mention": 1.0.0-next.60
+    "@remirror/extension-mention-atom": 1.0.0-next.60
+    "@remirror/extension-paragraph": 1.0.0-next.60
+    "@remirror/extension-react-component": 1.0.0-next.60
+    "@remirror/extension-text": 1.0.0-next.60
+    "@remirror/pm": 1.0.0-next.60
+    "@remirror/preset-core": 1.0.0-next.60
+    "@remirror/preset-table": 1.0.0-next.60
+    "@remirror/react": 1.0.0-next.60
+    "@remirror/react-hooks": 1.0.0-next.60
     "@types/node": ^14.14.22
     "@types/react": "*"
     "@types/react-dom": ^17.0.0
@@ -8422,12 +8552,20 @@ fsevents@~2.3.1:
     react: ^17.0.1
     react-dom: ^17.0.1
     sass: ^1.32.5
+    tslib: ^2.1.0
     typescript: ^4.1.3
   peerDependencies:
     react: ^16 || ^17
     react-dom: ^16 || ^17
   languageName: unknown
   linkType: soft
+
+"remove-accents@npm:0.4.2":
+  version: 0.4.2
+  resolution: "remove-accents@npm:0.4.2"
+  checksum: 54fd27e4b0df03e7827c49721113a99b51292dcd23233d65ef89aa2b73e4d96f071eaf11ff58cfec22cab0ad711ba60914749c57e4f37f799c2bf22b78be7992
+  languageName: node
+  linkType: hard
 
 "remove-trailing-separator@npm:^1.0.1":
   version: 1.1.0
@@ -9670,7 +9808,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0":
+"tslib@npm:^2.0.0, tslib@npm:^2.1.0":
   version: 2.1.0
   resolution: "tslib@npm:2.1.0"
   checksum: d8f5bdd067611651c6b846c2388f4dc8ba1f5af124e66105f5263d1ad56da17f4b8c6566887ca2f205c5a9758451871ceca87d5d06087af2dca1699c5e33db69

@@ -8,7 +8,14 @@ import Menu from './Menu';
 import { CorePreset } from '@remirror/preset-core';
 import { ProsemirrorDevTools } from '@remirror/dev';
 
-import { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension, TableControllerCellExtension } from '../';
+import {
+  TableExtension,
+  TableRowExtension,
+  TableHeaderCellExtension,
+  TableCellExtension,
+  TableControllerCellExtension,
+  TableCellMenu,
+} from '../';
 import { ReactComponentExtension } from '@remirror/extension-react-component';
 
 const EXTENSIONS = () => [
@@ -42,6 +49,7 @@ const SmallEditorContainer: FC = () => {
     <RemirrorProvider manager={extensionManager}>
       <SmallEditor />
       <ProsemirrorDevTools />
+      <TableCellMenu />
     </RemirrorProvider>
   );
 };
