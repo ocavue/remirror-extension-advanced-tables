@@ -1,7 +1,8 @@
+import React from 'jsx-dom';
+
 import { EditorView } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
-import React from 'jsx-dom';
 import { ControllerType } from '../const';
 import TableInsertionTriggerAreas from '../controller/TableInsertionTriggerAreas';
 import { stopEvent } from '../utils/dom';
