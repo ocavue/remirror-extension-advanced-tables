@@ -7,6 +7,8 @@
     --table-controller-width: 12px;
 }
 
+$add-column-handler-width: 4px;
+
 .ProseMirror {
     border: 1px solid red;
     min-height: 300px;
@@ -33,8 +35,6 @@
     position: relative;
     padding: 0px;
     margin: 0px;
-
-    overflow: auto;
 }
 
 .remirror-table-controller {
@@ -72,7 +72,7 @@
 }
 .remirror-table-column-controller > div {
     height: var(--table-controller-width);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .remirror-table-corner-controller {
@@ -81,7 +81,7 @@
 }
 .remirror-table-corner-controller > div {
     height: var(--table-controller-width);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .remirror-table--selected  {
@@ -94,4 +94,48 @@
 
 .remirror-table-col--selected {
     background-color: var(--table-preview-selection-background-color);
+}
+
+.ProseMirror table {
+    margin-top: 40px; // spec for popup
+    // padding-top: 40px;
+}
+
+
+.ProseMirror table  {
+    overflow: visible !important; // To show the .remirror-table-controller-popup-img
+}
+
+
+.remirror-table-column-controller {
+    & .remirror-table-controller__add-column-wrapper {
+        position: relative;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        z-index: 101;
+
+        & .remirror-table-controller__add-column-handler {
+            position: relative;
+            width:0px;
+            height:0px;
+
+            &::after {
+                position: absolute;
+                left: -0.5 * $add-column-handler-width;
+                top: -30px;
+                z-index: 103;
+
+                content: " ";
+                border-radius: 50%;
+                border-style: solid;
+                border-color: rgba(145, 145, 145, 0.589);
+                border-width: $add-column-handler-width / 2;
+                width: 0px;
+                height: 0px;
+            }
+        }
+    }
 }
