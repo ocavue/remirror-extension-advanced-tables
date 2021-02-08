@@ -1,7 +1,9 @@
 import React, { CSSProperties } from 'jsx-dom';
 import { ControllerType } from '../const';
 
-const TableInsertionTriggerArea = ({ showButton, hideButton }: { showButton: () => void; hideButton: () => void }) => {
+type TableInsertionTriggerArea = 'left' | 'right';
+
+const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }) => {
   let addColumnTriggerAreaStyle: CSSProperties = {
     flex: 1,
     height: 24,
@@ -9,47 +11,29 @@ const TableInsertionTriggerArea = ({ showButton, hideButton }: { showButton: () 
     zIndex: 10,
 
     // Just for debug. Use linear-gradient as background so that we can differentiate two neighbor areas.
-    opacity: 0.5,
-    background: 'linear-gradient(to left top, teal, pink)',
+    background: 'linear-gradient(to left top, rgba(0, 255, 169, 0.3), rgba(243, 61, 243, 0.3))',
   };
 
-  return (
-    <div
-      style={addColumnTriggerAreaStyle}
-      onMouseOver={(e) => {
-        showButton();
-      }}
-      onMouseOut={(e) => {
-        hideButton();
-      }}
-    ></div>
-  );
-};
+  let buttonStyle: CSSProperties = {
+    display: 'none',
+    zIndex: 105,
 
-const TableInsertionTriggerAreas = ({
-  controllerType,
-  showButton,
-  hideButton,
-}: {
-  controllerType: ControllerType;
-  showButton: () => void;
-  hideButton: () => void;
-}) => {
-  let props = { showButton, hideButton };
-  if (controllerType == ControllerType.COLUMN_CONTROLLER) {
-    return (
-      <>
-        <TableInsertionTriggerArea {...props} />
-        <TableInsertionTriggerArea {...props} />
-      </>
-    );
-  }
-  return null;
-};
+    position: 'absolute',
+    width: '24px',
+    height: '24px',
+    top: '-16px',
 
-const TableInsertionButtonWrapper = ({ controllerType }: { controllerType: ControllerType }) => {
+    opacity: 1,
+  };
+
+  if (type === 'left') buttonStyle.left = '-12px';
+  if (type === 'right') buttonStyle.right = '-13px';
+
   let button = (
-    <button className='remirror-table-controller__add-column-button' style={{ display: 'none', zIndex: 105 }}>
+    <button
+      // className='remirror-table-controller__add-column-button'
+      style={buttonStyle}
+    >
       a
     </button>
   );
@@ -64,9 +48,37 @@ const TableInsertionButtonWrapper = ({ controllerType }: { controllerType: Contr
   };
 
   return (
-    <>
+    <div
+      style={addColumnTriggerAreaStyle}
+      onMouseOver={(e) => {
+        showButton();
+      }}
+      onMouseOut={(e) => {
+        hideButton();
+      }}
+    >
       {button}
-      <TableInsertionTriggerAreas controllerType={controllerType} showButton={showButton} hideButton={hideButton} />
+    </div>
+  );
+};
+
+const TableInsertionTriggerAreas = ({ controllerType }: { controllerType: ControllerType }) => {
+  let props = {};
+  if (controllerType == ControllerType.COLUMN_CONTROLLER) {
+    return (
+      <>
+        <TableInsertionTriggerArea {...props} type='left' />
+        <TableInsertionTriggerArea {...props} type='right' />
+      </>
+    );
+  }
+  return null;
+};
+
+const TableInsertionButtonWrapper = ({ controllerType }: { controllerType: ControllerType }) => {
+  return (
+    <>
+      <TableInsertionTriggerAreas controllerType={controllerType} />
     </>
   );
 };

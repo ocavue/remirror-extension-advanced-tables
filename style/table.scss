@@ -131,12 +131,5 @@ $add-column-mark-width: 4px;
             border-width: $add-column-mark-width / 2;
         }
 
-        & .remirror-table-controller__add-column-button {
-            position: absolute;
-            width:24px;
-            height:24px;
-            top: -26px;
-            right: -12px;
-        }
     }
 }
