@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'jsx-dom';
 import { ControllerType } from '../const';
 
-const TableInsertionTriggerArea = () => {
+const TableInsertionTriggerArea = ({ showButton, hideButton }: { showButton: () => void; hideButton: () => void }) => {
   let addColumnTriggerAreaStyle: CSSProperties = {
     flex: 1,
     height: 24,
@@ -17,18 +17,30 @@ const TableInsertionTriggerArea = () => {
     <div
       style={addColumnTriggerAreaStyle}
       onMouseOver={(e) => {
-        console.debug(e);
+        showButton();
+      }}
+      onMouseOut={(e) => {
+        hideButton();
       }}
     ></div>
   );
 };
 
-const TableInsertionTriggerAreas = ({ controllerType }: { controllerType: ControllerType }) => {
+const TableInsertionTriggerAreas = ({
+  controllerType,
+  showButton,
+  hideButton,
+}: {
+  controllerType: ControllerType;
+  showButton: () => void;
+  hideButton: () => void;
+}) => {
+  let props = { showButton, hideButton };
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
     return (
       <>
-        <TableInsertionTriggerArea />
-        <TableInsertionTriggerArea />
+        <TableInsertionTriggerArea {...props} />
+        <TableInsertionTriggerArea {...props} />
       </>
     );
   }

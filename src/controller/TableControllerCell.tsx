@@ -18,6 +18,7 @@ export type TableControllerCellProps = {
 
 const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: TableControllerCellProps) => {
   const controllerType = node.attrs.controllerType;
+
   let className = '';
   if (controllerType === ControllerType.ROW_CONTROLLER) className = 'remirror-table-row-controller';
   else if (controllerType === ControllerType.COLUMN_CONTROLLER) className = 'remirror-table-column-controller';
@@ -32,24 +33,35 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     />
   );
 
-  let button = <button className='remirror-table-controller__add-column-button'>a</button>;
+  let button = (
+    <button className='remirror-table-controller__add-column-button' style={{ display: 'none' }}>
+      a
+    </button>
+  );
+
+  const showButton = () => {
+    console.debug('showButton');
+    button.style.setProperty('display', 'inherit');
+  };
+  const hideButton = () => {
+    console.debug('hideButton');
+    button.style.setProperty('display', 'none');
+  };
 
   let wrapper = (
     <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
-      <TableInsertionTriggerAreas controllerType={controllerType} />
+      <TableInsertionTriggerAreas controllerType={controllerType} showButton={showButton} hideButton={hideButton} />
       {contentDOM}
       {button}
       {mark}
     </div>
   );
 
-  let th: DOM = (
+  return (
     <th contentEditable={false} className={'remirror-table-controller ' + className} {...node.attrs.events}>
       {wrapper}
     </th>
   );
-
-  return th;
 };
 
 export default TableControllerCell;

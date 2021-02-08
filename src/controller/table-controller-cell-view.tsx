@@ -14,4 +14,9 @@ export class TableControllerCellView implements NodeView {
     this.contentDOM = <div contentEditable={false} />;
     this.dom = <TableControllerCell node={node} view={view} getPos={getPos} decorations={decorations} contentDOM={this.contentDOM} />;
   }
+
+  // When a DOM mutation happens (eg: the button show or hide), don't let ProsemirrorNode re-render the view.
+  ignoreMutation() {
+    return true;
+  }
 }
