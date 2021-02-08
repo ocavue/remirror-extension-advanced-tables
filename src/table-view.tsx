@@ -13,17 +13,17 @@ function debug(...params: any[]) {
 }
 
 export class TableView implements NodeView {
-  root: HTMLElement;
-  tbody: HTMLElement;
+  root: DOM;
+  tbody: DOM;
   map: TableMap;
 
   mounted = false;
 
-  get dom(): HTMLElement {
+  get dom() {
     return this.root;
   }
 
-  get contentDOM(): HTMLElement {
+  get contentDOM() {
     return this.tbody;
   }
 
@@ -35,7 +35,7 @@ export class TableView implements NodeView {
     public getPos: () => number,
   ) {
     this.map = TableMap.get(this.node);
-    this.tbody = h('tbody', { class: 'remirror-table-tbody' });
+    this.tbody = <tbody className='remirror-table-tbody' />;
     this.root = this.render();
 
     if (!node.attrs.isControllersInjected) {
@@ -206,7 +206,7 @@ export class TableControllerCellView implements NodeView {
 type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: Element };
 
 // TODO: this function's performance should be very bad. Maybe we should use some kind of DOM-diff algorithm.
-export function replaceChildren(container: HTMLElement, children: HTMLElement[]) {
+export function replaceChildren(container: DOM, children: DOM[]) {
   while (container.firstChild) {
     container.removeChild(container.firstChild);
   }
