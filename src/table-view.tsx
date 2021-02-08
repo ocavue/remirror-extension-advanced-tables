@@ -5,9 +5,6 @@ import React, { h } from 'jsx-dom';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
-import TableControllerCell from './controller/TableControllerCell';
-import TableInsertionTriggerAreas from './controller/TableInsertionTriggerAreas';
-import { stopEvent } from './utils/dom';
 import { DOM, Events } from './utils/jsx';
 
 function debug(...params: any[]) {
@@ -162,28 +159,6 @@ export class TableView implements NodeView {
   ignoreMutation(record: ProsemirrorMutationRecord) {
     // return record.type == 'attributes' && (record.target == this.table || (this.colgroup && this.colgroup.contains(record.target)));
     return record.type == 'attributes';
-  }
-}
-
-export class TableControllerCellView implements NodeView {
-  private th: DOM | undefined;
-  public contentDOM: DOM | undefined;
-
-  constructor(public node: ProsemirrorNode, public view: EditorView, public getPos: () => number, decorations: Decoration[]) {
-    <TableControllerCell
-      node={node}
-      view={view}
-      getPos={getPos}
-      decorations={decorations}
-      setContentDOM={(d) => (this.contentDOM = d)}
-      setDOM={(d) => {
-        this.th = d;
-      }}
-    />;
-  }
-
-  get dom() {
-    return this.th;
   }
 }
 

@@ -8,21 +8,15 @@ import TableInsertionTriggerAreas from '../controller/TableInsertionTriggerAreas
 import { stopEvent } from '../utils/dom';
 import { DOM } from '../utils/jsx';
 
-const TableControllerCell = ({
-  node,
-  view,
-  getPos,
-  decorations,
-  setContentDOM,
-  setDOM,
-}: {
+export type TableControllerCellProps = {
   node: ProsemirrorNode;
   view: EditorView;
   getPos: () => number;
   decorations: Decoration[];
-  setContentDOM: (contentDOM: DOM) => void;
-  setDOM: (dom: DOM) => void;
-}) => {
+  contentDOM: DOM;
+};
+
+const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: TableControllerCellProps) => {
   const controllerType = node.attrs.controllerType;
   let className = '';
   if (controllerType === ControllerType.ROW_CONTROLLER) className = 'remirror-table-row-controller';
@@ -40,7 +34,6 @@ const TableControllerCell = ({
 
   let button = <button className='remirror-table-controller__add-column-button'>a</button>;
 
-  let contentDOM = <div contentEditable={false} />;
   let wrapper = (
     <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
       <TableInsertionTriggerAreas controllerType={controllerType} />
@@ -50,14 +43,11 @@ const TableControllerCell = ({
     </div>
   );
 
-  let th = (
+  let th: DOM = (
     <th contentEditable={false} className={'remirror-table-controller ' + className} {...node.attrs.events}>
       {wrapper}
     </th>
   );
-
-  setContentDOM(contentDOM);
-  setDOM(th);
 
   return th;
 };
