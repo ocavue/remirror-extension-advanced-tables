@@ -1,12 +1,13 @@
 import { EditorView, NodeView, range, Transaction } from '@remirror/core';
 import { Fragment, Node as ProsemirrorNode, Schema } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
+import React, { h } from 'jsx-dom';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
-import React, { CSSProperties, h } from 'jsx-dom';
-import { DOM, Events } from './utils/jsx';
+import InsertionTriggerAreas from './InsertionTriggerAreas';
 import { stopEvent } from './utils/dom';
+import { DOM, Events } from './utils/jsx';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);
@@ -183,22 +184,14 @@ export class TableControllerCellView implements NodeView {
       />
     );
 
-    let addColumnTriggerAreaStyle: CSSProperties = {
-      flex: 1,
-      height: 24,
-      position: 'relative',
-      zIndex: 10,
-      opacity: 0.5,
-    };
-    let addColumnTriggerArea1 = <div style={{ ...addColumnTriggerAreaStyle, background: 'lightpink' }}></div>;
-    let addColumnTriggerArea2 = <div style={{ ...addColumnTriggerAreaStyle, background: 'lightblue' }}></div>;
+    let button = <button className='remirror-table-controller__add-column-button'>a</button>;
 
     this.contentDOM = <div contentEditable={false} />;
     let wrapper = (
       <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
-        {addColumnTriggerArea1}
-        {addColumnTriggerArea2}
+        <InsertionTriggerAreas controllerType={controllerType} />
         {this.contentDOM}
+        {button}
         {mark}
       </div>
     );
