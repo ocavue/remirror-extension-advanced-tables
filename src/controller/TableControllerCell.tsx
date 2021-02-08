@@ -4,7 +4,7 @@ import { EditorView } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { ControllerType } from '../const';
-import TableInsertionTriggerAreas from '../controller/TableInsertionTriggerAreas';
+import TableInsertionButtonWrapper from './TableInsertionButtonWrapper';
 import { stopEvent } from '../utils/dom';
 import { DOM } from '../utils/jsx';
 
@@ -33,26 +33,10 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     />
   );
 
-  let button = (
-    <button className='remirror-table-controller__add-column-button' style={{ display: 'none' }}>
-      a
-    </button>
-  );
-
-  const showButton = () => {
-    console.debug('showButton');
-    button.style.setProperty('display', 'inherit');
-  };
-  const hideButton = () => {
-    console.debug('hideButton');
-    button.style.setProperty('display', 'none');
-  };
-
   let wrapper = (
     <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
-      <TableInsertionTriggerAreas controllerType={controllerType} showButton={showButton} hideButton={hideButton} />
+      <TableInsertionButtonWrapper controllerType={controllerType} />
       {contentDOM}
-      {button}
       {mark}
     </div>
   );

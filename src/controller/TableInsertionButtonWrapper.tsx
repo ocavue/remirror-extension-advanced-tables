@@ -47,4 +47,28 @@ const TableInsertionTriggerAreas = ({
   return null;
 };
 
-export default TableInsertionTriggerAreas;
+const TableInsertionButtonWrapper = ({ controllerType }: { controllerType: ControllerType }) => {
+  let button = (
+    <button className='remirror-table-controller__add-column-button' style={{ display: 'none', zIndex: 105 }}>
+      a
+    </button>
+  );
+
+  const showButton = () => {
+    console.debug('showButton');
+    button.style.setProperty('display', 'inherit');
+  };
+  const hideButton = () => {
+    console.debug('hideButton');
+    button.style.setProperty('display', 'none');
+  };
+
+  return (
+    <>
+      {button}
+      <TableInsertionTriggerAreas controllerType={controllerType} showButton={showButton} hideButton={hideButton} />
+    </>
+  );
+};
+
+export default TableInsertionButtonWrapper;
