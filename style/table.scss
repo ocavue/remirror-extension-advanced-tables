@@ -125,7 +125,7 @@ $add-column-mark-width: 4px;
             &::after {
                 position: absolute;
                 left: -0.5 * $add-column-mark-width;
-                top: -30px;
+                top: -20px;
                 z-index: 103;
 
                 content: " ";
