@@ -4,7 +4,7 @@ import { Decoration } from '@remirror/pm/view';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
-import React, { h } from 'jsx-dom';
+import React, { CSSProperties, h } from 'jsx-dom';
 import { DOM, Events } from './utils/jsx';
 import { stopEvent } from './utils/dom';
 
@@ -183,9 +183,21 @@ export class TableControllerCellView implements NodeView {
       />
     );
 
+    let addColumnTriggerAreaStyle: CSSProperties = {
+      flex: 1,
+      height: 24,
+      position: 'relative',
+      zIndex: 10,
+      opacity: 0.5,
+    };
+    let addColumnTriggerArea1 = <div style={{ ...addColumnTriggerAreaStyle, background: 'lightpink' }}></div>;
+    let addColumnTriggerArea2 = <div style={{ ...addColumnTriggerAreaStyle, background: 'lightblue' }}></div>;
+
     this.contentDOM = <div contentEditable={false} />;
     let wrapper = (
       <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
+        {addColumnTriggerArea1}
+        {addColumnTriggerArea2}
         {this.contentDOM}
         {mark}
       </div>

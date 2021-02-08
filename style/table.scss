@@ -115,7 +115,7 @@ $add-column-mark-width: 4px;
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
-        align-items: center;
+        align-items: flex-end;
         z-index: 101;
 
         & .remirror-table-controller__add-column-mark {
@@ -126,7 +126,7 @@ $add-column-mark-width: 4px;
             &::after {
                 position: absolute;
                 left: -0.5 * $add-column-mark-width;
-                top: -20px;
+                top: -24px;
                 z-index: 103;
 
                 content: " ";
