@@ -5,7 +5,8 @@ import React, { h } from 'jsx-dom';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
-import InsertionTriggerAreas from './InsertionTriggerAreas';
+import TableControllerCell from './controller/TableControllerCell';
+import TableInsertionTriggerAreas from './controller/TableInsertionTriggerAreas';
 import { stopEvent } from './utils/dom';
 import { DOM, Events } from './utils/jsx';
 
@@ -165,42 +166,20 @@ export class TableView implements NodeView {
 }
 
 export class TableControllerCellView implements NodeView {
-  private th: DOM;
-  public contentDOM: DOM;
+  private th: DOM | undefined;
+  public contentDOM: DOM | undefined;
 
   constructor(public node: ProsemirrorNode, public view: EditorView, public getPos: () => number, decorations: Decoration[]) {
-    const controllerType = node.attrs.controllerType;
-    let className = '';
-    if (controllerType === ControllerType.ROW_CONTROLLER) className = 'remirror-table-row-controller';
-    else if (controllerType === ControllerType.COLUMN_CONTROLLER) className = 'remirror-table-column-controller';
-    else if (controllerType === ControllerType.CORNER_CONTROLLER) className = 'remirror-table-corner-controller';
-
-    let mark = (
-      <div
-        className='remirror-table-controller__add-column-mark'
-        /* prevent the parent (.remirror-table-controller) preview selection hightlight. */
-        onMouseOver={stopEvent}
-        onMouseOut={stopEvent}
-      />
-    );
-
-    let button = <button className='remirror-table-controller__add-column-button'>a</button>;
-
-    this.contentDOM = <div contentEditable={false} />;
-    let wrapper = (
-      <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
-        <InsertionTriggerAreas controllerType={controllerType} />
-        {this.contentDOM}
-        {button}
-        {mark}
-      </div>
-    );
-
-    this.th = (
-      <th contentEditable={false} className={'remirror-table-controller ' + className} {...node.attrs.events}>
-        {wrapper}
-      </th>
-    );
+    <TableControllerCell
+      node={node}
+      view={view}
+      getPos={getPos}
+      decorations={decorations}
+      setContentDOM={(d) => (this.contentDOM = d)}
+      setDOM={(d) => {
+        this.th = d;
+      }}
+    />;
   }
 
   get dom() {

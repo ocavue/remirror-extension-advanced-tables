@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'jsx-dom';
-import { ControllerType } from './const';
+import { ControllerType } from '../const';
 
-const InsertionTriggerArea = () => {
+const TableInsertionTriggerArea = () => {
   let addColumnTriggerAreaStyle: CSSProperties = {
     flex: 1,
     height: 24,
@@ -23,16 +23,16 @@ const InsertionTriggerArea = () => {
   );
 };
 
-const InsertionTriggerAreas = ({ controllerType }: { controllerType: ControllerType }) => {
+const TableInsertionTriggerAreas = ({ controllerType }: { controllerType: ControllerType }) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
     return (
       <>
-        <InsertionTriggerArea />
-        <InsertionTriggerArea />
+        <TableInsertionTriggerArea />
+        <TableInsertionTriggerArea />
       </>
     );
   }
   return null;
 };
 
-export default InsertionTriggerAreas;
+export default TableInsertionTriggerAreas;
