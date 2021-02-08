@@ -16,3 +16,9 @@ function createElement<K extends keyof HTMLElementTagNameMap>(
 const h = createElement;
 
 export { createElement, h };
+
+// When using 'jsx-dom', because of some limit of TypeScript, the
+// return type of <div/> is `JSX.Element` instead of `HTMLDivElement`.
+// The following type is compatible with both `document.createElement`
+// and `JSX.Element`.
+export type DOM = JSX.Element | HTMLElement;
