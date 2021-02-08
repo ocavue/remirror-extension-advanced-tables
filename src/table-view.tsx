@@ -3,10 +3,10 @@ import { Fragment, Node as ProsemirrorNode, Schema } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
-import { base64popupSvg } from './assets/popup';
 import { ControllerType } from './const';
 import React, { h } from 'jsx-dom';
 import { DOM } from './utils/jsx';
+import { stopEvent } from './utils/dom';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);
@@ -174,57 +174,20 @@ export class TableControllerCellView implements NodeView {
     else if (controllerType === ControllerType.COLUMN_CONTROLLER) className = 'remirror-table-column-controller';
     else if (controllerType === ControllerType.CORNER_CONTROLLER) className = 'remirror-table-corner-controller';
 
-    let handler = (
+    let mark = (
       <div
-        className='remirror-table-controller__add-column-handler'
-        onMouseEnter={(e) => {
-          console.debug('child event onMouseEnter');
-          // Use `stopPropagation` to prevent the parent (.remirror-table-controller) preview selection hightlight.
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-        onMouseLeave={(e) => {
-          console.debug('child event onMouseLeave');
-          // Use `stopPropagation` to prevent the parent (.remirror-table-controller) preview selection hightlight.
-          e.preventDefault();
-          e.stopPropagation();
-        }}
+        className='remirror-table-controller__add-column-mark'
+        /* prevent the parent (.remirror-table-controller) preview selection hightlight. */
+        onMouseOver={stopEvent}
+        onMouseOut={stopEvent}
       />
     );
 
-    handler.onmouseover = (e) => {
-      console.debug('child event onmouseover');
-      // Use `stopPropagation` to prevent the parent (.remirror-table-controller) preview selection hightlight.
-      e.preventDefault();
-      e.stopPropagation();
-    };
-    handler.onmouseout = (e) => {
-      console.debug('child event onmouseout');
-      // Use `stopPropagation` to prevent the parent (.remirror-table-controller) preview selection hightlight.
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
     this.contentDOM = h('div', { contentEditable: false });
     let wrapper = (
-      <div
-        contentEditable={false}
-        className='remirror-table-controller__add-column-wrapper'
-        onMouseEnter={(e) => {
-          console.debug('child event onMouseEnter');
-          // Use `stopPropagation` to prevent the parent (.remirror-table-controller) preview selection hightlight.
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-        onMouseLeave={(e) => {
-          console.debug('child event onMouseLeave');
-          // Use `stopPropagation` to prevent the parent (.remirror-table-controller) preview selection hightlight.
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
+      <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
         {this.contentDOM}
-        {handler}
+        {mark}
       </div>
     );
     this.th = h('th', { contentEditable: false, class: 'remirror-table-controller ' + className }, wrapper);
@@ -236,13 +199,15 @@ export class TableControllerCellView implements NodeView {
       };
     }
     if (node.attrs.onmouseenter) {
-      this.th.onmouseenter = (e) => {
+      this.th.onmouseover = (e) => {
+        console.debug('th event onmouseover');
         node.attrs.onmouseenter();
         e.preventDefault();
       };
     }
     if (node.attrs.onmouseleave) {
-      this.th.onmouseleave = (e) => {
+      this.th.onmouseout = (e) => {
+        console.debug('th event onmouseout');
         node.attrs.onmouseleave();
         e.preventDefault();
       };

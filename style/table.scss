@@ -7,7 +7,7 @@
     --table-controller-width: 12px;
 }
 
-$add-column-handler-width: 4px;
+$add-column-mark-width: 4px;
 
 .ProseMirror {
     border: 1px solid red;
@@ -117,14 +117,14 @@ $add-column-handler-width: 4px;
         align-items: center;
         z-index: 101;
 
-        & .remirror-table-controller__add-column-handler {
+        & .remirror-table-controller__add-column-mark {
             position: relative;
             width:0px;
             height:0px;
 
             &::after {
                 position: absolute;
-                left: -0.5 * $add-column-handler-width;
+                left: -0.5 * $add-column-mark-width;
                 top: -30px;
                 z-index: 103;
 
@@ -132,7 +132,7 @@ $add-column-handler-width: 4px;
                 border-radius: 50%;
                 border-style: solid;
                 border-color: rgba(145, 145, 145, 0.589);
-                border-width: $add-column-handler-width / 2;
+                border-width: $add-column-mark-width / 2;
                 width: 0px;
                 height: 0px;
             }
