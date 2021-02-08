@@ -131,10 +131,9 @@ export class TableControllerCellExtension extends NodeExtension {
       colwidth: { default: null },
       background: { default: null },
 
-      onclick: { default: null },
-      onmouseenter: { default: null },
-      onmouseleave: { default: null },
       controllerType: { default: false },
+
+      events: { default: null },
     };
 
     return {

@@ -5,7 +5,7 @@ import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
 import React, { h } from 'jsx-dom';
-import { DOM } from './utils/jsx';
+import { DOM, Events } from './utils/jsx';
 import { stopEvent } from './utils/dom';
 
 function debug(...params: any[]) {
@@ -118,19 +118,19 @@ export class TableView implements NodeView {
   private injectControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {
     const headerControllerCells: ProsemirrorNode[] = range(this.map.width + 1).map((i) => {
       if (i === 0) {
-        return schema.nodes.tableControllerCell.create({
-          controllerType: ControllerType.CORNER_CONTROLLER,
-          onclick: () => selectTable(this.view, this.getPos(), this.map),
-          onmouseenter: () => previewSelectTable(this.view, this.getPos()),
-          onmouseleave: () => previewLeaveTable(this.view, this.getPos()),
-        });
+        let events: Events = {
+          onClick: () => selectTable(this.view, this.getPos(), this.map),
+          onMouseOver: () => previewSelectTable(this.view, this.getPos()),
+          onMouseOut: () => previewLeaveTable(this.view, this.getPos()),
+        };
+        return schema.nodes.tableControllerCell.create({ controllerType: ControllerType.CORNER_CONTROLLER, events });
       } else {
-        return schema.nodes.tableControllerCell.create({
-          controllerType: ControllerType.COLUMN_CONTROLLER,
-          onclick: () => selectColumn(this.view, this.getPos(), this.map, i),
-          onmouseenter: () => previewSelectColumn(this.view, this.getPos(), i),
-          onmouseleave: () => previewLeaveColumn(this.view, this.getPos()),
-        });
+        let events: Events = {
+          onClick: () => selectColumn(this.view, this.getPos(), this.map, i),
+          onMouseOver: () => previewSelectColumn(this.view, this.getPos(), i),
+          onMouseOut: () => previewLeaveColumn(this.view, this.getPos()),
+        };
+        return schema.nodes.tableControllerCell.create({ controllerType: ControllerType.COLUMN_CONTROLLER, events });
       }
     });
 
@@ -139,12 +139,12 @@ export class TableView implements NodeView {
 
     const oldRows = oldTable.content;
     oldRows.forEach((oldRow, _, index) => {
-      const controllerCell = schema.nodes.tableControllerCell.create({
-        controllerType: ControllerType.ROW_CONTROLLER,
-        onclick: () => selectRow(this.view, this.getPos(), this.map, index + 1),
-        onmouseenter: () => previewSelectRow(this.view, this.getPos(), this.map, index + 1),
-        onmouseleave: () => previewLeaveRow(this.view, this.getPos(), this.map, index + 1),
-      });
+      let events: Events = {
+        onClick: () => selectRow(this.view, this.getPos(), this.map, index + 1),
+        onMouseOver: () => previewSelectRow(this.view, this.getPos(), this.map, index + 1),
+        onMouseOut: () => previewLeaveRow(this.view, this.getPos(), this.map, index + 1),
+      };
+      const controllerCell = schema.nodes.tableControllerCell.create({ controllerType: ControllerType.ROW_CONTROLLER, events });
       const oldCells = oldRow.content;
       const newCells = Fragment.from(controllerCell).append(oldCells);
       const newRow = oldRow.copy(newCells);
@@ -183,35 +183,19 @@ export class TableControllerCellView implements NodeView {
       />
     );
 
-    this.contentDOM = h('div', { contentEditable: false });
+    this.contentDOM = <div contentEditable={false} />;
     let wrapper = (
       <div contentEditable={false} className='remirror-table-controller__add-column-wrapper'>
         {this.contentDOM}
         {mark}
       </div>
     );
-    this.th = h('th', { contentEditable: false, class: 'remirror-table-controller ' + className }, wrapper);
 
-    if (node.attrs.onclick) {
-      this.th.onclick = (e) => {
-        node.attrs.onclick();
-        e.preventDefault();
-      };
-    }
-    if (node.attrs.onmouseenter) {
-      this.th.onmouseover = (e) => {
-        console.debug('th event onmouseover');
-        node.attrs.onmouseenter();
-        e.preventDefault();
-      };
-    }
-    if (node.attrs.onmouseleave) {
-      this.th.onmouseout = (e) => {
-        console.debug('th event onmouseout');
-        node.attrs.onmouseleave();
-        e.preventDefault();
-      };
-    }
+    this.th = (
+      <th contentEditable={false} className={'remirror-table-controller ' + className} {...node.attrs.events}>
+        {wrapper}
+      </th>
+    );
   }
 
   get dom() {
