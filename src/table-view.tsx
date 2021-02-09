@@ -6,6 +6,7 @@ import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tabl
 import { ControllerType } from './const';
 import { Events } from './utils/jsx';
 import { h } from 'jsx-dom/min';
+import { TableNodeAttrs } from './table-extension';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);
@@ -37,13 +38,13 @@ export class TableView implements NodeView {
     this.tbody = h('tbody', { className: 'remirror-table-tbody' });
     this.root = this.render();
 
-    if (!node.attrs.isControllersInjected) {
+    if (!this.attrs().isControllersInjected) {
       setTimeout(() => {
         let tr = view.state.tr;
         // tr.setSelection();
 
         view.state.selection;
-        tr = tr.setNodeMarkup(getPos(), undefined, { isControllersInjected: true });
+        tr = tr.setNodeMarkup(getPos(), undefined, { isControllersInjected: true } as TableNodeAttrs);
         tr = this.injectControllers(tr, node, getPos(), view.state.schema);
         view.dispatch(tr);
       }, 0); // TODO: better way to do the injection then setTimeout?
@@ -71,12 +72,12 @@ export class TableView implements NodeView {
 
   private render() {
     const cols = range(this.map.width).map(() => h('col'));
-    if (this.previewSelectionColumn() !== -1) {
-      cols[this.previewSelectionColumn()]?.classList.add('remirror-table-col--selected');
+    if (this.attrs().previewSelectionColumn !== -1) {
+      cols[this.attrs().previewSelectionColumn]?.classList.add('remirror-table-col--selected');
     }
     const colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, ...cols);
 
-    let className = `remirror-table ${this.previewSelection() ? 'remirror-table--selected' : ''}`;
+    let className = `remirror-table ${this.attrs().previewSelection ? 'remirror-table--selected' : ''}`;
     const table = h('table', { class: className }, colgroup, this.tbody); // TODO: don't need to re-create a table node
 
     if (!this.root) {
@@ -99,16 +100,8 @@ export class TableView implements NodeView {
     return shouldComponentUpdate;
   }
 
-  private isControllersInjected(): boolean {
-    return this.node.attrs.isControllersInjected;
-  }
-
-  private previewSelection(): boolean {
-    return this.node.attrs.previewSelection;
-  }
-
-  private previewSelectionColumn(): number {
-    return this.node.attrs.previewSelectionColumn;
+  private attrs() {
+    return this.node.attrs as TableNodeAttrs;
   }
 
   private injectControllers(tr: Transaction, oldTable: ProsemirrorNode, pos: number, schema: Schema): Transaction {

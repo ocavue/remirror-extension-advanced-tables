@@ -25,6 +25,13 @@ import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
 import { TableView } from './table-view';
 
+export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
+  isControllersInjected: boolean;
+  previewSelection: boolean;
+  previewSelectionColumn: number;
+  showInsertionButton: number;
+};
+
 export class TableExtension extends RemirrorTableExtension {
   get name() {
     return 'table' as const;
@@ -61,6 +68,7 @@ export class TableExtension extends RemirrorTableExtension {
         isControllersInjected: { default: false },
         previewSelection: { default: false },
         previewSelectionColumn: { default: -1 },
+        showInsertionButton: { default: true }, // TODO: change the default value to false
       },
       content: 'tableRow+',
       tableRole: 'table',

@@ -1,6 +1,8 @@
-import { CreatePluginReturn, EditorState, findParentNodeOfType } from '@remirror/core';
+import { CreatePluginReturn, EditorState, EditorView, findParentNodeOfType } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
+import { h } from 'jsx-dom/min';
+import type { TableNodeAttrs } from './table-extension';
 
 export type TableContollerPluginState = { debugCounter: number; tableNode?: ProsemirrorNode };
 
@@ -34,14 +36,34 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
           selection: state.selection,
         });
 
-        console.debug(`[TableContollerPlugin.decorations] tableNodeResult: ${tableNodeResult?.start}-${tableNodeResult?.end}`);
         if (tableNodeResult) {
-          const decoration = Decoration.node(
-            tableNodeResult.start - 1, // Not sure why do I need '-1' here.
-            tableNodeResult.end,
-            { class: 'remirror-table-controller-wrapper--show-controllers' },
-          );
-          return DecorationSet.create(state.doc, [decoration]);
+          const decorations = [
+            Decoration.node(
+              tableNodeResult.start - 1, // Not sure why do I need '-1' here.
+              tableNodeResult.end,
+              { class: 'remirror-table-controller-wrapper--show-controllers' },
+            ),
+          ];
+
+          let attrs = tableNodeResult.node.attrs as TableNodeAttrs;
+
+          if (attrs.showInsertionButton) {
+            let toDOM = (view: EditorView, getPos: () => number) => {
+              return h(
+                'button',
+                {
+                  style: { width: '24px', height: '24px' },
+                  onClick: () => {
+                    console.log(attrs);
+                  },
+                },
+                '+',
+              );
+            };
+            decorations.push(Decoration.widget(tableNodeResult.end, toDOM));
+          }
+
+          return DecorationSet.create(state.doc, decorations);
         }
 
         return null;
