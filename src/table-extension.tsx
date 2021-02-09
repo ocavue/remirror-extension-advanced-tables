@@ -24,12 +24,7 @@ import { TableControllerCellView } from './views/table-controller-cell-view';
 import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
 import { TableView } from './views/table-view';
-
-export type InsertionButtonAttrs = {
-  // The center axis of the InsertionButton
-  x: number;
-  y: number;
-};
+import { InsertionButtonAttrs } from './components/TableInsertionButton';
 
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;

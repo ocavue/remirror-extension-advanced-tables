@@ -4,10 +4,13 @@ import console from 'console';
 import { CSSProperties, h } from 'jsx-dom/min';
 import { ControllerType } from '../const';
 import type { TableNodeAttrs } from '../table-extension';
+import { InsertionButtonAttrs } from './TableInsertionButton';
 
 type TableInsertionTriggerArea = 'left' | 'right';
 
 type FindTable = () => FindProsemirrorNodeResult | undefined;
+
+const borderWidth = 1;
 
 const TableInsertionTriggerArea = ({
   type,
@@ -54,11 +57,11 @@ const TableInsertionTriggerArea = ({
 
     if (!rect.width && !rect.bottom) return;
 
-    let insertionButtonAttrs = { x: 0, y: 0 };
+    let insertionButtonAttrs: InsertionButtonAttrs;
     if (type === 'left') {
       insertionButtonAttrs = { x: rect.x, y: rect.y };
-    } else if (type === 'right') {
-      insertionButtonAttrs = { x: rect.x + rect.width, y: rect.y + rect.height };
+    } else {
+      insertionButtonAttrs = { x: rect.x + rect.width + borderWidth, y: rect.y };
     }
 
     let tableResult = findTable();
@@ -66,16 +69,17 @@ const TableInsertionTriggerArea = ({
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
-  const hideButton = () => {
-    console.debug('hideButton');
 
-    let tableResult = findTable();
-    if (!tableResult) return;
-    let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs: null };
-    view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
-  };
+  // const hideButton = () => {
+  //   console.debug('hideButton');
 
-  let area = h('div', { style: showButtonTriggerAreaStyle, onMouseLeave: hideButton, onMouseEnter: showButton });
+  //   let tableResult = findTable();
+  //   if (!tableResult) return;
+  //   let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs: null };
+  //   view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
+  // };
+
+  let area = h('div', { style: showButtonTriggerAreaStyle, /*onMouseLeave: hideButton,*/ onMouseEnter: showButton });
 
   return area;
 };

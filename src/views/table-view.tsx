@@ -7,6 +7,7 @@ import { ControllerType } from '../const';
 import { Events } from '../utils/jsx';
 import { h } from 'jsx-dom/min';
 import { TableNodeAttrs } from '../table-extension';
+import { setNodeAttrs } from '../utils/prosemirror';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);
@@ -44,7 +45,7 @@ export class TableView implements NodeView {
         // tr.setSelection();
 
         view.state.selection;
-        tr = tr.setNodeMarkup(getPos(), undefined, { isControllersInjected: true } as TableNodeAttrs);
+        tr = setNodeAttrs(tr, getPos(), { isControllersInjected: true });
         tr = this.injectControllers(tr, node, getPos(), view.state.schema);
         view.dispatch(tr);
       }, 0); // TODO: better way to do the injection then setTimeout?
@@ -208,25 +209,25 @@ function selectTable(view: EditorView, tablePos: number, map: TableMap) {
 function previewSelectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
   const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
   const rowPos = tablePos + posInTable;
-  view.dispatch(view.state.tr.setNodeMarkup(rowPos, undefined, { previewSelection: true }));
+  view.dispatch(setNodeAttrs(view.state.tr, rowPos, { previewSelection: true }));
 }
 
 function previewLeaveRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
   const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
   const rowPos = tablePos + posInTable;
-  view.dispatch(view.state.tr.setNodeMarkup(rowPos, undefined, { previewSelection: false }));
+  view.dispatch(setNodeAttrs(view.state.tr, rowPos, { previewSelection: false }));
 }
 
 function previewSelectColumn(view: EditorView, tablePos: number, columnIndex: number) {
-  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelectionColumn: columnIndex }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionColumn: columnIndex }));
 }
 function previewLeaveColumn(view: EditorView, tablePos: number) {
-  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelectionColumn: -1 }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionColumn: -1 }));
 }
 
 function previewSelectTable(view: EditorView, tablePos: number) {
-  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelection: true }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelection: true }));
 }
 function previewLeaveTable(view: EditorView, tablePos: number) {
-  view.dispatch(view.state.tr.setNodeMarkup(tablePos, undefined, { previewSelection: false }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelection: false }));
 }

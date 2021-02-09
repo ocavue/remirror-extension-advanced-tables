@@ -1,7 +1,7 @@
 import { CreatePluginReturn, EditorState, EditorView, findParentNodeOfType } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
-import { h } from 'jsx-dom/min';
+import TableInsertionButton from './components/TableInsertionButton';
 import type { TableNodeAttrs } from './table-extension';
 
 export type TableContollerPluginState = { debugCounter: number; tableNode?: ProsemirrorNode };
@@ -50,22 +50,7 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
           if (attrs.insertionButtonAttrs) {
             let buttonAttrs = attrs.insertionButtonAttrs;
             let toDOM = (view: EditorView, getPos: () => number) => {
-              return h(
-                'button',
-                {
-                  style: {
-                    width: '24px',
-                    height: '24px',
-                    position: 'absolute',
-                    top: `${buttonAttrs.x}px`,
-                    left: `${buttonAttrs.y}px`,
-                  },
-                  onClick: () => {
-                    console.log(attrs);
-                  },
-                },
-                '+',
-              );
+              return TableInsertionButton(buttonAttrs);
             };
             decorations.push(Decoration.widget(tableNodeResult.end, toDOM));
           }
