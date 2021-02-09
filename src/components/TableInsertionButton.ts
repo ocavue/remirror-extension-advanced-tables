@@ -1,3 +1,4 @@
+import { throttle } from '@remirror/core';
 import { h } from 'jsx-dom/min';
 
 export type InsertionButtonAttrs = {
@@ -9,7 +10,7 @@ export type InsertionButtonAttrs = {
 function TableInsertionButton(attrs: InsertionButtonAttrs) {
   let size = 24;
 
-  return h(
+  let button = h(
     'button',
     {
       style: {
@@ -26,6 +27,18 @@ function TableInsertionButton(attrs: InsertionButtonAttrs) {
     },
     '+',
   );
+
+  let onMouseMove = throttle(100, (e: MouseEvent) => {
+    // TODO: add move information in InsertionButtonAttrs
+    if (e.clientX < attrs.x - 300 || e.clientX > attrs.x + 300 || e.clientY < attrs.y - 60 || e.clientY > attrs.y + 24) {
+      document.removeEventListener('mousemove', onMouseMove);
+      button.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('mousemove', onMouseMove);
+
+  return button;
 }
 
 export default TableInsertionButton;
