@@ -37,7 +37,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     mark,
   );
 
-  return h('div', { contentEditable: false, className: 'remirror-table-controller ' + className, ...node.attrs.events }, wrapper);
+  return h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...node.attrs.events }, wrapper);
 };
 
 export default TableControllerCell;
