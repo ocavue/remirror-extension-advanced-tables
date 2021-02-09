@@ -21,8 +21,9 @@ function TableInsertionButton(attrs: InsertionButtonAttrs) {
         left: `${attrs.x - size / 2}px`,
         zIndex: 105,
       },
-      onClick: () => {
-        console.log(attrs);
+      onClick: (e) => {
+        // TODO: insert column
+        // TODO: fouce column
       },
     },
     '+',
