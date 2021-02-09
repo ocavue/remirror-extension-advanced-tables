@@ -4,14 +4,14 @@ import { ControllerType } from '../const';
 type TableInsertionTriggerArea = 'left' | 'right';
 
 const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }) => {
-  let addColumnTriggerAreaStyle: CSSProperties = {
+  let showButtonTriggerAreaStyle: CSSProperties = {
     flex: 1,
     height: 24,
     position: 'relative',
-    zIndex: 10,
+    zIndex: 12,
 
     // Just for debug. Use linear-gradient as background so that we can differentiate two neighbor areas.
-    background: 'linear-gradient(to left top, rgba(0, 255, 169, 0.3), rgba(243, 61, 243, 0.3))',
+    background: 'linear-gradient(to left top, rgba(0, 255, 100, 0.3), rgba(200, 100, 255, 0.3))',
   };
 
   let buttonStyle: CSSProperties = {
@@ -48,15 +48,7 @@ const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }
   };
 
   return (
-    <div
-      style={addColumnTriggerAreaStyle}
-      onMouseOver={(e) => {
-        showButton();
-      }}
-      onMouseOut={(e) => {
-        hideButton();
-      }}
-    >
+    <div style={showButtonTriggerAreaStyle} onMouseLeave={(e) => hideButton()} onMouseEnter={(e) => showButton()}>
       {button}
     </div>
   );
