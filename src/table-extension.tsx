@@ -25,11 +25,19 @@ import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
 import { TableView } from './table-view';
 
+export type InsertionButtonAttrs = {
+  // The center axis of the InsertionButton
+  x: number;
+  y: number;
+};
+
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;
   previewSelection: boolean;
   previewSelectionColumn: number;
-  showInsertionButton: number;
+
+  // if and only if `insertionButtonAttrs` exists, InsertionButton will show.
+  insertionButtonAttrs: null | InsertionButtonAttrs;
 };
 
 export class TableExtension extends RemirrorTableExtension {
@@ -68,7 +76,7 @@ export class TableExtension extends RemirrorTableExtension {
         isControllersInjected: { default: false },
         previewSelection: { default: false },
         previewSelectionColumn: { default: -1 },
-        showInsertionButton: { default: true }, // TODO: change the default value to false
+        insertionButtonAttrs: { default: null },
       },
       content: 'tableRow+',
       tableRole: 'table',

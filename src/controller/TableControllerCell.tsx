@@ -1,4 +1,4 @@
-import { EditorView } from '@remirror/core';
+import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { ControllerType } from '../const';
@@ -29,10 +29,23 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     onMouseOut: stopEvent,
   });
 
+  const getTable = (): FindProsemirrorNodeResult => {
+    let found = findParentNodeOfType({
+      types: 'table',
+      selection: view.state.doc.resolve(getPos()),
+    });
+
+    if (found) {
+      return found;
+    } else {
+      throw new RangeError('failed to find table node');
+    }
+  };
+
   let wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
-    ...TableInsertionButtonWrapper({ controllerType }),
+    ...TableInsertionButtonWrapper({ controllerType, view, getTable }),
     contentDOM,
     mark,
   );

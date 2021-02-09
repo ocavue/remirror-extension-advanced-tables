@@ -47,12 +47,19 @@ export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPlug
 
           let attrs = tableNodeResult.node.attrs as TableNodeAttrs;
 
-          if (attrs.showInsertionButton) {
+          if (attrs.insertionButtonAttrs) {
+            let buttonAttrs = attrs.insertionButtonAttrs;
             let toDOM = (view: EditorView, getPos: () => number) => {
               return h(
                 'button',
                 {
-                  style: { width: '24px', height: '24px' },
+                  style: {
+                    width: '24px',
+                    height: '24px',
+                    position: 'absolute',
+                    top: `${buttonAttrs.x}px`,
+                    left: `${buttonAttrs.y}px`,
+                  },
                   onClick: () => {
                     console.log(attrs);
                   },

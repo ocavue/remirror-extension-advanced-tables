@@ -1,9 +1,21 @@
-import { h, CSSProperties } from 'jsx-dom/min';
+import { FindProsemirrorNodeResult } from '@remirror/core';
+import { EditorView } from '@remirror/pm';
+import console from 'console';
+import { CSSProperties, h } from 'jsx-dom/min';
 import { ControllerType } from '../const';
+import type { TableNodeAttrs } from '../table-extension';
 
 type TableInsertionTriggerArea = 'left' | 'right';
 
-const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }) => {
+const TableInsertionTriggerArea = ({
+  type,
+  view,
+  getTable,
+}: {
+  type: TableInsertionTriggerArea;
+  view: EditorView;
+  getTable: () => FindProsemirrorNodeResult;
+}) => {
   let showButtonTriggerAreaStyle: CSSProperties = {
     flex: 1,
     height: '24px',
@@ -14,44 +26,77 @@ const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }
     background: 'linear-gradient(to left top, rgba(0, 255, 100, 0.3), rgba(200, 100, 255, 0.3))',
   };
 
-  let buttonStyle: CSSProperties = {
-    display: 'none',
-    zIndex: 105,
+  // let buttonStyle: CSSProperties = {
+  //   display: 'none',
+  //   zIndex: 105,
 
-    position: 'absolute',
-    width: '24px',
-    height: '24px',
-    top: '-16px',
+  //   position: 'absolute',
+  //   width: '24px',
+  //   height: '24px',
+  //   top: '-16px',
 
-    opacity: 1,
-  };
+  //   opacity: 1,
+  // };
 
-  if (type === 'left') buttonStyle.left = '-12px';
-  if (type === 'right') buttonStyle.right = '-13px';
+  // if (type === 'left') buttonStyle.left = '-12px';
+  // if (type === 'right') buttonStyle.right = '-13px';
 
-  let button = h('button', { style: buttonStyle }, 'a');
+  // let button = h('button', { style: buttonStyle }, 'a');
 
   const showButton = () => {
     console.debug('showButton');
-    button.style.setProperty('display', 'inherit');
+
+    let rect = area?.getClientRects()[0];
+    console.debug('get size async', rect);
+    if (!rect) return;
+
+    if (!rect.width && !rect.bottom) return;
+
+    let insertionButtonAttrs = { x: 0, y: 0 };
+    if (type === 'left') {
+      insertionButtonAttrs = { x: rect.x, y: rect.y };
+    } else if (type === 'right') {
+      insertionButtonAttrs = { x: rect.x + rect.width, y: rect.y + rect.height };
+    }
+
+    let tableResult = getTable();
+    let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
+    view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
   const hideButton = () => {
     console.debug('hideButton');
-    button.style.setProperty('display', 'none');
+
+    let tableResult = getTable();
+    let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs: null };
+    view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
 
-  return h('div', { style: showButtonTriggerAreaStyle, onMouseLeave: hideButton, onMouseEnter: showButton }, button);
+  let area = h('div', { style: showButtonTriggerAreaStyle, onMouseLeave: hideButton, onMouseEnter: showButton });
+
+  return area;
 };
 
-const TableInsertionTriggerAreas = ({ controllerType }: { controllerType: ControllerType }) => {
+const TableInsertionTriggerAreas = ({
+  controllerType,
+  view,
+  getTable,
+}: {
+  controllerType: ControllerType;
+  view: EditorView;
+  getTable: () => FindProsemirrorNodeResult;
+}) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
-    return [TableInsertionTriggerArea({ type: 'left' }), TableInsertionTriggerArea({ type: 'right' })];
+    return [TableInsertionTriggerArea({ type: 'left', view, getTable }), TableInsertionTriggerArea({ type: 'right', view, getTable })];
   }
   return [];
 };
 
-const TableInsertionButtonWrapper = ({ controllerType }: { controllerType: ControllerType }) => {
-  return TableInsertionTriggerAreas({ controllerType });
+const TableInsertionButtonWrapper = (props: {
+  controllerType: ControllerType;
+  view: EditorView;
+  getTable: () => FindProsemirrorNodeResult;
+}) => {
+  return TableInsertionTriggerAreas(props);
 };
 
 export default TableInsertionButtonWrapper;
