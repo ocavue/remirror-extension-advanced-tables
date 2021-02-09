@@ -1,11 +1,5 @@
 import { HTMLAttributes } from 'jsx-dom';
 
-// When using 'jsx-dom', because of some limit of TypeScript, the
-// return type of <div/> is `JSX.Element` instead of `HTMLDivElement`.
-// The following type is compatible with both `document.createElement`
-// and `JSX.Element`.
-export type DOM = JSX.Element | HTMLElement;
-
 export type Events<T = Element> = Pick<HTMLAttributes<T>, EventName>;
 
 export type EventName =

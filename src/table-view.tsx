@@ -1,19 +1,20 @@
 import { EditorView, NodeView, range, Transaction } from '@remirror/core';
 import { Fragment, Node as ProsemirrorNode, Schema } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
-import React, { h } from 'jsx-dom';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
-import { DOM, Events } from './utils/jsx';
+import { Events } from './utils/jsx';
+
+import { h } from 'jsx-dom';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);
 }
 
 export class TableView implements NodeView {
-  root: DOM;
-  tbody: DOM;
+  root: HTMLElement;
+  tbody: HTMLElement;
   map: TableMap;
 
   mounted = false;
@@ -34,7 +35,7 @@ export class TableView implements NodeView {
     public getPos: () => number,
   ) {
     this.map = TableMap.get(this.node);
-    this.tbody = <tbody className='remirror-table-tbody' />;
+    this.tbody = h('tbody', { className: 'remirror-table-tbody' });
     this.root = this.render();
 
     if (!node.attrs.isControllersInjected) {
@@ -75,17 +76,14 @@ export class TableView implements NodeView {
       cols[this.previewSelectionColumn()]?.classList.add('remirror-table-col--selected');
     }
     const colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, ...cols);
-    const table = h(
-      'table',
-      { class: `remirror-table ${this.previewSelection() ? 'remirror-table--selected' : ''}` },
-      colgroup,
-      this.tbody,
-    ); // TODO: don't need to re-create a table node
+
+    let className = `remirror-table ${this.previewSelection() ? 'remirror-table--selected' : ''}`;
+    const table = h('table', { class: className }, colgroup, this.tbody); // TODO: don't need to re-create a table node
 
     if (!this.root) {
-      this.root = h('div', { class: 'remirror-table-controller-wrapper' }, table);
+      this.root = h('div', { className: 'remirror-table-controller-wrapper' }, table);
     } else {
-      replaceChildren(this.root, [table]);
+      replaceChildren(this.root as Node, [table]);
     }
 
     updateColumnsOnResize(this.node, colgroup, table, this.cellMinWidth);
@@ -165,7 +163,7 @@ export class TableView implements NodeView {
 type ProsemirrorMutationRecord = MutationRecord | { type: 'selection'; target: Element };
 
 // TODO: this function's performance should be very bad. Maybe we should use some kind of DOM-diff algorithm.
-export function replaceChildren(container: DOM, children: DOM[]) {
+export function replaceChildren(container: Node, children: Node[]) {
   while (container.firstChild) {
     container.removeChild(container.firstChild);
   }

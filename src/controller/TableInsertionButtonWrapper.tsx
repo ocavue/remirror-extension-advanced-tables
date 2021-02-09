@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'jsx-dom';
+import { CSSProperties, h } from 'jsx-dom';
 import { ControllerType } from '../const';
 
 type TableInsertionTriggerArea = 'left' | 'right';
@@ -29,14 +29,7 @@ const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }
   if (type === 'left') buttonStyle.left = '-12px';
   if (type === 'right') buttonStyle.right = '-13px';
 
-  let button = (
-    <button
-      // className='remirror-table-controller__add-column-button'
-      style={buttonStyle}
-    >
-      a
-    </button>
-  );
+  let button = h('button', { style: buttonStyle }, 'a');
 
   const showButton = () => {
     console.debug('showButton');
@@ -47,32 +40,18 @@ const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }
     button.style.setProperty('display', 'none');
   };
 
-  return (
-    <div style={showButtonTriggerAreaStyle} onMouseLeave={(e) => hideButton()} onMouseEnter={(e) => showButton()}>
-      {button}
-    </div>
-  );
+  return h('div', { style: showButtonTriggerAreaStyle, onMouseLeave: hideButton, onMouseEnter: showButton }, button);
 };
 
 const TableInsertionTriggerAreas = ({ controllerType }: { controllerType: ControllerType }) => {
-  let props = {};
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
-    return (
-      <>
-        <TableInsertionTriggerArea {...props} type='left' />
-        <TableInsertionTriggerArea {...props} type='right' />
-      </>
-    );
+    return [TableInsertionTriggerArea({ type: 'left' }), TableInsertionTriggerArea({ type: 'right' })];
   }
-  return null;
+  return [];
 };
 
 const TableInsertionButtonWrapper = ({ controllerType }: { controllerType: ControllerType }) => {
-  return (
-    <>
-      <TableInsertionTriggerAreas controllerType={controllerType} />
-    </>
-  );
+  return TableInsertionTriggerAreas({ controllerType });
 };
 
 export default TableInsertionButtonWrapper;

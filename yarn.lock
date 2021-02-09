@@ -3850,7 +3850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.0.6":
+"csstype@npm:^3.0.2, csstype@npm:^3.0.3, csstype@npm:^3.0.6":
   version: 3.0.6
   resolution: "csstype@npm:3.0.6"
   checksum: ebdca96d26e1af5604658e6876af29ac1e218750efb587684f2b2b13bb062a397b351586d285f911e6985e03112e56c2aee127d35ae7354cc7d25f3000e22556
@@ -6186,12 +6186,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"jsx-dom@npm:^7.0.0-beta.0":
-  version: 7.0.0-beta.0
-  resolution: "jsx-dom@npm:7.0.0-beta.0"
+"jsx-dom@npm:^6.0.0":
+  version: 6.4.23
+  resolution: "jsx-dom@npm:6.4.23"
   dependencies:
-    csstype: ^3.0.6
-  checksum: 81cc46f9d18dd802a141b7ae22f116edb42ef0e3d54b31e954fe4086ef7696c4e34e07c2582f366e77f1f2188aefd040507049d01de89dbda4a5622e6d582fdc
+    csstype: ^3.0.3
+  checksum: 1de7750d58cef0ad9544571587b1910a33e19f826a0645addc1747b59ba44bc68d39743ec58d5408e87a7b9c013db55e23d4c2a1183aedbf06fe94a897b90af8
   languageName: node
   linkType: hard
 
@@ -8555,7 +8555,7 @@ fsevents@~2.3.1:
     eslint-plugin-prettier: ^3.3.1
     eslint-plugin-react: ^7.22.0
     eslint-plugin-react-hooks: ^4.2.0
-    jsx-dom: ^7.0.0-beta.0
+    jsx-dom: ^6.0.0
     parcel: ^1.12.4
     prettier: ^2.2.1
     prosemirror-tables: ^1.1.1
