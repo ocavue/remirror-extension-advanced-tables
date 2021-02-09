@@ -1,13 +1,16 @@
+import React from 'react';
 import {
   ApplySchemaAttributes,
   CreatePluginReturn,
   Decoration,
   EditorView,
   NodeExtension,
+  NodeExtensionSpec,
   NodeViewMethod,
   ProsemirrorNode,
   ProsemirrorPlugin,
 } from '@remirror/core';
+import { NodeViewComponentProps } from '@remirror/extension-react-component';
 import {
   TableCellExtension as RemirrorTableCellExtension,
   TableExtension as RemirrorTableExtension,
@@ -16,6 +19,7 @@ import {
 } from '@remirror/preset-table';
 import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
 import { tableEditing } from 'prosemirror-tables';
+import { ComponentType } from 'react';
 import { TableControllerCellView } from './controller/table-controller-cell-view';
 import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
@@ -152,5 +156,23 @@ export class TableControllerCellExtension extends NodeExtension {
     return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
       return new TableControllerCellView(node, view, getPos as () => number, decorations);
     };
+  };
+}
+
+export class TableInsertionHandlerExtension extends NodeExtension {
+  get name() {
+    return 'tableInsertionHandler' as const;
+  }
+
+  createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
+    return {
+      toDOM(node) {
+        return ['div', 0];
+      },
+    };
+  }
+
+  ReactComponent: ComponentType<NodeViewComponentProps> = (props) => {
+    return <div>Ignore content</div>;
   };
 }
