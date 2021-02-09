@@ -29,23 +29,17 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     onMouseOut: stopEvent,
   });
 
-  const getTable = (): FindProsemirrorNodeResult => {
-    let found = findParentNodeOfType({
+  const findTable = (): FindProsemirrorNodeResult | undefined => {
+    return findParentNodeOfType({
       types: 'table',
       selection: view.state.doc.resolve(getPos()),
     });
-
-    if (found) {
-      return found;
-    } else {
-      throw new RangeError('failed to find table node');
-    }
   };
 
   let wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
-    ...TableInsertionButtonWrapper({ controllerType, view, getTable }),
+    ...TableInsertionButtonWrapper({ controllerType, view, findTable }),
     contentDOM,
     mark,
   );

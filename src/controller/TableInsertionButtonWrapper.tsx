@@ -7,14 +7,16 @@ import type { TableNodeAttrs } from '../table-extension';
 
 type TableInsertionTriggerArea = 'left' | 'right';
 
+type FindTable = () => FindProsemirrorNodeResult | undefined;
+
 const TableInsertionTriggerArea = ({
   type,
   view,
-  getTable,
+  findTable,
 }: {
   type: TableInsertionTriggerArea;
   view: EditorView;
-  getTable: () => FindProsemirrorNodeResult;
+  findTable: FindTable;
 }) => {
   let showButtonTriggerAreaStyle: CSSProperties = {
     flex: 1,
@@ -59,14 +61,16 @@ const TableInsertionTriggerArea = ({
       insertionButtonAttrs = { x: rect.x + rect.width, y: rect.y + rect.height };
     }
 
-    let tableResult = getTable();
+    let tableResult = findTable();
+    if (!tableResult) return;
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
   const hideButton = () => {
     console.debug('hideButton');
 
-    let tableResult = getTable();
+    let tableResult = findTable();
+    if (!tableResult) return;
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs: null };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
@@ -79,23 +83,19 @@ const TableInsertionTriggerArea = ({
 const TableInsertionTriggerAreas = ({
   controllerType,
   view,
-  getTable,
+  findTable,
 }: {
   controllerType: ControllerType;
   view: EditorView;
-  getTable: () => FindProsemirrorNodeResult;
+  findTable: FindTable;
 }) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
-    return [TableInsertionTriggerArea({ type: 'left', view, getTable }), TableInsertionTriggerArea({ type: 'right', view, getTable })];
+    return [TableInsertionTriggerArea({ type: 'left', view, findTable }), TableInsertionTriggerArea({ type: 'right', view, findTable })];
   }
   return [];
 };
 
-const TableInsertionButtonWrapper = (props: {
-  controllerType: ControllerType;
-  view: EditorView;
-  getTable: () => FindProsemirrorNodeResult;
-}) => {
+const TableInsertionButtonWrapper = (props: { controllerType: ControllerType; view: EditorView; findTable: FindTable }) => {
   return TableInsertionTriggerAreas(props);
 };
 
