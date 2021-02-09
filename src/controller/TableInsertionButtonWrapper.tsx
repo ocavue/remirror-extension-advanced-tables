@@ -6,7 +6,7 @@ type TableInsertionTriggerArea = 'left' | 'right';
 const TableInsertionTriggerArea = ({ type }: { type: TableInsertionTriggerArea }) => {
   let showButtonTriggerAreaStyle: CSSProperties = {
     flex: 1,
-    height: 24,
+    height: '24px',
     position: 'relative',
     zIndex: 12,
 
