@@ -1,4 +1,4 @@
-import { CSSProperties, h } from 'jsx-dom';
+import { h, CSSProperties } from 'jsx-dom/min';
 import { ControllerType } from '../const';
 
 type TableInsertionTriggerArea = 'left' | 'right';

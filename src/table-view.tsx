@@ -5,8 +5,7 @@ import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import { ControllerType } from './const';
 import { Events } from './utils/jsx';
-
-import { h } from 'jsx-dom';
+import { h } from 'jsx-dom/min';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);

@@ -4,7 +4,7 @@ import { Decoration } from '@remirror/pm/view';
 import { ControllerType } from '../const';
 import TableInsertionButtonWrapper from './TableInsertionButtonWrapper';
 import { stopEvent } from '../utils/dom';
-import { h } from 'jsx-dom';
+import { h } from 'jsx-dom/min';
 
 export type TableControllerCellProps = {
   node: ProsemirrorNode;
