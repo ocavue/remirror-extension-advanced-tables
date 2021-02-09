@@ -7,7 +7,7 @@ import { RemirrorProvider, useManager, useRemirror } from '@remirror/react';
 import Menu from './Menu';
 import { CorePreset } from '@remirror/preset-core';
 import { ProsemirrorDevTools } from '@remirror/dev';
-
+import { ReactComponentExtension } from '@remirror/extension-react-component';
 import {
   TableExtension,
   TableRowExtension,
@@ -15,8 +15,7 @@ import {
   TableCellExtension,
   TableControllerCellExtension,
   TableCellMenu,
-} from '../';
-import { ReactComponentExtension } from '@remirror/extension-react-component';
+} from '../src';
 
 const EXTENSIONS = () => [
   new CorePreset(),

@@ -4,6 +4,6 @@ export {
   TableHeaderCellExtension,
   TableCellExtension,
   TableControllerCellExtension,
-} from './src/table-extension';
+} from './table-extension';
 
-export { TableCellMenu } from './src/TableCellMenu';
+export { TableCellMenu } from './TableCellMenu';
