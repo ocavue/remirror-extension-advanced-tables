@@ -3,10 +3,10 @@ import { Fragment, Node as ProsemirrorNode, Schema } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap, updateColumnsOnResize } from 'prosemirror-tables';
-import { ControllerType } from './const';
-import { Events } from './utils/jsx';
+import { ControllerType } from '../const';
+import { Events } from '../utils/jsx';
 import { h } from 'jsx-dom/min';
-import { TableNodeAttrs } from './table-extension';
+import { TableNodeAttrs } from '../table-extension';
 
 function debug(...params: any[]) {
   console.debug('[src/table-view.tsx]', ...params);

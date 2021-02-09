@@ -20,10 +20,10 @@ import {
 import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
 import { tableEditing } from 'prosemirror-tables';
 import { ComponentType } from 'react';
-import { TableControllerCellView } from './controller/table-controller-cell-view';
+import { TableControllerCellView } from './views/table-controller-cell-view';
 import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
-import { TableView } from './table-view';
+import { TableView } from './views/table-view';
 
 export type InsertionButtonAttrs = {
   // The center axis of the InsertionButton

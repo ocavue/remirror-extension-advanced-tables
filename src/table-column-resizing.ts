@@ -10,7 +10,7 @@ import { EditorState, EditorView, ResolvedPos, Transaction } from '@remirror/pm'
 import { Plugin, PluginKey } from 'prosemirror-state';
 import { cellAround, TableMap, tableNodeTypes, updateColumnsOnResize as updateColumns } from 'prosemirror-tables';
 import { Decoration, DecorationSet } from 'prosemirror-view';
-import { TableView } from './table-view';
+import { TableView } from './views/table-view';
 
 type Dragging = { startX: number; startWidth: number };
 
