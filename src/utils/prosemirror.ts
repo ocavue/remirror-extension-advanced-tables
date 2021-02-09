@@ -4,6 +4,8 @@ import { ReplaceAroundStep, Transform } from '@remirror/pm/transform';
 type Attrs = Record<string, any>;
 
 // Change the attributes of the node at `pos`.
+//
+// This different between this function and `Transform.setNodeMarkup` is that it only overwrites fields that appear in `attrs`.
 export function setNodeAttrs<T extends Transform>(tr: T, pos: number, attrs: Attrs): T {
   let node = tr.doc.nodeAt(pos);
   if (!node) throw new RangeError('No node at given position');
