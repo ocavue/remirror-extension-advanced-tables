@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es2015",
-        "module": "commonjs",
+        // "target": "es2015",
+        // "module": "commonjs",
         "strict": true,
         "importHelpers": true,
         "moduleResolution": "node",
@@ -12,6 +12,10 @@
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
         "jsx": "react",
+
+        "target": "ESNext",
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
+        "module": "ESNext",
     },
     "include": [
         "src",
