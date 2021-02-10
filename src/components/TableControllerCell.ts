@@ -3,8 +3,9 @@ import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { ControllerType } from '../const';
 import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
-import { stopEvent } from '../utils/dom';
 import { h } from 'jsx-dom/min';
+import TableInsertionMark from './TableInsertionMark';
+import { TableControllerCellAttrs } from '../table-extension';
 
 export type TableControllerCellProps = {
   node: ProsemirrorNode;
@@ -22,12 +23,9 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
   else if (controllerType === ControllerType.COLUMN_CONTROLLER) className = 'remirror-table-column-controller';
   else if (controllerType === ControllerType.CORNER_CONTROLLER) className = 'remirror-table-corner-controller';
 
-  let mark = h('div', {
-    className: 'remirror-table-controller__add-column-mark',
-    /* prevent the parent (.remirror-table-controller) preview selection hightlight. */
-    onMouseOver: stopEvent,
-    onMouseOut: stopEvent,
-  });
+  let attrs = node.attrs as TableControllerCellAttrs;
+
+  console.debug('TableControllerCell attrs', 'colspan:', attrs.colspan, 'rowspan:', attrs.rowspan);
 
   const findTable = (): FindProsemirrorNodeResult | undefined => {
     return findParentNodeOfType({
@@ -39,12 +37,12 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
   let wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
-    ...TableInsertionButtonTrigger({ controllerType, view, findTable }),
     contentDOM,
-    mark,
+    ...TableInsertionButtonTrigger({ controllerType, view, findTable }),
+    TableInsertionMark(),
   );
 
-  return h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...node.attrs.events }, wrapper);
+  return h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...attrs.events }, wrapper);
 };
 
 export default TableControllerCell;

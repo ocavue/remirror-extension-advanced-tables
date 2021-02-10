@@ -25,6 +25,8 @@ import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
 import { TableView } from './views/table-view';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
+import { ControllerType } from './const';
+import { Events } from './utils/jsx';
 
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;
@@ -134,6 +136,15 @@ export class TableCellExtension extends RemirrorTableCellExtension {
   }
 }
 
+export type TableControllerCellAttrs = {
+  colspan: number;
+  rowspan: number;
+  colwidth: null | number;
+  background: null | string;
+  controllerType: null | ControllerType;
+  events: null | Events;
+};
+
 export class TableControllerCellExtension extends NodeExtension {
   get name() {
     return 'tableControllerCell' as const;
@@ -142,12 +153,13 @@ export class TableControllerCellExtension extends NodeExtension {
   createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
     const cellAttrs = {
       ...extra.defaults(),
+
       colspan: { default: 1 },
       rowspan: { default: 1 },
       colwidth: { default: null },
       background: { default: null },
 
-      controllerType: { default: false },
+      controllerType: { default: null },
 
       events: { default: null },
     };
