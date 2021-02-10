@@ -42,11 +42,11 @@ export class TableExtension extends RemirrorTableExtension {
     return 'table' as const;
   }
 
-  createNodeViews = (): NodeViewMethod => {
+  createNodeViews(): NodeViewMethod {
     return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
       return new TableView(node, 10, decorations, view, getPos as () => number);
     };
-  };
+  }
 
   createPlugin(): CreatePluginReturn<TableContollerPluginState> {
     return newTableContollerPlugin();
@@ -175,27 +175,9 @@ export class TableControllerCellExtension extends NodeExtension {
     };
   }
 
-  createNodeViews = (): NodeViewMethod => {
+  createNodeViews(): NodeViewMethod {
     return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
       return new TableControllerCellView(node, view, getPos as () => number, decorations);
     };
-  };
-}
-
-export class TableInsertionHandlerExtension extends NodeExtension {
-  get name() {
-    return 'tableInsertionHandler' as const;
   }
-
-  createNodeSpec(extra: ApplySchemaAttributes): NodeExtensionSpec {
-    return {
-      toDOM(node) {
-        return ['div', 0];
-      },
-    };
-  }
-
-  ReactComponent: ComponentType<NodeViewComponentProps> = (props) => {
-    return <div>Ignore content</div>;
-  };
 }

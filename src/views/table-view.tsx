@@ -18,8 +18,6 @@ export class TableView implements NodeView {
   tbody: HTMLElement;
   map: TableMap;
 
-  mounted = false;
-
   get dom() {
     return this.root;
   }
