@@ -5,7 +5,7 @@ import { ControllerType } from '../const';
 import type { TableNodeAttrs } from '../table-extension';
 import { InsertionButtonAttrs } from './TableInsertionButton';
 
-type TriggerAreaType = 'left' | 'right';
+type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom';
 
 type FindTable = () => FindProsemirrorNodeResult | undefined;
 
@@ -17,8 +17,11 @@ function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect): Insert
     triggerMinY: rect.y,
     triggerMaxX: rect.x + rect.width,
     triggerMaxY: rect.y + rect.height,
+
+    column: -1,
+    row: -1,
   };
-  if (type === 'left') {
+  if (type === 'add_column_left') {
     return { ...attrs, x: rect.x, y: rect.y };
   } else {
     return { ...attrs, x: rect.x + rect.width + borderWidth, y: rect.y };
@@ -63,7 +66,7 @@ const TableInsertionButtonTrigger = ({
   findTable: FindTable;
 }) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
-    return [TriggerArea({ type: 'left', view, findTable }), TriggerArea({ type: 'right', view, findTable })];
+    return [TriggerArea({ type: 'add_column_left', view, findTable }), TriggerArea({ type: 'add_column_right', view, findTable })];
   }
   return [];
 };

@@ -1,5 +1,6 @@
 import { throttle } from '@remirror/core';
 import { h } from 'jsx-dom/min';
+import { addColumn } from '@remirror/pm/tables';
 
 export type InsertionButtonAttrs = {
   // The center axis of the TableInsertionButton
@@ -11,6 +12,11 @@ export type InsertionButtonAttrs = {
   triggerMinY: number;
   triggerMaxX: number;
   triggerMaxY: number;
+
+  // If `row` is not `-1`, this button will add a row at this index.
+  row: number;
+  // If `column` is not `-1`, this button will add a column at this index.
+  column: number;
 };
 
 function TableInsertionButton(attrs: InsertionButtonAttrs) {
@@ -28,8 +34,7 @@ function TableInsertionButton(attrs: InsertionButtonAttrs) {
         zIndex: 105,
       },
       onClick: (e) => {
-        // TODO: insert column
-        // TODO: fouce column
+        addColumn; // TODO
       },
     },
     '+',
