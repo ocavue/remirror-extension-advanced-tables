@@ -2,9 +2,15 @@ import { throttle } from '@remirror/core';
 import { h } from 'jsx-dom/min';
 
 export type InsertionButtonAttrs = {
-  // The center axis of the InsertionButton
+  // The center axis of the TableInsertionButton
   x: number;
   y: number;
+
+  // The rectangle axis of the TableInsertionButtonTrigger
+  triggerMinX: number;
+  triggerMinY: number;
+  triggerMaxX: number;
+  triggerMaxY: number;
 };
 
 function TableInsertionButton(attrs: InsertionButtonAttrs) {
@@ -31,7 +37,12 @@ function TableInsertionButton(attrs: InsertionButtonAttrs) {
 
   let onMouseMove = throttle(100, (e: MouseEvent) => {
     // TODO: add move information in InsertionButtonAttrs
-    if (e.clientX < attrs.x - 300 || e.clientX > attrs.x + 300 || e.clientY < attrs.y - 60 || e.clientY > attrs.y + 24) {
+    if (
+      e.clientX < attrs.triggerMinX - 400 ||
+      e.clientX > attrs.triggerMaxX + 400 ||
+      e.clientY < attrs.triggerMinY - 60 ||
+      e.clientY > attrs.triggerMaxY
+    ) {
       document.removeEventListener('mousemove', onMouseMove);
       button.style.display = 'none';
     }

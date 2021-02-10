@@ -11,6 +11,20 @@ type FindTable = () => FindProsemirrorNodeResult | undefined;
 
 const borderWidth = 1; // We can change it to a paramter instead of a constant if we want to support more border width values.
 
+function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect): InsertionButtonAttrs {
+  let attrs = {
+    triggerMinX: rect.x,
+    triggerMinY: rect.y,
+    triggerMaxX: rect.x + rect.width,
+    triggerMaxY: rect.y + rect.height,
+  };
+  if (type === 'left') {
+    return { ...attrs, x: rect.x, y: rect.y };
+  } else {
+    return { ...attrs, x: rect.x + rect.width + borderWidth, y: rect.y };
+  }
+}
+
 const TriggerArea = ({ type, view, findTable }: { type: TriggerAreaType; view: EditorView; findTable: FindTable }) => {
   let style: CSSProperties = {
     flex: 1,
@@ -27,15 +41,9 @@ const TriggerArea = ({ type, view, findTable }: { type: TriggerAreaType; view: E
     if (!rect) return;
     if (!rect.width && !rect.height) return;
 
-    let insertionButtonAttrs: InsertionButtonAttrs;
-    if (type === 'left') {
-      insertionButtonAttrs = { x: rect.x, y: rect.y };
-    } else {
-      insertionButtonAttrs = { x: rect.x + rect.width + borderWidth, y: rect.y };
-    }
-
     let tableResult = findTable();
     if (!tableResult) return;
+    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect);
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
