@@ -2,7 +2,7 @@ import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@re
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { ControllerType } from '../const';
-import TableInsertionButtonWrapper from './TableInsertionButtonWrapper';
+import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
 import { stopEvent } from '../utils/dom';
 import { h } from 'jsx-dom/min';
 
@@ -39,7 +39,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
   let wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
-    ...TableInsertionButtonWrapper({ controllerType, view, findTable }),
+    ...TableInsertionButtonTrigger({ controllerType, view, findTable }),
     contentDOM,
     mark,
   );
