@@ -10,7 +10,7 @@ type TableInsertionTriggerArea = 'left' | 'right';
 
 type FindTable = () => FindProsemirrorNodeResult | undefined;
 
-const borderWidth = 1;
+const borderWidth = 1; // We can change it to a paramter instead of a constant if we want to support more border width values.
 
 const TableInsertionTriggerArea = ({
   type,
