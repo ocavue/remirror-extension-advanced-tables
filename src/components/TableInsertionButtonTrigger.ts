@@ -7,7 +7,7 @@ import { InsertionButtonAttrs } from './TableInsertionButton';
 
 type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom';
 
-const borderWidth = 1; // We can change it to a paramter instead of a constant if we want to support more border width values.
+const borderWidth = 1; // We could change it to a paramter instead of a constant if we want to support more border width values.
 
 function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxis: CellAxis): InsertionButtonAttrs {
   let { col } = cellAxis;
