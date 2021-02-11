@@ -25,7 +25,7 @@ function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxi
       y: rect.y,
 
       row: -1,
-      col: col - 1,
+      col: col,
     };
   } else {
     return {
@@ -34,7 +34,7 @@ function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxi
       y: rect.y,
 
       row: -1,
-      col: col,
+      col: col + 1,
     };
   }
 }
