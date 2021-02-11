@@ -4,7 +4,7 @@ import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
 import { TableMap } from 'prosemirror-tables';
 import { ControllerType } from '../const';
-import { newControllerEvents } from '../utils/controller';
+import { newControllerEvents, getControllerType } from '../utils/controller';
 import { CellAxis } from '../utils/types';
 import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
 import TableInsertionMark from './TableInsertionMark';
@@ -24,13 +24,12 @@ let classNameMap = {
 };
 
 const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: TableControllerCellProps) => {
-  let $pos = view.state.doc.resolve(getPos() + 1);
-  let cellAxis: CellAxis = { col: $pos.index(-1), row: $pos.index(-2) };
+  const getAxis = (): CellAxis => {
+    let $pos = view.state.doc.resolve(getPos() + 1);
+    return { col: $pos.index(-1), row: $pos.index(-2) };
+  };
 
-  let controllerType: ControllerType = ControllerType.CORNER_CONTROLLER;
-  if (cellAxis.row > 0) controllerType = ControllerType.ROW_CONTROLLER;
-  else if (cellAxis.col > 0) controllerType = ControllerType.COLUMN_CONTROLLER;
-
+  let controllerType = getControllerType(getAxis());
   let className = classNameMap[controllerType];
 
   const findTable = (): FindProsemirrorNodeResult | undefined => {
@@ -44,16 +43,16 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
     contentDOM,
-    ...TableInsertionButtonTrigger({ controllerType, view, findTable, cellAxis }),
+    ...TableInsertionButtonTrigger({ controllerType, view, findTable, getAxis }),
     TableInsertionMark(),
   );
 
   let events = newControllerEvents({
     controllerType,
     view,
-    cellAxis,
+    getAxis,
     getTablePos: () => {
-      return findTable()!.pos;
+      return findTable()!.pos; // TODO: perf
     },
     getMap: () => {
       return TableMap.get(findTable()!.node);

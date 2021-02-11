@@ -43,12 +43,12 @@ const TriggerArea = ({
   type,
   view,
   findTable,
-  cellAxis,
+  getAxis,
 }: {
   type: TriggerAreaType;
   view: EditorView;
   findTable: FindTable;
-  cellAxis: CellAxis;
+  getAxis: () => CellAxis;
 }) => {
   let style: CSSProperties = {
     flex: 1,
@@ -67,7 +67,7 @@ const TriggerArea = ({
 
     let tableResult = findTable();
     if (!tableResult) return;
-    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect, cellAxis);
+    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect, getAxis());
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
@@ -81,17 +81,17 @@ const TableInsertionButtonTrigger = ({
   controllerType,
   view,
   findTable,
-  cellAxis,
+  getAxis,
 }: {
   controllerType: ControllerType;
   view: EditorView;
   findTable: FindTable;
-  cellAxis: CellAxis;
+  getAxis: () => CellAxis;
 }) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
     return [
-      TriggerArea({ type: 'add_column_left', view, findTable, cellAxis }),
-      TriggerArea({ type: 'add_column_right', view, findTable, cellAxis }),
+      TriggerArea({ type: 'add_column_left', view, findTable, getAxis }),
+      TriggerArea({ type: 'add_column_right', view, findTable, getAxis }),
     ];
   }
   return [];

@@ -1,4 +1,4 @@
-import { EditorView, range, Transaction } from '@remirror/core';
+import { EditorView, Transaction } from '@remirror/core';
 import { Fragment, Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap } from 'prosemirror-tables';
@@ -48,24 +48,24 @@ export function newControllerEvents({
   view,
   getTablePos: getPos,
   getMap,
-  cellAxis,
+  getAxis,
 }: {
   controllerType: ControllerType;
   view: EditorView;
   getTablePos: () => number;
   getMap: () => TableMap;
-  cellAxis: CellAxis;
+  getAxis: () => CellAxis;
 }): Events {
   if (controllerType === ControllerType.ROW_CONTROLLER)
     return {
-      onClick: () => selectRow(view, getPos(), getMap(), cellAxis.row),
-      onMouseOver: () => previewSelectRow(view, getPos(), getMap(), cellAxis.row),
-      onMouseOut: () => previewLeaveRow(view, getPos(), getMap(), cellAxis.row),
+      onClick: () => selectRow(view, getPos(), getMap(), getAxis().row),
+      onMouseOver: () => previewSelectRow(view, getPos(), getMap(), getAxis().row),
+      onMouseOut: () => previewLeaveRow(view, getPos(), getMap(), getAxis().row),
     };
   else if (controllerType === ControllerType.COLUMN_CONTROLLER)
     return {
-      onClick: () => selectColumn(view, getPos(), getMap(), cellAxis.col),
-      onMouseOver: () => previewSelectColumn(view, getPos(), cellAxis.col),
+      onClick: () => selectColumn(view, getPos(), getMap(), getAxis().col),
+      onMouseOver: () => previewSelectColumn(view, getPos(), getAxis().col),
       onMouseOut: () => previewLeaveColumn(view, getPos()),
     };
   else
@@ -141,4 +141,10 @@ function previewLeaveTable(view: EditorView, tablePos: number) {
 
 function getCellIndex(map: TableMap, rowIndex: number, colIndex: number): number {
   return map.width * rowIndex + colIndex;
+}
+
+export function getControllerType(cellAxis: CellAxis): ControllerType {
+  if (cellAxis.row > 0) return ControllerType.ROW_CONTROLLER;
+  else if (cellAxis.col > 0) return ControllerType.COLUMN_CONTROLLER;
+  else return ControllerType.CORNER_CONTROLLER;
 }
