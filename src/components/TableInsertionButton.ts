@@ -1,6 +1,8 @@
 import { EditorView, throttle } from '@remirror/core';
 import { addColumn, addRow, TableRect } from '@remirror/pm/tables';
 import { h } from 'jsx-dom/min';
+import { TableNodeAttrs } from '../table-extension';
+import { setNodeAttrs } from '../utils/prosemirror';
 
 type MouseMoveListener = (e: MouseEvent) => void;
 const mouseMoveListeners: MouseMoveListener[] = [];
@@ -59,6 +61,11 @@ function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonPr
     } else {
       return;
     }
+
+    // TODO: this does not work
+    let attrsPatch: Partial<TableNodeAttrs> = { insertionButtonAttrs: null };
+    tr = setNodeAttrs(tr, tableRect.tableStart - 1, attrsPatch);
+
     view.dispatch(tr);
   };
 
