@@ -3,24 +3,28 @@ import { Fragment, Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap } from 'prosemirror-tables';
 import { ControllerType } from '../const';
-import { TableControllerCellAttrs } from '../table-extension';
 import { Events } from '../utils/jsx';
 import { setNodeAttrs } from '../utils/prosemirror';
 
-export function injectControllers(
-  tr: Transaction,
-  oldTable: ProsemirrorNode,
-  map: TableMap,
-  getPos: () => number,
-  view: EditorView,
-): Transaction {
+export function injectControllers({
+  view,
+  getMap,
+  getPos,
+  tr,
+  oldTable,
+}: {
+  view: EditorView;
+  getMap: () => TableMap;
+  getPos: () => number;
+  tr: Transaction;
+  oldTable: ProsemirrorNode;
+}) {
   let schema = view.state.schema;
-
-  const headerControllerCells: ProsemirrorNode[] = range(map.width + 1).map((index) => {
+  const headerControllerCells: ProsemirrorNode[] = range(getMap().width + 1).map((index) => {
     if (index === 0) {
-      return newCornerController({ view, getPos, map, index });
+      return newCornerController({ view, getPos, getMap, index });
     } else {
-      return newColumnController({ view, getPos, map, index });
+      return newColumnController({ view, getPos, getMap, index });
     }
   });
 
@@ -29,7 +33,7 @@ export function injectControllers(
 
   const oldRows = oldTable.content;
   oldRows.forEach((oldRow, _, index) => {
-    const controllerCell = newRowController({ view, getPos, map, index });
+    const controllerCell = newRowController({ view, getPos, getMap, index });
     const oldCells = oldRow.content;
     const newCells = Fragment.from(controllerCell).append(oldCells);
     const newRow = oldRow.copy(newCells);
@@ -43,31 +47,31 @@ export function injectControllers(
   return tr.replaceRangeWith(pos, pos + oldTable.nodeSize, newTable);
 }
 
-type NewControllerParams = { view: EditorView; getPos: () => number; map: TableMap; index: number };
+type NewControllerParams = { view: EditorView; getPos: () => number; getMap: () => TableMap; index: number };
 
-function newCornerController({ view, getPos, map }: NewControllerParams) {
+function newCornerController({ view, getPos, getMap }: NewControllerParams) {
   let events: Events = {
-    onClick: () => selectTable(view, getPos(), map),
+    onClick: () => selectTable(view, getPos(), getMap()),
     onMouseOver: () => previewSelectTable(view, getPos()),
     onMouseOut: () => previewLeaveTable(view, getPos()),
   };
   return view.state.schema.nodes.tableControllerCell.create({ controllerType: ControllerType.CORNER_CONTROLLER, events });
 }
 
-function newColumnController({ view, getPos, map, index }: NewControllerParams) {
+function newColumnController({ view, getPos, getMap, index }: NewControllerParams) {
   let events: Events = {
-    onClick: () => selectColumn(view, getPos(), map, index),
+    onClick: () => selectColumn(view, getPos(), getMap(), index),
     onMouseOver: () => previewSelectColumn(view, getPos(), index),
     onMouseOut: () => previewLeaveColumn(view, getPos()),
   };
   return view.state.schema.nodes.tableControllerCell.create({ controllerType: ControllerType.COLUMN_CONTROLLER, events });
 }
 
-function newRowController({ view, getPos, map, index }: NewControllerParams) {
+function newRowController({ view, getPos, getMap, index }: NewControllerParams) {
   let events: Events = {
-    onClick: () => selectRow(view, getPos(), map, index + 1),
-    onMouseOver: () => previewSelectRow(view, getPos(), map, index + 1),
-    onMouseOut: () => previewLeaveRow(view, getPos(), map, index + 1),
+    onClick: () => selectRow(view, getPos(), getMap(), index + 1),
+    onMouseOver: () => previewSelectRow(view, getPos(), getMap(), index + 1),
+    onMouseOut: () => previewLeaveRow(view, getPos(), getMap(), index + 1),
   };
   return view.state.schema.nodes.tableControllerCell.create({ controllerType: ControllerType.ROW_CONTROLLER, events });
 }

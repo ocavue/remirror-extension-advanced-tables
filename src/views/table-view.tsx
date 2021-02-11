@@ -42,7 +42,7 @@ export class TableView implements NodeView {
 
         view.state.selection;
         tr = setNodeAttrs(tr, getPos(), { isControllersInjected: true });
-        tr = injectControllers(tr, node, this.map, this.getPos, view);
+        tr = injectControllers({ view: this.view, getMap: () => this.map, getPos: this.getPos, tr, oldTable: node });
         view.dispatch(tr);
       }, 0); // TODO: better way to do the injection then setTimeout?
       // TODO: add a event listener to detect `this.root` insertion
