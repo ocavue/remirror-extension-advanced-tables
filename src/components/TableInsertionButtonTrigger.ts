@@ -5,7 +5,7 @@ import type { TableNodeAttrs } from '../table-extension';
 import { CellAxis, FindTable } from '../utils/types';
 import { InsertionButtonAttrs } from './TableInsertionButton';
 
-type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom';
+type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom'; // TODO: use enum
 
 const borderWidth = 1; // We could change it to a paramter instead of a constant if we want to support more border width values.
 
@@ -52,13 +52,15 @@ const TriggerArea = ({
 }) => {
   let style: CSSProperties = {
     flex: 1,
-    height: '24px',
     position: 'relative',
     zIndex: 12,
 
     // Just for debug. Use linear-gradient as background so that we can differentiate two neighbor areas.
-    // background: 'linear-gradient(to left top, rgba(0, 255, 100, 0.3), rgba(200, 100, 255, 0.3))',
+    background: 'linear-gradient(to left top, rgba(0, 255, 100, 0.3), rgba(200, 100, 255, 0.3))',
   };
+
+  if (type === 'add_column_left' || type === 'add_column_right') style.height = '24px';
+  else if (type === 'add_row_up' || type === 'add_row_buttom') style.width = '24px';
 
   const showButton = () => {
     let rect = area?.getClientRects()[0];
@@ -92,6 +94,11 @@ const TableInsertionButtonTrigger = ({
     return [
       TriggerArea({ type: 'add_column_left', view, findTable, getAxis }),
       TriggerArea({ type: 'add_column_right', view, findTable, getAxis }),
+    ];
+  } else if (controllerType == ControllerType.ROW_CONTROLLER) {
+    return [
+      TriggerArea({ type: 'add_row_up', view, findTable, getAxis }),
+      TriggerArea({ type: 'add_row_buttom', view, findTable, getAxis }),
     ];
   }
   return [];
