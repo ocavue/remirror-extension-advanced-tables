@@ -1,11 +1,11 @@
 import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
-import { ControllerType } from '../const';
-import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
 import { h } from 'jsx-dom/min';
-import TableInsertionMark from './TableInsertionMark';
+import { ControllerType } from '../const';
 import { TableControllerCellAttrs } from '../table-extension';
+import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
+import TableInsertionMark from './TableInsertionMark';
 
 export type TableControllerCellProps = {
   node: ProsemirrorNode;
@@ -34,15 +34,32 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     });
   };
 
-  let wrapper = h(
+  const findTableCellIndex = (): { row: number; col: number } => {
+    let row = -1;
+    let col = -1;
+
+    let tr = td.parentElement;
+    if (!tr) return { row, col };
+    let tbody = tr.parentElement;
+    if (!tbody) return { row, col };
+
+    row = Array.prototype.indexOf.call(tbody.children, tr);
+    col = Array.prototype.indexOf.call(tr.children, td);
+
+    return { row, col };
+  };
+
+  const wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
     contentDOM,
-    ...TableInsertionButtonTrigger({ controllerType, view, findTable }),
+    ...TableInsertionButtonTrigger({ controllerType, view, findTable, findTableCellIndex }),
     TableInsertionMark(),
   );
 
-  return h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...attrs.events }, wrapper);
+  const td = h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...attrs.events }, wrapper);
+
+  return td;
 };
 
 export default TableControllerCell;

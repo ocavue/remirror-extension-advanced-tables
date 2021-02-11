@@ -1,34 +1,55 @@
-import { FindProsemirrorNodeResult } from '@remirror/core';
 import { EditorView } from '@remirror/pm';
 import { CSSProperties, h } from 'jsx-dom/min';
 import { ControllerType } from '../const';
 import type { TableNodeAttrs } from '../table-extension';
+import { FindTable, FindTableCellIndex } from '../utils/types';
 import { InsertionButtonAttrs } from './TableInsertionButton';
 
 type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom';
 
-type FindTable = () => FindProsemirrorNodeResult | undefined;
-
 const borderWidth = 1; // We can change it to a paramter instead of a constant if we want to support more border width values.
 
-function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect): InsertionButtonAttrs {
+function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, findTableCellIndex: FindTableCellIndex): InsertionButtonAttrs {
+  let { col } = findTableCellIndex();
+
   let attrs = {
     triggerMinX: rect.x,
     triggerMinY: rect.y,
     triggerMaxX: rect.x + rect.width,
     triggerMaxY: rect.y + rect.height,
-
-    column: -1,
-    row: -1,
   };
   if (type === 'add_column_left') {
-    return { ...attrs, x: rect.x, y: rect.y };
+    return {
+      ...attrs,
+      x: rect.x,
+      y: rect.y,
+
+      row: -1,
+      col: col - 1,
+    };
   } else {
-    return { ...attrs, x: rect.x + rect.width + borderWidth, y: rect.y };
+    return {
+      ...attrs,
+      x: rect.x + rect.width + borderWidth,
+      y: rect.y,
+
+      row: -1,
+      col: col,
+    };
   }
 }
 
-const TriggerArea = ({ type, view, findTable }: { type: TriggerAreaType; view: EditorView; findTable: FindTable }) => {
+const TriggerArea = ({
+  type,
+  view,
+  findTable,
+  findTableCellIndex,
+}: {
+  type: TriggerAreaType;
+  view: EditorView;
+  findTable: FindTable;
+  findTableCellIndex: FindTableCellIndex;
+}) => {
   let style: CSSProperties = {
     flex: 1,
     height: '24px',
@@ -46,7 +67,7 @@ const TriggerArea = ({ type, view, findTable }: { type: TriggerAreaType; view: E
 
     let tableResult = findTable();
     if (!tableResult) return;
-    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect);
+    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect, findTableCellIndex);
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
@@ -60,13 +81,18 @@ const TableInsertionButtonTrigger = ({
   controllerType,
   view,
   findTable,
+  findTableCellIndex,
 }: {
   controllerType: ControllerType;
   view: EditorView;
   findTable: FindTable;
+  findTableCellIndex: FindTableCellIndex;
 }) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
-    return [TriggerArea({ type: 'add_column_left', view, findTable }), TriggerArea({ type: 'add_column_right', view, findTable })];
+    return [
+      TriggerArea({ type: 'add_column_left', view, findTable, findTableCellIndex }),
+      TriggerArea({ type: 'add_column_right', view, findTable, findTableCellIndex }),
+    ];
   }
   return [];
 };

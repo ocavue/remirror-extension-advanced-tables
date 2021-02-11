@@ -1,6 +1,9 @@
-import { throttle } from '@remirror/core';
+import { EditorView, throttle } from '@remirror/core';
+import { addColumn, addRow, TableRect } from '@remirror/pm/tables';
 import { h } from 'jsx-dom/min';
-import { addColumn } from '@remirror/pm/tables';
+
+type MouseMoveListener = (e: MouseEvent) => void;
+const mouseMoveListeners: MouseMoveListener[] = [];
 
 export type InsertionButtonAttrs = {
   // The center axis of the TableInsertionButton
@@ -15,14 +18,20 @@ export type InsertionButtonAttrs = {
 
   // If `row` is not `-1`, this button will add a row at this index.
   row: number;
-  // If `column` is not `-1`, this button will add a column at this index.
-  column: number;
+  // If `col` is not `-1`, this button will add a col at this index.
+  col: number;
 };
 
-function TableInsertionButton(attrs: InsertionButtonAttrs) {
+export type TableInsertionButtonProps = {
+  view: EditorView;
+  tableRect: TableRect;
+  attrs: InsertionButtonAttrs;
+};
+
+function InnerTableInsertionButton(attrs: InsertionButtonAttrs) {
   let size = 24;
 
-  let button = h(
+  return h(
     'button',
     {
       style: {
@@ -33,26 +42,50 @@ function TableInsertionButton(attrs: InsertionButtonAttrs) {
         left: `${attrs.x - size / 2}px`,
         zIndex: 105,
       },
-      onClick: (e) => {
-        addColumn; // TODO
-      },
     },
     '+',
   );
+}
+
+function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonProps) {
+  let button = InnerTableInsertionButton(attrs);
+
+  const insertRolOrColumn = () => {
+    let tr = view.state.tr;
+    if (attrs.col !== -1) {
+      tr = addColumn(tr, tableRect, attrs.col);
+    } else if (attrs.row !== -1) {
+      tr = addRow(tr, tableRect, attrs.row);
+    } else {
+      return;
+    }
+    view.dispatch(tr);
+  };
+
+  // TODO: onMouseDown work but onClick doesn't work.
+  button.onclick = (e) => {
+    console.debug('[TableInsertionButton] onClick', attrs);
+  };
+  button.onmousedown = (e) => {
+    console.debug('[TableInsertionButton] onMouseDown', attrs);
+    insertRolOrColumn();
+  };
 
   let onMouseMove = throttle(100, (e: MouseEvent) => {
-    // TODO: add move information in InsertionButtonAttrs
     if (
       e.clientX < attrs.triggerMinX - 400 ||
       e.clientX > attrs.triggerMaxX + 400 ||
       e.clientY < attrs.triggerMinY - 60 ||
       e.clientY > attrs.triggerMaxY
     ) {
-      document.removeEventListener('mousemove', onMouseMove);
+      while (mouseMoveListeners.length) {
+        document.removeEventListener('mousemove', mouseMoveListeners.pop() as MouseMoveListener);
+      }
       button.style.display = 'none';
     }
   });
 
+  mouseMoveListeners.push(onMouseMove);
   document.addEventListener('mousemove', onMouseMove);
 
   return button;
