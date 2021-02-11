@@ -161,8 +161,9 @@ export class TableControllerCellExtension extends NodeExtension {
     };
 
     return {
+      atom: true,
       isolating: true,
-      content: `block*`,
+      content: 'block*',
       attrs: cellAttrs,
       tableRole: 'header_cell',
       toDOM(node) {
