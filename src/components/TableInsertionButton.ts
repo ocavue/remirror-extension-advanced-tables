@@ -62,7 +62,7 @@ function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonPr
       return;
     }
 
-    // TODO: this does not work
+    // Remove insertionButtonAttrs from tableNode so that the TableInsertionButton won't keep at the origin position.
     let attrsPatch: Partial<TableNodeAttrs> = { insertionButtonAttrs: null };
     tr = setNodeAttrs(tr, tableRect.tableStart - 1, attrsPatch);
 
