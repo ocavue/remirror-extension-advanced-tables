@@ -39,6 +39,8 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     });
   };
 
+  const events = newControllerEvents({ controllerType, view, getAxis, findTable });
+
   const wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
@@ -47,21 +49,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     TableInsertionMark(),
   );
 
-  let events = newControllerEvents({
-    controllerType,
-    view,
-    getAxis,
-    getTablePos: () => {
-      return findTable()!.pos; // TODO: perf
-    },
-    getMap: () => {
-      return TableMap.get(findTable()!.node);
-    },
-  });
-
-  const td = h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...events }, wrapper);
-
-  return td;
+  return h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...events }, wrapper);
 };
 
 export default TableControllerCell;

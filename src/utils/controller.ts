@@ -6,7 +6,7 @@ import { ControllerType } from '../const';
 import { Events } from '../utils/jsx';
 import { setNodeAttrs } from '../utils/prosemirror';
 import { repeat } from './array';
-import { CellAxis } from './types';
+import { CellAxis, FindTable } from './types';
 
 export function injectControllers({
   view,
@@ -46,38 +46,46 @@ export function injectControllers({
 export function newControllerEvents({
   controllerType,
   view,
-  getTablePos: getPos,
-  getMap,
+  findTable,
   getAxis,
 }: {
   controllerType: ControllerType;
   view: EditorView;
-  getTablePos: () => number;
-  getMap: () => TableMap;
+  findTable: FindTable;
   getAxis: () => CellAxis;
 }): Events {
   if (controllerType === ControllerType.ROW_CONTROLLER)
     return {
-      onClick: () => selectRow(view, getPos(), getMap(), getAxis().row),
-      onMouseOver: () => previewSelectRow(view, getPos(), getMap(), getAxis().row),
-      onMouseOut: () => previewLeaveRow(view, getPos(), getMap(), getAxis().row),
+      onClick: () => selectRow(view, findTable, getAxis().row),
+      onMouseOver: () => previewSelectRow(view, findTable, getAxis().row),
+      onMouseOut: () => previewLeaveRow(view, findTable, getAxis().row),
     };
   else if (controllerType === ControllerType.COLUMN_CONTROLLER)
     return {
-      onClick: () => selectColumn(view, getPos(), getMap(), getAxis().col),
-      onMouseOver: () => previewSelectColumn(view, getPos(), getAxis().col),
-      onMouseOut: () => previewLeaveColumn(view, getPos()),
+      onClick: () => selectColumn(view, findTable, getAxis().col),
+      onMouseOver: () => previewSelectColumn(view, findTable, getAxis().col),
+      onMouseOut: () => previewLeaveColumn(view, findTable, getAxis().col),
     };
   else
     return {
-      onClick: () => selectTable(view, getPos(), getMap()),
-      onMouseOver: () => previewSelectTable(view, getPos()),
-      onMouseOut: () => previewLeaveTable(view, getPos()),
+      onClick: () => selectTable(view, findTable, 0),
+      onMouseOver: () => previewSelectTable(view, findTable, 0),
+      onMouseOut: () => previewLeaveTable(view, findTable, 0),
     };
 }
 
-function selectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
-  const cellIndex = getCellIndex(map, rowIndex, 0);
+function decoExecFunc(func: (view: EditorView, tablePos: number, map: TableMap, index: number) => void) {
+  return (view: EditorView, findTable: FindTable, index: number) => {
+    let found = findTable();
+    if (!found) return;
+    let tablePos = found.pos;
+    let map = TableMap.get(found.node);
+    return func(view, tablePos, map, index);
+  };
+}
+
+const selectRow = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
+  const cellIndex = getCellIndex(map, index, 0);
   let tr = view.state.tr;
   const posInTable = map.map[cellIndex + 1];
   const pos = tablePos + posInTable + 1;
@@ -85,10 +93,10 @@ function selectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: 
   const selection = CellSelection.rowSelection($pos);
   tr = tr.setSelection((selection as unknown) as Selection); // TODO: https://github.com/ProseMirror/prosemirror-tables/pull/126
   view.dispatch(tr);
-}
+});
 
-function selectColumn(view: EditorView, tablePos: number, map: TableMap, colIndex: number) {
-  const cellIndex = getCellIndex(map, 0, colIndex);
+const selectColumn = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
+  const cellIndex = getCellIndex(map, 0, index);
   let tr = view.state.tr;
   const posInTable = map.map[cellIndex];
   const pos = tablePos + posInTable + 1;
@@ -96,9 +104,9 @@ function selectColumn(view: EditorView, tablePos: number, map: TableMap, colInde
   const selection = CellSelection.colSelection($pos);
   tr = tr.setSelection((selection as unknown) as Selection);
   view.dispatch(tr);
-}
+});
 
-function selectTable(view: EditorView, tablePos: number, map: TableMap) {
+const selectTable = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
   if (map.map.length > 0) {
     let tr = view.state.tr;
     const firstCellPosInTable = map.map[0];
@@ -111,33 +119,33 @@ function selectTable(view: EditorView, tablePos: number, map: TableMap) {
     tr = tr.setSelection((selection as unknown) as Selection);
     view.dispatch(tr);
   }
-}
+});
 
-function previewSelectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
-  const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
+const previewSelectRow = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
+  const posInTable = map.map[getCellIndex(map, index, 0)];
   const rowPos = tablePos + posInTable;
   view.dispatch(setNodeAttrs(view.state.tr, rowPos, { previewSelection: true }));
-}
+});
 
-function previewLeaveRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {
-  const posInTable = map.map[getCellIndex(map, rowIndex, 0)];
+const previewLeaveRow = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
+  const posInTable = map.map[getCellIndex(map, index, 0)];
   const rowPos = tablePos + posInTable;
   view.dispatch(setNodeAttrs(view.state.tr, rowPos, { previewSelection: false }));
-}
+});
 
-function previewSelectColumn(view: EditorView, tablePos: number, columnIndex: number) {
-  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionColumn: columnIndex }));
-}
-function previewLeaveColumn(view: EditorView, tablePos: number) {
+const previewSelectColumn = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionColumn: index }));
+});
+const previewLeaveColumn = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
   view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionColumn: -1 }));
-}
+});
 
-function previewSelectTable(view: EditorView, tablePos: number) {
+const previewSelectTable = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
   view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelection: true }));
-}
-function previewLeaveTable(view: EditorView, tablePos: number) {
+});
+const previewLeaveTable = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
   view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelection: false }));
-}
+});
 
 function getCellIndex(map: TableMap, rowIndex: number, colIndex: number): number {
   return map.width * rowIndex + colIndex;
