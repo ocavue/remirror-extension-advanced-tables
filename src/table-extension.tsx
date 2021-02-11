@@ -1,16 +1,13 @@
-import React from 'react';
 import {
   ApplySchemaAttributes,
   CreatePluginReturn,
   Decoration,
   EditorView,
   NodeExtension,
-  NodeExtensionSpec,
   NodeViewMethod,
   ProsemirrorNode,
   ProsemirrorPlugin,
 } from '@remirror/core';
-import { NodeViewComponentProps } from '@remirror/extension-react-component';
 import {
   TableCellExtension as RemirrorTableCellExtension,
   TableExtension as RemirrorTableExtension,
@@ -19,14 +16,13 @@ import {
 } from '@remirror/preset-table';
 import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
 import { tableEditing } from 'prosemirror-tables';
-import { ComponentType } from 'react';
-import { TableControllerCellView } from './views/table-controller-cell-view';
-import { columnResizing } from './table-column-resizing';
-import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
-import { TableView } from './views/table-view';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
 import { ControllerType } from './const';
+import { columnResizing } from './table-column-resizing';
+import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
 import { Events } from './utils/jsx';
+import { TableControllerCellView } from './views/table-controller-cell-view';
+import { TableView } from './views/table-view';
 
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;
