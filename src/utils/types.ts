@@ -1,4 +1,4 @@
 import { FindProsemirrorNodeResult } from '@remirror/core';
 
 export type FindTable = () => FindProsemirrorNodeResult | undefined;
-export type FindTableCellIndex = () => { row: number; col: number };
+export type CellAxis = { row: number; col: number };

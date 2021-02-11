@@ -2,15 +2,15 @@ import { EditorView } from '@remirror/pm';
 import { CSSProperties, h } from 'jsx-dom/min';
 import { ControllerType } from '../const';
 import type { TableNodeAttrs } from '../table-extension';
-import { FindTable, FindTableCellIndex } from '../utils/types';
+import { CellAxis, FindTable } from '../utils/types';
 import { InsertionButtonAttrs } from './TableInsertionButton';
 
 type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom';
 
 const borderWidth = 1; // We can change it to a paramter instead of a constant if we want to support more border width values.
 
-function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, findTableCellIndex: FindTableCellIndex): InsertionButtonAttrs {
-  let { col } = findTableCellIndex();
+function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxis: CellAxis): InsertionButtonAttrs {
+  let { col } = cellAxis;
 
   let attrs = {
     triggerMinX: rect.x,
@@ -43,12 +43,12 @@ const TriggerArea = ({
   type,
   view,
   findTable,
-  findTableCellIndex,
+  cellAxis,
 }: {
   type: TriggerAreaType;
   view: EditorView;
   findTable: FindTable;
-  findTableCellIndex: FindTableCellIndex;
+  cellAxis: CellAxis;
 }) => {
   let style: CSSProperties = {
     flex: 1,
@@ -67,7 +67,7 @@ const TriggerArea = ({
 
     let tableResult = findTable();
     if (!tableResult) return;
-    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect, findTableCellIndex);
+    let insertionButtonAttrs = buildInsertionButtonAttrs(type, rect, cellAxis);
     let attrs: TableNodeAttrs = { ...(tableResult.node.attrs as TableNodeAttrs), insertionButtonAttrs };
     view.dispatch(view.state.tr.setNodeMarkup(tableResult.pos, undefined, attrs));
   };
@@ -81,17 +81,17 @@ const TableInsertionButtonTrigger = ({
   controllerType,
   view,
   findTable,
-  findTableCellIndex,
+  cellAxis,
 }: {
   controllerType: ControllerType;
   view: EditorView;
   findTable: FindTable;
-  findTableCellIndex: FindTableCellIndex;
+  cellAxis: CellAxis;
 }) => {
   if (controllerType == ControllerType.COLUMN_CONTROLLER) {
     return [
-      TriggerArea({ type: 'add_column_left', view, findTable, findTableCellIndex }),
-      TriggerArea({ type: 'add_column_right', view, findTable, findTableCellIndex }),
+      TriggerArea({ type: 'add_column_left', view, findTable, cellAxis }),
+      TriggerArea({ type: 'add_column_right', view, findTable, cellAxis }),
     ];
   }
   return [];

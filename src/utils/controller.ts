@@ -5,6 +5,8 @@ import { CellSelection, TableMap } from 'prosemirror-tables';
 import { ControllerType } from '../const';
 import { Events } from '../utils/jsx';
 import { setNodeAttrs } from '../utils/prosemirror';
+import { repeat } from './array';
+import { CellAxis } from './types';
 
 export function injectControllers({
   view,
@@ -20,20 +22,14 @@ export function injectControllers({
   oldTable: ProsemirrorNode;
 }) {
   let schema = view.state.schema;
-  const headerControllerCells: ProsemirrorNode[] = range(getMap().width + 1).map((index) => {
-    if (index === 0) {
-      return newCornerController({ view, getPos, getMap, index });
-    } else {
-      return newColumnController({ view, getPos, getMap, index });
-    }
-  });
+  let controllerCell = view.state.schema.nodes.tableControllerCell.create();
+  const headerControllerCells: ProsemirrorNode[] = repeat(controllerCell, getMap().width + 1);
 
   const crotrollerRow: ProsemirrorNode = schema.nodes.tableRow.create({}, headerControllerCells);
   const newRowsArray: ProsemirrorNode[] = [crotrollerRow];
 
   const oldRows = oldTable.content;
-  oldRows.forEach((oldRow, _, index) => {
-    const controllerCell = newRowController({ view, getPos, getMap, index });
+  oldRows.forEach((oldRow) => {
     const oldCells = oldRow.content;
     const newCells = Fragment.from(controllerCell).append(oldCells);
     const newRow = oldRow.copy(newCells);
@@ -47,33 +43,37 @@ export function injectControllers({
   return tr.replaceRangeWith(pos, pos + oldTable.nodeSize, newTable);
 }
 
-type NewControllerParams = { view: EditorView; getPos: () => number; getMap: () => TableMap; index: number };
-
-function newCornerController({ view, getPos, getMap }: NewControllerParams) {
-  let events: Events = {
-    onClick: () => selectTable(view, getPos(), getMap()),
-    onMouseOver: () => previewSelectTable(view, getPos()),
-    onMouseOut: () => previewLeaveTable(view, getPos()),
-  };
-  return view.state.schema.nodes.tableControllerCell.create({ controllerType: ControllerType.CORNER_CONTROLLER, events });
-}
-
-function newColumnController({ view, getPos, getMap, index }: NewControllerParams) {
-  let events: Events = {
-    onClick: () => selectColumn(view, getPos(), getMap(), index),
-    onMouseOver: () => previewSelectColumn(view, getPos(), index),
-    onMouseOut: () => previewLeaveColumn(view, getPos()),
-  };
-  return view.state.schema.nodes.tableControllerCell.create({ controllerType: ControllerType.COLUMN_CONTROLLER, events });
-}
-
-function newRowController({ view, getPos, getMap, index }: NewControllerParams) {
-  let events: Events = {
-    onClick: () => selectRow(view, getPos(), getMap(), index + 1),
-    onMouseOver: () => previewSelectRow(view, getPos(), getMap(), index + 1),
-    onMouseOut: () => previewLeaveRow(view, getPos(), getMap(), index + 1),
-  };
-  return view.state.schema.nodes.tableControllerCell.create({ controllerType: ControllerType.ROW_CONTROLLER, events });
+export function newControllerEvents({
+  controllerType,
+  view,
+  getTablePos: getPos,
+  getMap,
+  cellAxis,
+}: {
+  controllerType: ControllerType;
+  view: EditorView;
+  getTablePos: () => number;
+  getMap: () => TableMap;
+  cellAxis: CellAxis;
+}): Events {
+  if (controllerType === ControllerType.ROW_CONTROLLER)
+    return {
+      onClick: () => selectRow(view, getPos(), getMap(), cellAxis.row),
+      onMouseOver: () => previewSelectRow(view, getPos(), getMap(), cellAxis.row),
+      onMouseOut: () => previewLeaveRow(view, getPos(), getMap(), cellAxis.row),
+    };
+  else if (controllerType === ControllerType.COLUMN_CONTROLLER)
+    return {
+      onClick: () => selectColumn(view, getPos(), getMap(), cellAxis.col),
+      onMouseOver: () => previewSelectColumn(view, getPos(), cellAxis.col),
+      onMouseOut: () => previewLeaveColumn(view, getPos()),
+    };
+  else
+    return {
+      onClick: () => selectTable(view, getPos(), getMap()),
+      onMouseOver: () => previewSelectTable(view, getPos()),
+      onMouseOut: () => previewLeaveTable(view, getPos()),
+    };
 }
 
 function selectRow(view: EditorView, tablePos: number, map: TableMap, rowIndex: number) {

@@ -17,10 +17,8 @@ import {
 import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
 import { tableEditing } from 'prosemirror-tables';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
-import { ControllerType } from './const';
 import { columnResizing } from './table-column-resizing';
 import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
-import { Events } from './utils/jsx';
 import { TableControllerCellView } from './views/table-controller-cell-view';
 import { TableView } from './views/table-view';
 
@@ -137,8 +135,6 @@ export type TableControllerCellAttrs = {
   rowspan: number;
   colwidth: null | number;
   background: null | string;
-  controllerType: null | ControllerType;
-  events: null | Events;
 };
 
 export class TableControllerCellExtension extends NodeExtension {
@@ -154,10 +150,6 @@ export class TableControllerCellExtension extends NodeExtension {
       rowspan: { default: 1 },
       colwidth: { default: null },
       background: { default: null },
-
-      controllerType: { default: null },
-
-      events: { default: null },
     };
 
     return {

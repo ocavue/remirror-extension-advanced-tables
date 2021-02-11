@@ -2,8 +2,10 @@ import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@re
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
+import { TableMap } from 'prosemirror-tables';
 import { ControllerType } from '../const';
-import { TableControllerCellAttrs } from '../table-extension';
+import { newControllerEvents } from '../utils/controller';
+import { CellAxis } from '../utils/types';
 import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
 import TableInsertionMark from './TableInsertionMark';
 
@@ -15,17 +17,21 @@ export type TableControllerCellProps = {
   contentDOM: HTMLElement;
 };
 
+let classNameMap = {
+  [ControllerType.ROW_CONTROLLER]: 'remirror-table-row-controller',
+  [ControllerType.COLUMN_CONTROLLER]: 'remirror-table-column-controller',
+  [ControllerType.CORNER_CONTROLLER]: 'remirror-table-corner-controller',
+};
+
 const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: TableControllerCellProps) => {
-  const controllerType = node.attrs.controllerType;
+  let $pos = view.state.doc.resolve(getPos() + 1);
+  let cellAxis: CellAxis = { col: $pos.index(-1), row: $pos.index(-2) };
 
-  let className = '';
-  if (controllerType === ControllerType.ROW_CONTROLLER) className = 'remirror-table-row-controller';
-  else if (controllerType === ControllerType.COLUMN_CONTROLLER) className = 'remirror-table-column-controller';
-  else if (controllerType === ControllerType.CORNER_CONTROLLER) className = 'remirror-table-corner-controller';
+  let controllerType: ControllerType = ControllerType.CORNER_CONTROLLER;
+  if (cellAxis.row > 0) controllerType = ControllerType.ROW_CONTROLLER;
+  else if (cellAxis.col > 0) controllerType = ControllerType.COLUMN_CONTROLLER;
 
-  let attrs = node.attrs as TableControllerCellAttrs;
-
-  console.debug('TableControllerCell attrs', 'colspan:', attrs.colspan, 'rowspan:', attrs.rowspan);
+  let className = classNameMap[controllerType];
 
   const findTable = (): FindProsemirrorNodeResult | undefined => {
     return findParentNodeOfType({
@@ -34,30 +40,27 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     });
   };
 
-  const findTableCellIndex = (): { row: number; col: number } => {
-    let row = -1;
-    let col = -1;
-
-    let tr = td.parentElement;
-    if (!tr) return { row, col };
-    let tbody = tr.parentElement;
-    if (!tbody) return { row, col };
-
-    row = Array.prototype.indexOf.call(tbody.children, tr);
-    col = Array.prototype.indexOf.call(tr.children, td);
-
-    return { row, col };
-  };
-
   const wrapper = h(
     'div',
     { contentEditable: false, className: 'remirror-table-controller__add-column-wrapper' },
     contentDOM,
-    ...TableInsertionButtonTrigger({ controllerType, view, findTable, findTableCellIndex }),
+    ...TableInsertionButtonTrigger({ controllerType, view, findTable, cellAxis }),
     TableInsertionMark(),
   );
 
-  const td = h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...attrs.events }, wrapper);
+  let events = newControllerEvents({
+    controllerType,
+    view,
+    cellAxis,
+    getTablePos: () => {
+      return findTable()!.pos;
+    },
+    getMap: () => {
+      return TableMap.get(findTable()!.node);
+    },
+  });
+
+  const td = h('td', { contentEditable: false, className: 'remirror-table-controller ' + className, ...events }, wrapper);
 
   return td;
 };
