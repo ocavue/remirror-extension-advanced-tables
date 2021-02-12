@@ -74,7 +74,7 @@ const TriggerArea = ({
     zIndex: 12,
 
     // Just for debug. Use linear-gradient as background so that we can differentiate two neighbor areas.
-    background: 'linear-gradient(to left top, rgba(0, 255, 100, 0.3), rgba(200, 100, 255, 0.3))',
+    // background: 'linear-gradient(to left top, rgba(0, 255, 100, 0.3), rgba(200, 100, 255, 0.3))',
   };
 
   if (type === 'add_column_left' || type === 'add_column_right') style.height = '24px';
