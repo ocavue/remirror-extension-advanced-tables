@@ -1,6 +1,6 @@
 import { useEvents } from '@remirror/react-hooks';
 import React, { useState } from 'react';
-import { useBlockPositioner } from './block-positioner';
+import { useBlockPositioner } from '../block-positioner';
 
 export function TableCellMenu() {
   const { ref, bottom, right, top } = useBlockPositioner(['tableCell', 'tableHeaderCell']);

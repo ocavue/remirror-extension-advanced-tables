@@ -6,4 +6,4 @@ export {
   TableControllerCellExtension,
 } from './table-extension';
 
-export { TableCellMenu } from './TableCellMenu';
+export { TableCellMenu } from './components/TableCellMenu';
