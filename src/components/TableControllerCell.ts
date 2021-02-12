@@ -45,7 +45,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     { contentEditable: 'false', className: 'remirror-table-controller__wrapper' },
     contentDOM,
     ...TableInsertionButtonTrigger({ controllerType, view, findTable, getAxis }),
-    TableInsertionMark(),
+    ...TableInsertionMark({ controllerType }),
   );
 
   return h('td', { contentEditable: 'false', className: 'remirror-table-controller ' + className, ...events }, wrapper);
