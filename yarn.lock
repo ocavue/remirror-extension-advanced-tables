@@ -8512,9 +8512,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"remirror-experimental-extension-tables@workspace:.":
+"remirror-extension-advanced-tables@workspace:.":
   version: 0.0.0-use.local
-  resolution: "remirror-experimental-extension-tables@workspace:."
+  resolution: "remirror-extension-advanced-tables@workspace:."
   dependencies:
     "@babel/core": ^7.12.10
     "@remirror/core": 1.0.0-next.60
