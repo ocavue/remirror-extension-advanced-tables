@@ -18,7 +18,7 @@ import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/ta
 import { tableEditing } from 'prosemirror-tables';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
 import { columnResizing } from './table-column-resizing';
-import { newTableContollerPlugin, TableContollerPluginState } from './table-plugin';
+import { newTableDecorationPlugin } from './table-plugin';
 import { TableControllerCellView } from './views/table-controller-cell-view';
 import { TableView } from './views/table-view';
 
@@ -42,8 +42,8 @@ export class TableExtension extends RemirrorTableExtension {
     };
   }
 
-  createPlugin(): CreatePluginReturn<TableContollerPluginState> {
-    return newTableContollerPlugin();
+  createPlugin(): CreatePluginReturn {
+    return newTableDecorationPlugin();
   }
 
   /**

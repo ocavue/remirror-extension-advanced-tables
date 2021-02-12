@@ -30,7 +30,7 @@ export type TableInsertionButtonProps = {
   attrs: InsertionButtonAttrs;
 };
 
-function InnerTableInsertionButton(attrs: InsertionButtonAttrs) {
+function InnerTableInsertionButton(attrs: InsertionButtonAttrs): HTMLElement {
   let size = 24;
 
   return h(

@@ -5,32 +5,9 @@ import { TableMap } from 'prosemirror-tables';
 import TableInsertionButton from './components/TableInsertionButton';
 import type { TableNodeAttrs } from './table-extension';
 
-export type TableContollerPluginState = { debugCounter: number; tableNode?: ProsemirrorNode };
-
-export function newTableContollerPlugin(): CreatePluginReturn<TableContollerPluginState> {
+export function newTableDecorationPlugin(): CreatePluginReturn {
   return {
-    /*
-        state: {
-            init: (config, state): TableContollerPluginState => {
-                console.debug(`[TableContollerPlugin.init]`)
-                return { debugCounter: 0 }
-            },
-            apply: (tr, oldPluginState, oldEditorState, newEditorState): TableContollerPluginState => {
-                return newPluginState
-            },
-        },
-    */
-
     props: {
-      /*
-      handleDOMEvents: {
-        mousedown: () => {
-          console.debug(`[TableContollerPlugin.mousedown]`);
-          return false;
-        },
-      },
-      */
-
       decorations: (state: EditorState) => {
         const tableNodeResult = findParentNodeOfType({
           types: 'table',
