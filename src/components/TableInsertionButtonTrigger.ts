@@ -10,7 +10,7 @@ type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | '
 const borderWidth = 1; // We could change it to a paramter instead of a constant if we want to support more border width values.
 
 function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxis: CellAxis): InsertionButtonAttrs {
-  let { col } = cellAxis;
+  let { row, col } = cellAxis;
 
   let attrs = {
     triggerMinX: rect.x,
@@ -21,20 +21,38 @@ function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxi
   if (type === 'add_column_left') {
     return {
       ...attrs,
-      x: rect.x,
+      x: rect.x - borderWidth,
       y: rect.y,
 
       row: -1,
       col: col,
     };
-  } else {
+  } else if (type === 'add_column_right') {
     return {
       ...attrs,
-      x: rect.x + rect.width + borderWidth,
+      x: rect.x + rect.width,
       y: rect.y,
 
       row: -1,
       col: col + 1,
+    };
+  } else if (type === 'add_row_up') {
+    return {
+      ...attrs,
+      x: rect.x,
+      y: rect.y - borderWidth,
+
+      row: row,
+      col: -1,
+    };
+  } else {
+    return {
+      ...attrs,
+      x: rect.x,
+      y: rect.y + rect.height,
+
+      row: row + 1,
+      col: -1,
     };
   }
 }
