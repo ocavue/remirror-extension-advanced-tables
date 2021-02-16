@@ -20,8 +20,6 @@ import { DeleteButtonAttrs } from './components/TableDeleteButton';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
 import { columnResizing } from './table-column-resizing';
 import { newTableDecorationPlugin, newTableDeleteStatePlugin } from './table-plugin';
-import { CellSelectionType } from './utils/controller';
-import { CellAxis } from './utils/types';
 import { TableControllerCellView } from './views/table-controller-cell-view';
 import { TableView } from './views/table-view';
 
