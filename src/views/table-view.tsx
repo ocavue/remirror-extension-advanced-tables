@@ -136,7 +136,7 @@ export class TableView implements NodeView {
   }
 
   ignoreMutation(record: ProsemirrorMutationRecord) {
-    return record.type == 'attributes' && (record.target == this.table || (this.colgroup && this.colgroup.contains(record.target)));
+    return record.type == 'attributes';
   }
 }
 
