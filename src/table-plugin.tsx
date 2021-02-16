@@ -43,7 +43,7 @@ export const key = new PluginKey('tablePreviewDelete');
 export function newTableDeleteStatePlugin(): Plugin {
   let plugin = new Plugin({
     key,
-    appendTransaction: (trs: Transaction[], oldState: EditorState, newState: EditorState) => {
+    appendTransaction: (trs: Transaction[], oldState: EditorState, newState: EditorState): Transaction | void => {
       if (newState.selection instanceof CellSelection && !newState.selection.empty && !oldState.selection.eq(newState.selection)) {
         let selection: CellSelection = newState.selection;
         let tableResult = findParentNodeOfType({ selection: cellSelectionToSelection(selection), types: 'table' });
@@ -55,8 +55,7 @@ export function newTableDeleteStatePlugin(): Plugin {
           selectionHeadAxis: getCellAxis(newState.doc.resolve(selection.$headCell.pos + 1)),
           selectionAnchorAxis: getCellAxis(newState.doc.resolve(selection.$anchorCell.pos + 1)),
         };
-        let tr: Transaction = setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
-        return tr;
+        return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
       }
     },
   });
