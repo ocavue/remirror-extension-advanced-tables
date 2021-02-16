@@ -123,9 +123,10 @@ export class TableView implements NodeView {
   }
 
   private renderDeletButton() {
-    let button = TableDeleteButton({ view: this.view, node: this.node });
-    if (button) {
-      replaceChildren(this.deleteButtonWrapper, [button]);
+    const attrs = this.attrs().deleteButtonAttrs;
+    if (attrs) {
+      let button = TableDeleteButton({ view: this.view, node: this.node, attrs });
+      replaceChildren(this.deleteButtonWrapper, button ? [button] : []);
     } else {
       replaceChildren(this.deleteButtonWrapper, []);
     }

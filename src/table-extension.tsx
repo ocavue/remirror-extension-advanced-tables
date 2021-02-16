@@ -16,6 +16,7 @@ import {
 } from '@remirror/preset-table';
 import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
 import { tableEditing } from 'prosemirror-tables';
+import { DeleteButtonAttrs } from './components/TableDeleteButton';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
 import { columnResizing } from './table-column-resizing';
 import { newTableDecorationPlugin, newTableDeleteStatePlugin } from './table-plugin';
@@ -32,9 +33,8 @@ export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>>
   // if and only if `insertionButtonAttrs` exists, InsertionButton will show.
   insertionButtonAttrs: InsertionButtonAttrs | null;
 
-  selectionType: CellSelectionType | null;
-  selectionHeadAxis: CellAxis | null;
-  selectionAnchorAxis: CellAxis | null;
+  // if and only if `deleteButtonAttrs` exists, DeleteButton will show.
+  deleteButtonAttrs: DeleteButtonAttrs | null;
 };
 
 export class TableExtension extends RemirrorTableExtension {
@@ -74,6 +74,7 @@ export class TableExtension extends RemirrorTableExtension {
         previewSelection: { default: false },
         previewSelectionColumn: { default: -1 },
         insertionButtonAttrs: { default: null },
+        deleteButtonAttrs: { default: null },
         selectionType: { default: null },
         selectionHeadAxis: { default: null },
         selectionAnchorAxis: { default: null },

@@ -66,11 +66,11 @@ export function newTableDeleteStatePlugin(): Plugin<TableDeletePluginState> {
         let tableResult = findParentNodeOfType({ selection: cellSelectionToSelection(selection), types: 'table' });
         if (!tableResult) return;
         let attrs: Partial<TableNodeAttrs> = {
-          selectionType: getCellSelectionType(selection),
-          // Notice that `selection.$headCell` and `selection.$anchorCell` are resolved positions pointing **in front of** the head cell and anchor cell.
-          // That means in order to get the actual position of cells, we need to +1.
-          selectionHeadAxis: getCellAxis(newState.doc.resolve(selection.$headCell.pos + 1)),
-          selectionAnchorAxis: getCellAxis(newState.doc.resolve(selection.$anchorCell.pos + 1)),
+          deleteButtonAttrs: {
+            selectionType: getCellSelectionType(selection),
+            selectionHeadCellPos: selection.$headCell.pos,
+            selectionAnchorCellPos: selection.$anchorCell.pos,
+          },
         };
         return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
       }
@@ -79,9 +79,7 @@ export function newTableDeleteStatePlugin(): Plugin<TableDeletePluginState> {
       let tableResult = findParentNodeOfType({ selection: newState.selection, types: 'table' });
       if (tableResult) {
         let attrs: Partial<TableNodeAttrs> = {
-          selectionType: null,
-          selectionHeadAxis: null,
-          selectionAnchorAxis: null,
+          deleteButtonAttrs: null,
         };
         return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
       }

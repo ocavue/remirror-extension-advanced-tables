@@ -8,11 +8,11 @@ type MouseMoveListener = (e: MouseEvent) => void;
 const mouseMoveListeners: MouseMoveListener[] = [];
 
 export type InsertionButtonAttrs = {
-  // The center axis of the TableInsertionButton
+  // The center axis (in px) of the TableInsertionButton
   x: number;
   y: number;
 
-  // The rectangle axis of the TableInsertionButtonTrigger
+  // The rectangle axis (in px) of the TableInsertionButtonTrigger
   triggerMinX: number;
   triggerMinY: number;
   triggerMaxX: number;
