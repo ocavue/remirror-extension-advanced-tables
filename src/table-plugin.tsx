@@ -2,6 +2,7 @@ import { CreatePluginReturn, EditorState, findParentNodeOfType, Transaction } fr
 import { Plugin, PluginKey } from '@remirror/pm/state';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
 import { CellSelection } from 'prosemirror-tables';
+import { TableNodeAttrs } from './table-extension';
 import { getCellAxis, getCellSelectionType } from './utils/controller';
 import { cellSelectionToSelection, setNodeAttrs } from './utils/prosemirror';
 
@@ -40,15 +41,31 @@ export const key = new PluginKey('tablePreviewDelete');
  * table 在收到属性后，由 decoration 增加一个按钮。
  */
 
-export function newTableDeleteStatePlugin(): Plugin {
+type TableDeletePluginState = {
+  showButton: boolean;
+};
+
+export function newTableDeleteStatePlugin(): Plugin<TableDeletePluginState> {
   let plugin = new Plugin({
     key,
+    // state: {
+    //   init: (): TableDeletePluginState => {
+    //     return { showButton: false };
+    //   },
+    //   apply: (tr: Transaction, state: TableDeletePluginState): TableDeletePluginState => {
+    //     return state;
+    //   },
+    // },
     appendTransaction: (trs: Transaction[], oldState: EditorState, newState: EditorState): Transaction | void => {
-      if (newState.selection instanceof CellSelection && !newState.selection.empty && !oldState.selection.eq(newState.selection)) {
+      // If the selection doesn't change, then the state of delete button shouldn't change.
+      if (oldState.selection.eq(newState.selection)) return;
+
+      // If the selection is a CellSelection instance, then we add selection information into the table node.
+      if (newState.selection instanceof CellSelection && !newState.selection.empty) {
         let selection: CellSelection = newState.selection;
         let tableResult = findParentNodeOfType({ selection: cellSelectionToSelection(selection), types: 'table' });
         if (!tableResult) return;
-        let attrs = {
+        let attrs: Partial<TableNodeAttrs> = {
           selectionType: getCellSelectionType(selection),
           // Notice that `selection.$headCell` and `selection.$anchorCell` are resolved positions pointing **in front of** the head cell and anchor cell.
           // That means in order to get the actual position of cells, we need to +1.
@@ -57,6 +74,19 @@ export function newTableDeleteStatePlugin(): Plugin {
         };
         return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
       }
+
+      // If the selection is not a CellSelection instance but inside a table, then we remove selection information from the table node.
+      let tableResult = findParentNodeOfType({ selection: newState.selection, types: 'table' });
+      if (tableResult) {
+        let attrs: Partial<TableNodeAttrs> = {
+          selectionType: null,
+          selectionHeadAxis: null,
+          selectionAnchorAxis: null,
+        };
+        return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
+      }
+
+      // If the selection is not inside a table, the delete button show be hidden by CSS. So we don't need to do anything manually.
     },
   });
   return plugin;

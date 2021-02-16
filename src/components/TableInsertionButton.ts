@@ -49,7 +49,7 @@ function InnerTableInsertionButton(attrs: InsertionButtonAttrs): HTMLElement {
   );
 }
 
-function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonProps) {
+function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonProps): HTMLElement {
   let button = InnerTableInsertionButton(attrs);
 
   const insertRolOrColumn = () => {

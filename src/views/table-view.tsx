@@ -3,6 +3,7 @@ import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
 import { TableMap, updateColumnsOnResize } from 'prosemirror-tables';
+import TableDeleteButton from '../components/TableDeleteButton';
 import TableInsertionButton from '../components/TableInsertionButton';
 import { TableNodeAttrs } from '../table-extension';
 import { injectControllers } from '../utils/controller';
@@ -14,6 +15,7 @@ export class TableView implements NodeView {
   readonly colgroup: HTMLElement;
   readonly tbody: HTMLElement;
   readonly insertionButtonWrapper: HTMLElement;
+  readonly deleteButtonWrapper: HTMLElement;
   map: TableMap;
 
   get dom() {
@@ -37,7 +39,14 @@ export class TableView implements NodeView {
     this.colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, ...range(this.map.width).map(() => h('col')));
     this.table = h('table', { class: 'remirror-table' }, this.colgroup, this.tbody);
     this.insertionButtonWrapper = h('div');
-    this.root = h('div', { className: 'remirror-table-controller-wrapper' }, this.table, this.insertionButtonWrapper);
+    this.deleteButtonWrapper = h('div');
+    this.root = h(
+      'div',
+      { className: 'remirror-table-controller-wrapper' },
+      this.table,
+      this.insertionButtonWrapper,
+      this.deleteButtonWrapper,
+    );
 
     if (!this.attrs().isControllersInjected) {
       setTimeout(() => {
@@ -60,8 +69,14 @@ export class TableView implements NodeView {
     this.node = node;
     this.map = TableMap.get(this.node);
 
+    console.log('this.attrs().isControllersInjected:', this.attrs().isControllersInjected);
+    if (!this.attrs().isControllersInjected) {
+      return true;
+    }
+
     this.renderTable();
     this.renderInsertionButton();
+    this.renderDeletButton();
 
     return true;
   }
@@ -77,7 +92,6 @@ export class TableView implements NodeView {
   }
 
   private renderInsertionButton() {
-    if (!this.attrs().isControllersInjected) return;
     const attrs = this.attrs().insertionButtonAttrs;
     if (attrs) {
       let button = TableInsertionButton({
@@ -98,6 +112,16 @@ export class TableView implements NodeView {
       replaceChildren(this.insertionButtonWrapper, [button]);
     } else {
       replaceChildren(this.insertionButtonWrapper, []);
+    }
+  }
+
+  private renderDeletButton() {
+    let button = TableDeleteButton({ view: this.view, node: this.node });
+    console.log('button:', !!button);
+    if (button) {
+      replaceChildren(this.deleteButtonWrapper, [button]);
+    } else {
+      replaceChildren(this.deleteButtonWrapper, []);
     }
   }
 
