@@ -2,6 +2,7 @@ import { EditorView, ResolvedPos, Transaction } from '@remirror/core';
 import { Fragment, Node as ProsemirrorNode } from '@remirror/pm/model';
 import { CellSelection, TableMap } from 'prosemirror-tables';
 import { ControllerType } from '../const';
+import { TableNodeAttrs } from '../table-extension';
 import { Events } from '../utils/jsx';
 import { cellSelectionToSelection, setNodeAttrs } from '../utils/prosemirror';
 import { repeat } from './array';
@@ -37,6 +38,8 @@ export function injectControllers({
 
   const newRows = Fragment.fromArray(newRowsArray);
   const newTable = oldTable.copy(newRows);
+
+  (newTable.attrs as TableNodeAttrs).isControllersInjected = true;
 
   let pos = getPos();
   return tr.replaceRangeWith(pos, pos + oldTable.nodeSize, newTable);

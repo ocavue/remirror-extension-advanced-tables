@@ -39,7 +39,6 @@ export class TableView implements NodeView {
     if (!this.attrs().isControllersInjected) {
       setTimeout(() => {
         let tr = view.state.tr;
-        tr = setNodeAttrs(tr, getPos(), { isControllersInjected: true });
         tr = injectControllers({ view: this.view, getMap: () => this.map, getPos: this.getPos, tr, oldTable: node });
         view.dispatch(tr);
       }, 0); // TODO: better way to do the injection then setTimeout?
