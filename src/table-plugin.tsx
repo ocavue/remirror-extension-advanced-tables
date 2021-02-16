@@ -1,9 +1,10 @@
-import { CreatePluginReturn, EditorState, EditorView, findParentNodeOfType } from '@remirror/core';
-import { Node as ProsemirrorNode } from '@remirror/pm/model';
+import { CreatePluginReturn, EditorState, findParentNodeOfType, Transaction } from '@remirror/core';
+import { Plugin, PluginKey } from '@remirror/pm/state';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
-import { TableMap } from 'prosemirror-tables';
-import TableInsertionButton from './components/TableInsertionButton';
-import type { TableNodeAttrs } from './table-extension';
+import { CellSelection } from 'prosemirror-tables';
+import { TableNodeAttrs } from './table-extension';
+import { getCellSelectionType } from './utils/controller';
+import { cellSelectionToSelection, setNodeAttrs } from './utils/prosemirror';
 
 export function newTableDecorationPlugin(): CreatePluginReturn {
   return {
@@ -16,36 +17,10 @@ export function newTableDecorationPlugin(): CreatePluginReturn {
 
         if (tableNodeResult) {
           const decorations = [
-            Decoration.node(
-              tableNodeResult.start - 1, // Not sure why do I need '-1' here.
-              tableNodeResult.end,
-              { class: 'remirror-table-controller-wrapper--show-controllers' },
-            ),
+            Decoration.node(tableNodeResult.pos, tableNodeResult.end, {
+              class: 'remirror-table-controller-wrapper--show-controllers',
+            }),
           ];
-
-          const attrs = (tableNodeResult.node.attrs as TableNodeAttrs).insertionButtonAttrs;
-
-          if (attrs) {
-            let toDOM = (view: EditorView, getPos: () => number) => {
-              return TableInsertionButton({
-                view,
-                attrs,
-                tableRect: {
-                  map: TableMap.get(tableNodeResult.node),
-                  table: tableNodeResult.node,
-                  tableStart: tableNodeResult.start,
-
-                  // The following properties are not actually used
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                },
-              });
-            };
-            decorations.push(Decoration.widget(tableNodeResult.end, toDOM));
-          }
-
           return DecorationSet.create(state.doc, decorations);
         }
 
@@ -53,4 +28,58 @@ export function newTableDecorationPlugin(): CreatePluginReturn {
       },
     },
   };
+}
+
+export const key = new PluginKey('tablePreviewDelete');
+
+type TableDeletePluginState = {
+  showButton: boolean;
+};
+
+// TODO: merge two plgins
+export function newTableDeleteStatePlugin(): Plugin<TableDeletePluginState> {
+  let plugin = new Plugin({
+    key,
+    // state: {
+    //   init: (): TableDeletePluginState => {
+    //     return { showButton: false };
+    //   },
+    //   apply: (tr: Transaction, state: TableDeletePluginState): TableDeletePluginState => {
+    //     return state;
+    //   },
+    // },
+
+    // TODO: move to a function
+    appendTransaction: (trs: Transaction[], oldState: EditorState, newState: EditorState): Transaction | void => {
+      // If the selection doesn't change, then the state of delete button shouldn't change.
+      if (oldState.selection.eq(newState.selection)) return;
+
+      // If the selection is a CellSelection instance, then we add selection information into the table node.
+      if (newState.selection instanceof CellSelection && !newState.selection.empty) {
+        let selection: CellSelection = newState.selection;
+        let tableResult = findParentNodeOfType({ selection: cellSelectionToSelection(selection), types: 'table' });
+        if (!tableResult) return;
+        let attrs: Partial<TableNodeAttrs> = {
+          deleteButtonAttrs: {
+            selectionType: getCellSelectionType(selection),
+            selectionHeadCellPos: selection.$headCell.pos,
+            selectionAnchorCellPos: selection.$anchorCell.pos,
+          },
+        };
+        return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
+      }
+
+      // If the selection is not a CellSelection instance but inside a table, then we remove selection information from the table node.
+      let tableResult = findParentNodeOfType({ selection: newState.selection, types: 'table' });
+      if (tableResult) {
+        let attrs: Partial<TableNodeAttrs> = {
+          deleteButtonAttrs: null,
+        };
+        return setNodeAttrs(newState.tr, tableResult.pos, attrs, tableResult.node);
+      }
+
+      // If the selection is not inside a table, the delete button show be hidden by CSS. So we don't need to do anything manually.
+    },
+  });
+  return plugin;
 }
