@@ -38,7 +38,7 @@ function InnerTableDeleteButton({
     'button',
     {
       style: {
-        backgroundColor: selectionType === CellSelectionType.row ? 'lightblue' : 'lightpink',
+        backgroundColor: 'lightpink',
         position: 'fixed',
         left: `${x}px`,
         top: `${y}px`,
@@ -60,6 +60,8 @@ function TableDeleteButton({
   node: ProsemirrorNode;
   attrs: DeleteButtonAttrs;
 }): HTMLElement | void {
+  if (attrs.selectionType !== CellSelectionType.col && attrs.selectionType !== CellSelectionType.row) return;
+
   let anchorCellDOM = view.nodeDOM(attrs.selectionAnchorCellPos) as HTMLElement | null | undefined;
   let headCellDOM = view.nodeDOM(attrs.selectionHeadCellPos) as HTMLElement | null | undefined;
   if (!anchorCellDOM || !headCellDOM) return;
