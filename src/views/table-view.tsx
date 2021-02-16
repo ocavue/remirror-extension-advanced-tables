@@ -3,6 +3,7 @@ import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
 import { TableMap, updateColumnsOnResize } from 'prosemirror-tables';
+import TableInsertionButton from '../components/TableInsertionButton';
 import { TableNodeAttrs } from '../table-extension';
 import { injectControllers } from '../utils/controller';
 import { setNodeAttrs } from '../utils/prosemirror';
@@ -12,6 +13,7 @@ export class TableView implements NodeView {
   readonly table: HTMLElement;
   readonly colgroup: HTMLElement;
   readonly tbody: HTMLElement;
+  readonly insertionButtonWrapper: HTMLElement;
   map: TableMap;
 
   get dom() {
@@ -34,7 +36,8 @@ export class TableView implements NodeView {
     this.tbody = h('tbody', { className: 'remirror-table-tbody' });
     this.colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, ...range(this.map.width).map(() => h('col')));
     this.table = h('table', { class: 'remirror-table' }, this.colgroup, this.tbody);
-    this.root = h('div', { className: 'remirror-table-controller-wrapper' }, this.table);
+    this.insertionButtonWrapper = h('div');
+    this.root = h('div', { className: 'remirror-table-controller-wrapper' }, this.table, this.insertionButtonWrapper);
 
     if (!this.attrs().isControllersInjected) {
       setTimeout(() => {
@@ -57,12 +60,13 @@ export class TableView implements NodeView {
     this.node = node;
     this.map = TableMap.get(this.node);
 
-    this.render();
+    this.renderTable();
+    this.renderInsertionButton();
 
     return true;
   }
 
-  private render() {
+  private renderTable() {
     const cols = range(this.map.width).map(() => h('col'));
     if (this.attrs().previewSelectionColumn !== -1) {
       cols[this.attrs().previewSelectionColumn]?.classList.add('remirror-table-col--selected');
@@ -70,6 +74,31 @@ export class TableView implements NodeView {
     replaceChildren(this.colgroup, cols);
     this.table.className = `remirror-table ${this.attrs().previewSelection ? 'remirror-table--selected' : ''}`;
     updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth);
+  }
+
+  private renderInsertionButton() {
+    if (!this.attrs().isControllersInjected) return;
+    const attrs = this.attrs().insertionButtonAttrs;
+    if (attrs) {
+      let button = TableInsertionButton({
+        view: this.view,
+        attrs,
+        tableRect: {
+          map: this.map,
+          table: this.node,
+          tableStart: this.getPos() + 1,
+
+          // The following properties are not actually used
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+        },
+      });
+      replaceChildren(this.insertionButtonWrapper, [button]);
+    } else {
+      replaceChildren(this.insertionButtonWrapper, []);
+    }
   }
 
   private attrs() {

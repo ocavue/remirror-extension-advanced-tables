@@ -1,9 +1,7 @@
-import { CreatePluginReturn, EditorState, EditorView, findParentNodeOfType, Transaction } from '@remirror/core';
+import { CreatePluginReturn, EditorState, findParentNodeOfType, Transaction } from '@remirror/core';
 import { Plugin, PluginKey } from '@remirror/pm/state';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
-import { CellSelection, TableMap } from 'prosemirror-tables';
-import TableInsertionButton from './components/TableInsertionButton';
-import type { TableNodeAttrs } from './table-extension';
+import { CellSelection } from 'prosemirror-tables';
 import { getCellAxis, getCellSelectionType } from './utils/controller';
 import { cellSelectionToSelection, setNodeAttrs } from './utils/prosemirror';
 
@@ -22,30 +20,6 @@ export function newTableDecorationPlugin(): CreatePluginReturn {
               class: 'remirror-table-controller-wrapper--show-controllers',
             }),
           ];
-
-          const attrs = (tableNodeResult.node.attrs as TableNodeAttrs).insertionButtonAttrs;
-
-          if (attrs) {
-            let toDOM = (view: EditorView, getPos: () => number) => {
-              return TableInsertionButton({
-                view,
-                attrs,
-                tableRect: {
-                  map: TableMap.get(tableNodeResult.node),
-                  table: tableNodeResult.node,
-                  tableStart: tableNodeResult.start,
-
-                  // The following properties are not actually used
-                  left: 0,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                },
-              });
-            };
-            decorations.push(Decoration.widget(tableNodeResult.end, toDOM));
-          }
-
           return DecorationSet.create(state.doc, decorations);
         }
 
