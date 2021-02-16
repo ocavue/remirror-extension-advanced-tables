@@ -18,7 +18,9 @@ import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/ta
 import { tableEditing } from 'prosemirror-tables';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
 import { columnResizing } from './table-column-resizing';
-import { newTableDecorationPlugin } from './table-plugin';
+import { newTableDecorationPlugin, newTableDeleteStatePlugin } from './table-plugin';
+import { CellSelectionType } from './utils/controller';
+import { CellAxis } from './utils/types';
 import { TableControllerCellView } from './views/table-controller-cell-view';
 import { TableView } from './views/table-view';
 
@@ -28,7 +30,11 @@ export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>>
   previewSelectionColumn: number;
 
   // if and only if `insertionButtonAttrs` exists, InsertionButton will show.
-  insertionButtonAttrs: null | InsertionButtonAttrs;
+  insertionButtonAttrs: InsertionButtonAttrs | null;
+
+  selectionType: CellSelectionType | null;
+  selectionHeadAxis: CellAxis | null;
+  selectionAnchorAxis: CellAxis | null;
 };
 
 export class TableExtension extends RemirrorTableExtension {
@@ -50,7 +56,7 @@ export class TableExtension extends RemirrorTableExtension {
    * Add the table plugins to the editor.
    */
   createExternalPlugins(): ProsemirrorPlugin[] {
-    const plugins = [tableEditing()];
+    const plugins = [tableEditing(), newTableDeleteStatePlugin()];
 
     if (this.options.resizable) {
       plugins.push(columnResizing({ firstResizableColumn: 1 }));
@@ -68,6 +74,9 @@ export class TableExtension extends RemirrorTableExtension {
         previewSelection: { default: false },
         previewSelectionColumn: { default: -1 },
         insertionButtonAttrs: { default: null },
+        selectionType: { default: null },
+        selectionHeadAxis: { default: null },
+        selectionAnchorAxis: { default: null },
       },
       content: 'tableRow+',
       tableRole: 'table',

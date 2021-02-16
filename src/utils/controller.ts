@@ -1,10 +1,9 @@
-import { EditorView, Transaction } from '@remirror/core';
+import { EditorView, ResolvedPos, Transaction } from '@remirror/core';
 import { Fragment, Node as ProsemirrorNode } from '@remirror/pm/model';
-import { Selection } from 'prosemirror-state';
 import { CellSelection, TableMap } from 'prosemirror-tables';
 import { ControllerType } from '../const';
 import { Events } from '../utils/jsx';
-import { setNodeAttrs } from '../utils/prosemirror';
+import { cellSelectionToSelection, setNodeAttrs } from '../utils/prosemirror';
 import { repeat } from './array';
 import { CellAxis, FindTable } from './types';
 
@@ -91,7 +90,7 @@ const selectRow = decoExecFunc((view: EditorView, tablePos: number, map: TableMa
   const pos = tablePos + posInTable + 1;
   const $pos = tr.doc.resolve(pos);
   const selection = CellSelection.rowSelection($pos);
-  tr = tr.setSelection((selection as unknown) as Selection); // TODO: https://github.com/ProseMirror/prosemirror-tables/pull/126
+  tr = tr.setSelection(cellSelectionToSelection(selection));
   view.dispatch(tr);
 });
 
@@ -102,7 +101,7 @@ const selectColumn = decoExecFunc((view: EditorView, tablePos: number, map: Tabl
   const pos = tablePos + posInTable + 1;
   const $pos = tr.doc.resolve(pos);
   const selection = CellSelection.colSelection($pos);
-  tr = tr.setSelection((selection as unknown) as Selection);
+  tr = tr.setSelection(cellSelectionToSelection(selection));
   view.dispatch(tr);
 });
 
@@ -116,7 +115,7 @@ const selectTable = decoExecFunc((view: EditorView, tablePos: number, map: Table
     const $firstCellPos = tr.doc.resolve(firstCellPos);
     const $lastCellPos = tr.doc.resolve(lastCellPos);
     const selection = new CellSelection($firstCellPos, $lastCellPos);
-    tr = tr.setSelection((selection as unknown) as Selection);
+    tr = tr.setSelection(cellSelectionToSelection(selection));
     view.dispatch(tr);
   }
 });
@@ -155,4 +154,28 @@ export function getControllerType(cellAxis: CellAxis): ControllerType {
   if (cellAxis.row > 0) return ControllerType.ROW_CONTROLLER;
   else if (cellAxis.col > 0) return ControllerType.COLUMN_CONTROLLER;
   else return ControllerType.CORNER_CONTROLLER;
+}
+
+export function getCellAxis($cellPos: ResolvedPos): CellAxis {
+  return { col: $cellPos.index(-1), row: $cellPos.index(-2) };
+}
+
+export const enum CellSelectionType {
+  row = 1,
+  col = 2,
+  table = 3,
+  other = 4,
+}
+
+export function getCellSelectionType(selection: CellSelection): CellSelectionType {
+  if (selection.isRowSelection()) {
+    if (selection.isColSelection()) {
+      return CellSelectionType.table;
+    } else {
+      return CellSelectionType.row;
+    }
+  } else if (selection.isColSelection()) {
+    return CellSelectionType.col;
+  }
+  return CellSelectionType.other;
 }

@@ -3,7 +3,7 @@ import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
 import { ControllerType } from '../const';
-import { getControllerType, newControllerEvents } from '../utils/controller';
+import { getCellAxis, getControllerType, newControllerEvents } from '../utils/controller';
 import { CellAxis } from '../utils/types';
 import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
 import TableInsertionMark from './TableInsertionMark';
@@ -24,8 +24,7 @@ let classNameMap = {
 
 const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: TableControllerCellProps) => {
   const getAxis = (): CellAxis => {
-    let $pos = view.state.doc.resolve(getPos() + 1);
-    return { col: $pos.index(-1), row: $pos.index(-2) };
+    return getCellAxis(view.state.doc.resolve(getPos() + 1));
   };
 
   let controllerType = getControllerType(getAxis());

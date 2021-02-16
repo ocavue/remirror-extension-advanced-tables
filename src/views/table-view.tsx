@@ -51,7 +51,7 @@ export class TableView implements NodeView {
   }
 
   update(node: ProsemirrorNode, decorations: Decoration[]): boolean {
-    debug('TableView.update');
+    // debug('TableView.update');
     if (node.type != this.node.type) {
       return false;
     }
@@ -59,7 +59,7 @@ export class TableView implements NodeView {
     this.decorations = decorations;
 
     const shouldComponentUpdate = this.shouldComponentUpdate(node);
-    debug('TableView.update shouldComponentUpdate:', shouldComponentUpdate);
+    // debug('TableView.update shouldComponentUpdate:', shouldComponentUpdate);
     if (shouldComponentUpdate) {
       this.render();
     }

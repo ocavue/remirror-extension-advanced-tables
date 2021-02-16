@@ -1,13 +1,16 @@
+import { ProsemirrorNode } from '@remirror/pm';
 import { Fragment, Slice } from '@remirror/pm/model';
+import { Selection } from '@remirror/pm/state';
 import { ReplaceAroundStep, Transform } from '@remirror/pm/transform';
+import { CellSelection } from 'prosemirror-tables';
 
 type Attrs = Record<string, any>;
 
 // Change the attributes of the node at `pos`.
 //
 // This different between this function and `Transform.setNodeMarkup` is that it only overwrites fields that appear in `attrs`.
-export function setNodeAttrs<T extends Transform>(tr: T, pos: number, attrs: Attrs): T {
-  let node = tr.doc.nodeAt(pos);
+export function setNodeAttrs<T extends Transform>(tr: T, pos: number, attrs: Attrs, node?: ProsemirrorNode | null | undefined): T {
+  node = node || tr.doc.nodeAt(pos);
   if (!node) throw new RangeError('No node at given position');
   let type = node.type;
   let newNode = type.create({ ...node.attrs, ...attrs }, undefined, node.marks);
@@ -18,4 +21,13 @@ export function setNodeAttrs<T extends Transform>(tr: T, pos: number, attrs: Att
   return tr.step(
     new ReplaceAroundStep(pos, pos + node.nodeSize, pos + 1, pos + node.nodeSize - 1, new Slice(Fragment.from(newNode), 0, 0), 1, true),
   );
+}
+
+// TODO: https://github.com/ProseMirror/prosemirror-tables/pull/126
+export function selectionToCellSelection(selection: Selection) {
+  return (selection as unknown) as CellSelection;
+}
+
+export function cellSelectionToSelection(selection: CellSelection) {
+  return (selection as unknown) as Selection;
 }
