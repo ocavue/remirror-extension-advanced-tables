@@ -33,6 +33,8 @@ export class TableView implements NodeView {
     public view: EditorView,
     public getPos: () => number,
   ) {
+    console.debug(`[TableView] constructor`);
+
     this.map = TableMap.get(this.node);
 
     this.tbody = h('tbody', { className: 'remirror-table-tbody' });
@@ -56,11 +58,13 @@ export class TableView implements NodeView {
       }, 0); // TODO: better way to do the injection then setTimeout?
       // TODO: add a event listener to detect `this.root` insertion
       // see also: https://davidwalsh.name/detect-node-insertion
+    } else {
+      this.render();
     }
   }
 
   update(node: ProsemirrorNode, decorations: Decoration[]): boolean {
-    // console.debug('TableView.update');
+    console.debug(`[TableView] update`);
     if (node.type != this.node.type) {
       return false;
     }
@@ -69,16 +73,19 @@ export class TableView implements NodeView {
     this.node = node;
     this.map = TableMap.get(this.node);
 
-    console.log('this.attrs().isControllersInjected:', this.attrs().isControllersInjected);
+    this.render();
+
+    return true;
+  }
+
+  private render() {
     if (!this.attrs().isControllersInjected) {
-      return true;
+      return;
     }
 
     this.renderTable();
     this.renderInsertionButton();
     this.renderDeletButton();
-
-    return true;
   }
 
   private renderTable() {
@@ -117,7 +124,6 @@ export class TableView implements NodeView {
 
   private renderDeletButton() {
     let button = TableDeleteButton({ view: this.view, node: this.node });
-    console.log('button:', !!button);
     if (button) {
       replaceChildren(this.deleteButtonWrapper, [button]);
     } else {

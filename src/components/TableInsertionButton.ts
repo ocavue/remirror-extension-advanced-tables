@@ -78,12 +78,20 @@ function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonPr
     insertRolOrColumn();
   };
 
-  let onMouseMove = throttle(100, (e: MouseEvent) => {
+  let handleMouseMove = throttle(100, (e: MouseEvent) => {
+    console.log('onMouseMove ', mouseMoveListeners.length, 'attrs:', attrs);
+
     if (
-      e.clientX < attrs.triggerMinX - 400 ||
-      e.clientX > attrs.triggerMaxX + 400 ||
-      e.clientY < attrs.triggerMinY - 60 ||
-      e.clientY > attrs.triggerMaxY
+      (attrs.col !== -1 &&
+        (e.clientX < attrs.triggerMinX - 400 ||
+          e.clientX > attrs.triggerMaxX + 400 ||
+          e.clientY < attrs.triggerMinY - 60 ||
+          e.clientY > attrs.triggerMaxY)) ||
+      (attrs.row !== -1 &&
+        (e.clientY < attrs.triggerMinY - 100 ||
+          e.clientY > attrs.triggerMaxY + 100 ||
+          e.clientX < attrs.triggerMinX - 40 ||
+          e.clientX > attrs.triggerMaxX))
     ) {
       while (mouseMoveListeners.length) {
         document.removeEventListener('mousemove', mouseMoveListeners.pop() as MouseMoveListener);
@@ -92,8 +100,10 @@ function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonPr
     }
   });
 
-  mouseMoveListeners.push(onMouseMove);
-  document.addEventListener('mousemove', onMouseMove);
+  if (mouseMoveListeners.length === 0) {
+    mouseMoveListeners.push(handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove);
+  }
 
   return button;
 }
