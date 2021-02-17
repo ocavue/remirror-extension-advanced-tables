@@ -1,6 +1,6 @@
 import { EditorView, ProsemirrorNode } from '@remirror/core';
 import { h } from 'jsx-dom/min';
-import { deleteColumn, deleteRow } from 'prosemirror-tables';
+import { deleteColumn, deleteRow, TableMap } from 'prosemirror-tables';
 import { CellSelectionType } from '../utils/controller';
 
 export type DeleteButtonAttrs = {
@@ -51,16 +51,12 @@ function InnerTableDeleteButton({
   );
 }
 
-function TableDeleteButton({
-  view,
-  node,
-  attrs,
-}: {
-  view: EditorView;
-  node: ProsemirrorNode;
-  attrs: DeleteButtonAttrs;
-}): HTMLElement | void {
+function TableDeleteButton({ view, map, attrs }: { view: EditorView; map: TableMap; attrs: DeleteButtonAttrs }): HTMLElement | void {
   if (attrs.selectionType !== CellSelectionType.col && attrs.selectionType !== CellSelectionType.row) return;
+
+  // Don't show the delete button if there is only one row/column (excluded controllers).
+  if (attrs.selectionType === CellSelectionType.col && map.width <= 2) return;
+  if (attrs.selectionType === CellSelectionType.row && map.height <= 2) return;
 
   let anchorCellDOM = view.nodeDOM(attrs.selectionAnchorCellPos) as HTMLElement | null | undefined;
   let headCellDOM = view.nodeDOM(attrs.selectionHeadCellPos) as HTMLElement | null | undefined;
