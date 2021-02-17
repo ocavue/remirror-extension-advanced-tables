@@ -24,45 +24,36 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
 
   let controllerType = getControllerType(getAxis());
 
-  let controllerClass = '';
+  let controllerWrapperClass = '';
   if (controllerType === ControllerType.ROW_CONTROLLER) {
-    controllerClass = css`
+    controllerWrapperClass = css`
+      height: 100%;
       overflow: visible;
-      & .remirror-table-controller__wrapper {
-        height: 100%;
-        overflow: visible;
 
-        position: relative;
+      position: relative;
 
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: flex-end;
-        z-index: 101;
-      }
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      z-index: 101;
     `;
   } else if (controllerType === ControllerType.COLUMN_CONTROLLER) {
-    controllerClass = css`
+    controllerWrapperClass = css`
+      width: 100%;
       overflow: visible;
-      & .remirror-table-controller__wrapper {
-        width: 100%;
-        overflow: visible;
 
-        position: relative;
+      position: relative;
 
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: flex-end;
-        z-index: 101;
-      }
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: flex-end;
+      z-index: 101;
     `;
   } else if (controllerType === ControllerType.CORNER_CONTROLLER) {
-    controllerClass = css`
+    controllerWrapperClass = css`
       overflow: visible;
-      & .remirror-table-controller__wrapper {
-        overflow: visible;
-      }
     `;
   }
 
@@ -77,13 +68,13 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
 
   const wrapper = h(
     'div',
-    { contentEditable: 'false', className: 'remirror-table-controller__wrapper' },
+    { contentEditable: 'false', className: controllerWrapperClass },
     contentDOM,
     ...TableInsertionButtonTrigger({ controllerType, view, findTable, getAxis }),
     ...TableInsertionMark({ controllerType }),
   );
 
-  return h('td', { contentEditable: 'false', className: 'remirror-table-controller ' + controllerClass, ...events }, wrapper);
+  return h('td', { contentEditable: 'false', className: 'remirror-table-controller ', ...events }, wrapper);
 };
 
 export default TableControllerCell;
