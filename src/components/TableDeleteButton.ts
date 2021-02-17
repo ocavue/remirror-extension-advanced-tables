@@ -80,6 +80,7 @@ function TableDeleteButton({
     } else {
       deleteColumn(view.state, view.dispatch);
     }
+    view.dispatch(view.state.tr.deleteSelection());
   };
 
   let button = InnerTableDeleteButton({
