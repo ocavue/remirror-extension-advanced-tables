@@ -1,6 +1,6 @@
 import '../style/table.scss';
 import '../node_modules/prosemirror-view/style/prosemirror.css';
-import '../node_modules/prosemirror-tables/style/tables.css';
+// import '../node_modules/prosemirror-tables/style/tables.css';
 
 import React, { FC } from 'react';
 import { RemirrorProvider, useManager, useRemirror } from '@remirror/react';

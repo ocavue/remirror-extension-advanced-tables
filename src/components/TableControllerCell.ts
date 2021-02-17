@@ -3,7 +3,7 @@ import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@re
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
-import { ControllerType } from '../const';
+import { ClassName, ControllerType } from '../const';
 import { getCellAxis, getControllerType, newControllerEvents } from '../utils/controller';
 import { CellAxis } from '../utils/types';
 import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
@@ -74,7 +74,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     ...TableInsertionMark({ controllerType }),
   );
 
-  return h('td', { contentEditable: 'false', className: 'remirror-table-controller ', ...events }, wrapper);
+  return h('th', { contentEditable: 'false', className: ClassName.TABLE_CONTROLLER, ...events }, wrapper);
 };
 
 export default TableControllerCell;

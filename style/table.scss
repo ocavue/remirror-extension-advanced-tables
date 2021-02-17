@@ -4,7 +4,6 @@
     --table-hightlight-background-color: rgba(50, 128, 206, 1);
     --table-dark-background-color: rgba(220, 222, 224, 0.5);
     --table-preview-selection-background-color: rgba(169, 200, 231, 0.5);
-    --table-controller-width: 12px;
 }
 
 $add-column-mark-width: 4px;
@@ -15,21 +14,6 @@ $add-column-mark-width: 4px;
     padding: 32px;
 }
 
-.ProseMirror table td {
-    border-top: solid 1px var(--table-border-color);
-    border-left: solid 1px var(--table-border-color);
-}
-
-.ProseMirror table th {
-    border-top: solid 1px var(--table-border-color);
-    border-left: solid 1px var(--table-border-color);
-    background-color: var(--table-dark-background-color);
-}
-
-.ProseMirror table {
-    border-bottom: solid 1px var(--table-border-color);
-    border-right: solid 1px var(--table-border-color);
-}
 
 .remirror-table-controller-wrapper {
     position: relative;
@@ -50,9 +34,6 @@ $add-column-mark-width: 4px;
     padding: 0px;
 }
 
-.selectedCell {
-    z-index: 10000;
-}
 
 .selectedCell.remirror-table-controller {
     background-color: var(--table-hightlight-background-color);
@@ -74,3 +55,8 @@ $add-column-mark-width: 4px;
     overflow: visible !important;
 }
 
+
+.ProseMirror.resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
+  }

@@ -6,6 +6,7 @@ import { h } from 'jsx-dom/min';
 import { TableMap, updateColumnsOnResize } from 'prosemirror-tables';
 import TableDeleteButton from '../components/TableDeleteButton';
 import TableInsertionButton from '../components/TableInsertionButton';
+import { ClassName } from '../const';
 import { TableNodeAttrs } from '../table-extension';
 import { injectControllers } from '../utils/controller';
 
@@ -17,6 +18,9 @@ export class TableView implements NodeView {
   readonly insertionButtonWrapper: HTMLElement;
   readonly deleteButtonWrapper: HTMLElement;
   map: TableMap;
+  tableClass: string;
+  previewSelectionClass: string;
+  previewSelectionControllerClass: string;
 
   get dom() {
     return this.root;
@@ -33,8 +37,13 @@ export class TableView implements NodeView {
     public view: EditorView,
     public getPos: () => number,
 
-    public previewSelectionBackgroundColor: string = 'rgba(169, 200, 231, 0.5)',
+    public previewSelectionBorderColor: string = 'rgb(0, 103, 206)',
+    public selectionBackgroundColor: string = '#edf4ff',
+    public previewSelectionControllerBackgroundColor: string = '#5ab1ef',
+    public selectionControllerBackgroundColor: string = '#5ab1ef',
     public controllerSize: number = 12,
+    public borderColor: string = 'rgba(171, 175, 179, 1)',
+    public headerCellBackgroundColor: string = 'rgba(220, 222, 224, 0.5)',
   ) {
     console.debug(`[TableView] constructor`);
 
@@ -62,6 +71,78 @@ export class TableView implements NodeView {
       // TODO: add a event listener to detect `this.root` insertion
       // see also: https://davidwalsh.name/detect-node-insertion
     }
+
+    this.previewSelectionClass = css`
+      border-color: ${this.previewSelectionBorderColor};
+      border-width: 1px;
+      border-style: double; // Make the border-style 'double' instead of 'solid'. This works because 'double' has a higher priority than 'solid'.
+    `;
+
+    this.previewSelectionControllerClass = css`
+      background-color: ${this.previewSelectionControllerBackgroundColor};
+    `;
+
+    this.tableClass = css`
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      overflow: hidden;
+
+      & > tbody > tr:first-child {
+        height: ${this.controllerSize}px;
+        overflow: visible;
+
+        & > td.${ClassName.TABLE_CONTROLLER}, & > th.${ClassName.TABLE_CONTROLLER} {
+          height: ${this.controllerSize}px;
+          overflow: visible;
+
+          & > div {
+            height: ${this.controllerSize}px;
+            overflow: visible;
+          }
+        }
+      }
+
+      & > colgroup > col:first-child {
+        width: ${this.controllerSize}px;
+        overflow: visible;
+      }
+
+      & > tbody > tr > {
+        th.${ClassName.SELECTED_CELL}.${ClassName.TABLE_CONTROLLER} {
+          background-color: ${this.selectionControllerBackgroundColor} !important;
+        }
+        th.${ClassName.SELECTED_CELL}, td.${ClassName.SELECTED_CELL} {
+          ${this.previewSelectionClass};
+          background-color: ${this.selectionBackgroundColor};
+        }
+      }
+
+      & td,
+      & th {
+        vertical-align: top;
+        box-sizing: border-box;
+        position: relative;
+
+        border: solid 1px ${this.borderColor};
+      }
+
+      & th {
+        background-color: ${headerCellBackgroundColor};
+      }
+
+      & .${ClassName.COLUMN_RESIZE_HANDLE} {
+        position: absolute;
+        right: -2px;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        z-index: 20;
+        background-color: #adf;
+        pointer-events: none;
+      }
+    `;
+
     this.render();
   }
 
@@ -92,55 +173,53 @@ export class TableView implements NodeView {
 
   private renderTable() {
     let previewSelectionClass = '';
+
     if (this.attrs().previewSelectionColumn !== -1) {
       previewSelectionClass = css`
-        & > colgroup > col:nth-child(${this.attrs().previewSelectionColumn + 1}) {
-          background: ${this.previewSelectionBackgroundColor};
+        & > tbody > tr > {
+          td:nth-child(${this.attrs().previewSelectionColumn + 1}) {
+            ${this.previewSelectionClass};
+          }
+          th.${ClassName.TABLE_CONTROLLER}:nth-child(${this.attrs().previewSelectionColumn + 1}) {
+            ${this.previewSelectionClass};
+            ${this.previewSelectionControllerClass}
+          }
         }
       `;
     } else if (this.attrs().previewSelectionRow !== -1) {
       previewSelectionClass = css`
-        & > tbody > tr:nth-child(${this.attrs().previewSelectionRow + 1}) {
-          background: ${this.previewSelectionBackgroundColor};
+        & > tbody > tr:nth-child(${this.attrs().previewSelectionRow + 1}) > {
+          td {
+            ${this.previewSelectionClass};
+          }
+          th.${ClassName.TABLE_CONTROLLER} {
+            ${this.previewSelectionClass};
+            ${this.previewSelectionControllerClass}
+          }
         }
       `;
     } else if (this.attrs().previewSelectionTable) {
       previewSelectionClass = css`
-        background-color: ${this.previewSelectionBackgroundColor};
-      `;
-    }
-
-    let controllerCellClass = '';
-    if (this.attrs().isControllersInjected) {
-      controllerCellClass = css`
-        & > tbody > tr:first-child {
-          height: ${this.controllerSize}px;
-          overflow: visible;
-
-          & > td {
-            height: ${this.controllerSize}px;
-            overflow: visible;
-
-            & > div {
-              height: ${this.controllerSize}px;
-              overflow: visible;
-            }
+        & > tbody > tr > {
+          td {
+            ${this.previewSelectionClass};
+          }
+          th.${ClassName.TABLE_CONTROLLER} {
+            ${this.previewSelectionClass};
+            ${this.previewSelectionControllerClass}
           }
         }
-
-        & > colgroup > col:first-child {
-          width: ${this.controllerSize}px;
-          overflow: visible;
-        }
       `;
     }
+
+    let tableClass = this.attrs().isControllersInjected ? this.tableClass : '';
 
     if (this.colgroup.children.length !== this.map.width) {
       const cols = range(this.map.width).map(() => h('col'));
       replaceChildren(this.colgroup, cols);
     }
 
-    this.table.className = `remirror-table ${previewSelectionClass} ${controllerCellClass}`;
+    this.table.className = `remirror-table ${previewSelectionClass} ${tableClass}`;
     updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth);
   }
 

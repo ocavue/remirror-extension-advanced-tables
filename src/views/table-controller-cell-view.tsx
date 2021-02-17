@@ -15,6 +15,6 @@ export class TableControllerCellView implements NodeView {
 
   // When a DOM mutation happens (eg: the button show or hide), don't let ProsemirrorNode re-render the view.
   ignoreMutation() {
-    return true;
+    return false;
   }
 }
