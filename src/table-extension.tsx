@@ -27,6 +27,7 @@ export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>>
   isControllersInjected: boolean;
   previewSelection: boolean;
   previewSelectionColumn: number;
+  previewSelectionRow: number;
 
   // if and only if `insertionButtonAttrs` exists, InsertionButton will show.
   insertionButtonAttrs: InsertionButtonAttrs | null;
@@ -71,6 +72,7 @@ export class TableExtension extends RemirrorTableExtension {
         isControllersInjected: { default: false },
         previewSelection: { default: false },
         previewSelectionColumn: { default: -1 },
+        previewSelectionRow: { default: -1 },
         insertionButtonAttrs: { default: null },
         deleteButtonAttrs: { default: null },
       },
@@ -94,22 +96,8 @@ export class TableRowExtension extends RemirrorTableRowExtension {
   createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
     const spec = super.createNodeSpec(extra);
     spec.content = '(tableCell | tableHeaderCell | tableControllerCell)*';
-    spec.attrs = {
-      ...spec.attrs,
-      previewSelection: { default: false },
-    };
     spec.toDOM = (node) => {
-      const attrs = {
-        ...extra.dom(node),
-      };
-      if (node.attrs.previewSelection) {
-        if (attrs.class) {
-          attrs.class = `${attrs.class} remirror-table-row--selected`;
-        } else {
-          attrs.class = `remirror-table-row--selected`;
-        }
-      }
-      return ['tr', attrs, 0];
+      return ['tr', extra.dom(node), 0];
     };
     return spec;
   }

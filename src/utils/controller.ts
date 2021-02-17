@@ -124,15 +124,11 @@ const selectTable = decoExecFunc((view: EditorView, tablePos: number, map: Table
 });
 
 const previewSelectRow = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
-  const posInTable = map.map[getCellIndex(map, index, 0)];
-  const rowPos = tablePos + posInTable;
-  view.dispatch(setNodeAttrs(view.state.tr, rowPos, { previewSelection: true }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionRow: index }));
 });
 
 const previewLeaveRow = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
-  const posInTable = map.map[getCellIndex(map, index, 0)];
-  const rowPos = tablePos + posInTable;
-  view.dispatch(setNodeAttrs(view.state.tr, rowPos, { previewSelection: false }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionRow: -1 }));
 });
 
 const previewSelectColumn = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {

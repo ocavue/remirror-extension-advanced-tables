@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import { EditorView, NodeView, range } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
@@ -91,8 +92,27 @@ export class TableView implements NodeView {
     if (this.attrs().previewSelectionColumn !== -1) {
       cols[this.attrs().previewSelectionColumn]?.classList.add('remirror-table-col--selected');
     }
+
+    let className = '';
+    if (this.attrs().previewSelectionColumn !== -1) {
+      className = css`
+        color: red;
+        & > colgroup > col:nth-child(${this.attrs().previewSelectionColumn + 1}) {
+          background: red !important;
+        }
+      `;
+    }
+    if (this.attrs().previewSelectionRow !== -1) {
+      className = css`
+        color: blue;
+        & > tbody > tr:nth-child(${this.attrs().previewSelectionRow + 1}) {
+          background: blue !important;
+        }
+      `;
+    }
+
     replaceChildren(this.colgroup, cols);
-    this.table.className = `remirror-table ${this.attrs().previewSelection ? 'remirror-table--selected' : ''}`;
+    this.table.className = `remirror-table ${className} ${this.attrs().previewSelection ? 'remirror-table--selected' : ''}`;
     updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth);
   }
 
