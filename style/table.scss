@@ -63,18 +63,6 @@ $add-column-mark-width: 4px;
     cursor: pointer;
 }
 
-.remirror-table--selected  {
-    background-color: var(--table-preview-selection-background-color);
-}
-
-.remirror-table-row--selected {
-    background-color: var(--table-preview-selection-background-color);
-}
-
-.remirror-table-col--selected {
-    background-color: var(--table-preview-selection-background-color);
-}
-
 .ProseMirror table {
     // spec for marks
     margin-top: 40px;
@@ -86,54 +74,54 @@ $add-column-mark-width: 4px;
     overflow: visible !important;
 }
 
-.remirror-table-column-controller {
-    height: var(--table-controller-width);
-    overflow: visible;
+// .remirror-table-column-controller {
+//     height: var(--table-controller-width);
+//     overflow: visible;
 
-    & .remirror-table-controller__wrapper {
-        height: var(--table-controller-width);
-        width: 100%;
-        overflow: visible;
+//     & .remirror-table-controller__wrapper {
+//         height: var(--table-controller-width);
+//         width: 100%;
+//         overflow: visible;
 
-        position: relative;
+//         position: relative;
 
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: flex-end;
-        z-index: 101;
-    }
-}
+//         display: flex;
+//         flex-direction: row;
+//         justify-content: flex-end;
+//         align-items: flex-end;
+//         z-index: 101;
+//     }
+// }
 
-.remirror-table-row-controller {
-    width: var(--table-controller-width);
-    overflow: visible;
+// .remirror-table-row-controller {
+//     width: var(--table-controller-width);
+//     overflow: visible;
 
-    & .remirror-table-controller__wrapper {
-        width: var(--table-controller-width);
-        height: 100%;
-        overflow: visible;
+//     & .remirror-table-controller__wrapper {
+//         width: var(--table-controller-width);
+//         height: 100%;
+//         overflow: visible;
 
-        position: relative;
+//         position: relative;
 
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: flex-end;
-        z-index: 101;
-    }
-}
+//         display: flex;
+//         flex-direction: column;
+//         justify-content: flex-end;
+//         align-items: flex-end;
+//         z-index: 101;
+//     }
+// }
 
-.remirror-table-corner-controller  {
-    width: var(--table-controller-width);
-    height: var(--table-controller-width);
+// .remirror-table-corner-controller  {
+//     width: var(--table-controller-width);
+//     height: var(--table-controller-width);
 
-    & .remirror-table-controller__wrapper {
-        width: var(--table-controller-width);
-        height: var(--table-controller-width);
-        overflow: visible;
-    }
-}
+//     & .remirror-table-controller__wrapper {
+//         width: var(--table-controller-width);
+//         height: var(--table-controller-width);
+//         overflow: visible;
+//     }
+// }
 
 
 .remirror-table-controller {

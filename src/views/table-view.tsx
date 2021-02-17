@@ -34,6 +34,7 @@ export class TableView implements NodeView {
     public getPos: () => number,
 
     public previewSelectionBackgroundColor: string = 'rgba(169, 200, 231, 0.5)',
+    public controllerSize: number = 12,
   ) {
     console.debug(`[TableView] constructor`);
 
@@ -90,22 +91,47 @@ export class TableView implements NodeView {
   }
 
   private renderTable() {
-    let className = '';
+    let previewSelectionClass = '';
     if (this.attrs().previewSelectionColumn !== -1) {
-      className = css`
+      previewSelectionClass = css`
         & > colgroup > col:nth-child(${this.attrs().previewSelectionColumn + 1}) {
           background: ${this.previewSelectionBackgroundColor};
         }
       `;
     } else if (this.attrs().previewSelectionRow !== -1) {
-      className = css`
+      previewSelectionClass = css`
         & > tbody > tr:nth-child(${this.attrs().previewSelectionRow + 1}) {
           background: ${this.previewSelectionBackgroundColor};
         }
       `;
     } else if (this.attrs().previewSelectionTable) {
-      className = css`
+      previewSelectionClass = css`
         background-color: ${this.previewSelectionBackgroundColor};
+      `;
+    }
+
+    let controllerCellClass = '';
+    if (this.attrs().isControllersInjected) {
+      controllerCellClass = css`
+        & > tbody > tr:first-child {
+          height: ${this.controllerSize}px;
+          overflow: visible;
+
+          & > td {
+            height: ${this.controllerSize}px;
+            overflow: visible;
+
+            & > div {
+              height: ${this.controllerSize}px;
+              overflow: visible;
+            }
+          }
+        }
+
+        & > colgroup > col:first-child {
+          width: ${this.controllerSize}px;
+          overflow: visible;
+        }
       `;
     }
 
@@ -114,7 +140,7 @@ export class TableView implements NodeView {
       replaceChildren(this.colgroup, cols);
     }
 
-    this.table.className = `remirror-table ${className}`;
+    this.table.className = `remirror-table ${previewSelectionClass} ${controllerCellClass}`;
     updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth);
   }
 

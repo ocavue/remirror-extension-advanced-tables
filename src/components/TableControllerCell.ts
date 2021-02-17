@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
@@ -16,19 +17,54 @@ export type TableControllerCellProps = {
   contentDOM: HTMLElement;
 };
 
-let classNameMap = {
-  [ControllerType.ROW_CONTROLLER]: 'remirror-table-row-controller',
-  [ControllerType.COLUMN_CONTROLLER]: 'remirror-table-column-controller',
-  [ControllerType.CORNER_CONTROLLER]: 'remirror-table-corner-controller',
-};
-
 const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: TableControllerCellProps) => {
   const getAxis = (): CellAxis => {
     return getCellAxis(view.state.doc.resolve(getPos() + 1));
   };
 
   let controllerType = getControllerType(getAxis());
-  let className = classNameMap[controllerType];
+
+  let controllerClass = '';
+  if (controllerType === ControllerType.ROW_CONTROLLER) {
+    controllerClass = css`
+      overflow: visible;
+      & .remirror-table-controller__wrapper {
+        height: 100%;
+        overflow: visible;
+
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+        z-index: 101;
+      }
+    `;
+  } else if (controllerType === ControllerType.COLUMN_CONTROLLER) {
+    controllerClass = css`
+      overflow: visible;
+      & .remirror-table-controller__wrapper {
+        width: 100%;
+        overflow: visible;
+
+        position: relative;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: flex-end;
+        z-index: 101;
+      }
+    `;
+  } else if (controllerType === ControllerType.CORNER_CONTROLLER) {
+    controllerClass = css`
+      overflow: visible;
+      & .remirror-table-controller__wrapper {
+        overflow: visible;
+      }
+    `;
+  }
 
   const findTable = (): FindProsemirrorNodeResult | undefined => {
     return findParentNodeOfType({
@@ -47,7 +83,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     ...TableInsertionMark({ controllerType }),
   );
 
-  return h('td', { contentEditable: 'false', className: 'remirror-table-controller ' + className, ...events }, wrapper);
+  return h('td', { contentEditable: 'false', className: 'remirror-table-controller ' + controllerClass, ...events }, wrapper);
 };
 
 export default TableControllerCell;
