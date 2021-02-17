@@ -32,6 +32,8 @@ export class TableView implements NodeView {
     public decorations: Decoration[],
     public view: EditorView,
     public getPos: () => number,
+
+    public previewSelectionBackgroundColor: string = 'rgba(169, 200, 231, 0.5)',
   ) {
     console.debug(`[TableView] constructor`);
 
@@ -88,31 +90,31 @@ export class TableView implements NodeView {
   }
 
   private renderTable() {
-    const cols = range(this.map.width).map(() => h('col'));
-    if (this.attrs().previewSelectionColumn !== -1) {
-      cols[this.attrs().previewSelectionColumn]?.classList.add('remirror-table-col--selected');
-    }
-
     let className = '';
     if (this.attrs().previewSelectionColumn !== -1) {
       className = css`
-        color: red;
         & > colgroup > col:nth-child(${this.attrs().previewSelectionColumn + 1}) {
-          background: red !important;
+          background: ${this.previewSelectionBackgroundColor};
         }
       `;
-    }
-    if (this.attrs().previewSelectionRow !== -1) {
+    } else if (this.attrs().previewSelectionRow !== -1) {
       className = css`
-        color: blue;
         & > tbody > tr:nth-child(${this.attrs().previewSelectionRow + 1}) {
-          background: blue !important;
+          background: ${this.previewSelectionBackgroundColor};
         }
+      `;
+    } else if (this.attrs().previewSelectionTable) {
+      className = css`
+        background-color: ${this.previewSelectionBackgroundColor};
       `;
     }
 
-    replaceChildren(this.colgroup, cols);
-    this.table.className = `remirror-table ${className} ${this.attrs().previewSelection ? 'remirror-table--selected' : ''}`;
+    if (this.colgroup.children.length !== this.map.width) {
+      const cols = range(this.map.width).map(() => h('col'));
+      replaceChildren(this.colgroup, cols);
+    }
+
+    this.table.className = `remirror-table ${className}`;
     updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth);
   }
 

@@ -139,10 +139,10 @@ const previewLeaveColumn = decoExecFunc((view: EditorView, tablePos: number, map
 });
 
 const previewSelectTable = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
-  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelection: true }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionTable: true }));
 });
 const previewLeaveTable = decoExecFunc((view: EditorView, tablePos: number, map: TableMap, index: number) => {
-  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelection: false }));
+  view.dispatch(setNodeAttrs(view.state.tr, tablePos, { previewSelectionTable: false }));
 });
 
 function getCellIndex(map: TableMap, rowIndex: number, colIndex: number): number {

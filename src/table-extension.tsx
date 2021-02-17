@@ -25,7 +25,7 @@ import { TableView } from './views/table-view';
 
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;
-  previewSelection: boolean;
+  previewSelectionTable: boolean;
   previewSelectionColumn: number;
   previewSelectionRow: number;
 
@@ -70,7 +70,7 @@ export class TableExtension extends RemirrorTableExtension {
       attrs: {
         ...extra.defaults(),
         isControllersInjected: { default: false },
-        previewSelection: { default: false },
+        previewSelectionTable: { default: false },
         previewSelectionColumn: { default: -1 },
         previewSelectionRow: { default: -1 },
         insertionButtonAttrs: { default: null },
