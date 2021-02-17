@@ -25,6 +25,8 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
   let controllerType = getControllerType(getAxis());
 
   let controllerWrapperClass = '';
+
+  // TODO: use css selector instead of js to detect ControllerType
   if (controllerType === ControllerType.ROW_CONTROLLER) {
     controllerWrapperClass = css`
       height: 100%;
@@ -64,6 +66,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     });
   };
 
+  // TODO: controllerType maybe wrong
   const events = newControllerEvents({ controllerType, view, getAxis, findTable });
 
   const wrapper = h(

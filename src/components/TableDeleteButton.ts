@@ -1,4 +1,4 @@
-import { EditorView, ProsemirrorNode } from '@remirror/core';
+import { EditorView } from '@remirror/core';
 import { h } from 'jsx-dom/min';
 import { deleteColumn, deleteRow, TableMap } from 'prosemirror-tables';
 import { CellSelectionType } from '../utils/controller';
