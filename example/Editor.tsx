@@ -35,7 +35,7 @@ const SmallEditor: FC = () => {
 
   return (
     <div>
-      <Menu createTable={() => commands.createTable({ columnsCount: 3, rowsCount: 3, withHeaderRow: false })} />
+      <Menu createTable={commands.createTable} />
       <div {...getRootProps()} />
     </div>
   );
