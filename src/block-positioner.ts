@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { EditorSchema, findParentNodeOfType, NodeType } from '@remirror/core';
+import { findParentNodeOfType, FindProsemirrorNodeResult, Selection } from '@remirror/core';
 import { useRemirror } from '@remirror/react';
+import { CellSelection } from 'prosemirror-tables';
+import React, { useEffect, useRef, useState } from 'react';
 
 export type TablePos = {
   left?: number;
@@ -35,20 +36,26 @@ const defaultPositionState: TablePos = { top: -999999, left: -999999, right: 999
 // let parentRect = CreateElement(undefined, undefined, undefined, undefined, 'end', 'green');
 //#endregion
 
-export function useBlockPositioner<RefType extends HTMLDivElement>(
-  blockTypes: NodeType<EditorSchema> | string | Array<NodeType<EditorSchema> | string>,
-): TablePosWithRef<RefType> {
+function findTableCell(selection: Selection, blockTypes: string[]): FindProsemirrorNodeResult | undefined | null {
+  if (selection instanceof CellSelection && selection.$anchorCell.pos !== selection.$headCell.pos) {
+    return null;
+  }
+  return findParentNodeOfType({ selection: selection, types: blockTypes });
+}
+
+export function useBlockPositioner<RefType extends HTMLDivElement>(blockTypes: string[]): TablePosWithRef<RefType> {
   const { addHandler } = useRemirror();
   const [tablePos, setTablePos] = useState<TablePos>(defaultPositionState);
   const ref = useRef<RefType>(null);
 
   useEffect(() => {
     const unsub = addHandler('updated', ({ state, view }) => {
-      const node = findParentNodeOfType({
-        selection: state.selection,
-        types: blockTypes,
-      });
+      const node = findTableCell(state.selection, blockTypes);
+
       if (node) {
+        const node = findParentNodeOfType({ selection: state.selection, types: blockTypes });
+        if (!node) return;
+
         const { top, left } = view.coordsAtPos(node.start);
         let { bottom, right, left: leftEnd } = view.coordsAtPos(node.end);
         // {
