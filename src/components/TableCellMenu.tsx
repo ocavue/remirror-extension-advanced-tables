@@ -2,7 +2,29 @@ import { useEvents } from '@remirror/react-hooks';
 import React, { useState } from 'react';
 import { useBlockPositioner } from '../block-positioner';
 
-export function TableCellMenu() {
+export type TableCellMenuButtonProps = {
+  setPopupOpen: (open: boolean) => void;
+};
+export type TableCellMenuButton = React.ComponentType<TableCellMenuButtonProps>;
+
+export const DefaultTableCellMenuButton: React.FC<TableCellMenuButtonProps> = ({ setPopupOpen }) => {
+  return (
+    <button onClick={() => setPopupOpen(true)} style={{ position: 'relative', left: '-18px' }}>
+      v
+    </button>
+  );
+};
+
+export type TableCellMenuPapperProps = Record<string, never>;
+export type TableCellMenuPopup = React.ComponentType<TableCellMenuPapperProps>;
+
+export const DefaultTableCellMenuPopup: React.FC<TableCellMenuPapperProps> = () => {
+  return <div style={{ position: 'fixed', backgroundColor: 'white', border: '1px solid red' }}>MENU</div>;
+};
+
+export type TableCellMenuProps = { Button: TableCellMenuButton; Popup: TableCellMenuPopup };
+
+const TableCellMenu: React.FC<TableCellMenuProps> = ({ Button = DefaultTableCellMenuButton, Popup = DefaultTableCellMenuPopup }) => {
   const { ref, bottom, right, top } = useBlockPositioner(['tableCell', 'tableHeaderCell']);
 
   const [popupOpen, setPopupOpen] = useState(false);
@@ -26,13 +48,12 @@ export function TableCellMenu() {
       }}
     >
       <div>
-        <button onClick={() => setPopupOpen(true)} style={{ position: 'relative', left: '-18px' }}>
-          v
-        </button>
-        {popupOpen && <div style={{ position: 'fixed', backgroundColor: 'white', border: '1px solid red' }}>MENU</div>}
+        <Button setPopupOpen={setPopupOpen} />
+        {popupOpen && <Popup />}
       </div>
     </div>
   );
-}
+};
 
+export { TableCellMenu };
 export default TableCellMenu;
