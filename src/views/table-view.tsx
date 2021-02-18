@@ -37,12 +37,12 @@ export class TableView implements NodeView {
     public view: EditorView,
     public getPos: () => number,
 
-    public previewSelectionBorderColor: string = 'rgb(0, 103, 206)',
+    public previewSelectionBorderColor: string = '#0067ce',
     public selectionBackgroundColor: string = '#edf4ff',
     public previewSelectionControllerBackgroundColor: string = '#5ab1ef',
     public selectionControllerBackgroundColor: string = '#5ab1ef',
     public controllerSize: number = 12,
-    public borderColor: string = 'rgba(171, 175, 179, 1)',
+    public borderColor: string = '#ced3d8',
     public headerCellBackgroundColor: string = 'rgba(220, 222, 224, 0.5)',
   ) {
     console.debug(`[TableView] constructor`);
