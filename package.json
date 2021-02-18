@@ -1,7 +1,7 @@
 {
   "name": "remirror-extension-advanced-tables",
   "license": "MIT",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "scripts": {
     "lint": "eslint --ignore-path .gitignore --ext '.js,.jsx,.ts,.tsx'",
     "dev": "parcel index.html",
