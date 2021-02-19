@@ -1,6 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import Editor from './Editor';
+
+function App() {
+  return (
+    <div className='App'>
+      <p>
+        <strong>demo</strong>
+      </p>
+      <Editor />
+    </div>
+  );
+}
 
 ReactDOM.render(
   <React.StrictMode>

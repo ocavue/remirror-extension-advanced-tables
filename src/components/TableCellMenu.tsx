@@ -22,7 +22,7 @@ export const DefaultTableCellMenuPopup: React.FC<TableCellMenuPapperProps> = () 
   return <div style={{ position: 'fixed', backgroundColor: 'white', border: '1px solid red' }}>MENU</div>;
 };
 
-export type TableCellMenuProps = { Button: TableCellMenuButton; Popup: TableCellMenuPopup };
+export type TableCellMenuProps = { Button?: TableCellMenuButton; Popup?: TableCellMenuPopup };
 
 const TableCellMenu: React.FC<TableCellMenuProps> = ({ Button = DefaultTableCellMenuButton, Popup = DefaultTableCellMenuPopup }) => {
   const { ref, bottom, right, top } = useBlockPositioner(['tableCell', 'tableHeaderCell']);
