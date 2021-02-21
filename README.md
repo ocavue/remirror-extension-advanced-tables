@@ -22,8 +22,6 @@ $ yarn add remirror-extension-advanced-tables
 Then, in your codebase:
 
 ```ts
-import "node_modules/remirror-extension-advanced-tables/style/table.css" // you can also use `style/table.scss` if your bundler support it.
-
 import { TableExtension, TableRowExtension, TableHeaderCellExtension, TableCellExtension } from 'remirror-extension-advanced-tables'
 ```
 
@@ -39,6 +37,3 @@ $ yarn dev
 ## Features
 
 Please check https://github.com/ocavue/remirror-extension-advanced-tables/issues/3 for some demo.
-
-
-
