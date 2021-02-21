@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { EditorView, NodeView, range } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
@@ -10,6 +10,153 @@ import { ClassName } from '../const';
 import { TableNodeAttrs } from '../table-extension';
 import { injectControllers } from '../utils/controller';
 
+export type TableStyleOptions = {
+  previewSelectionBorderColor: string;
+  selectionBackgroundColor: string;
+  previewSelectionControllerBackgroundColor: string;
+  selectionControllerBackgroundColor: string;
+  controllerSize: number;
+  borderColor: string;
+  headerCellBackgroundColor: string;
+};
+
+export const defaultTableStyleOptions = {
+  previewSelectionBorderColor: '#0067ce',
+  selectionBackgroundColor: '#edf4ff',
+  previewSelectionControllerBackgroundColor: '#5ab1ef',
+  selectionControllerBackgroundColor: '#5ab1ef',
+  controllerSize: 12,
+  borderColor: '#ced3d8',
+  headerCellBackgroundColor: 'rgba(220, 222, 224, 0.5)',
+};
+
+export function buildTableStyle(options?: TableStyleOptions) {
+  const {
+    previewSelectionBorderColor,
+    selectionBackgroundColor,
+    previewSelectionControllerBackgroundColor,
+    selectionControllerBackgroundColor,
+    controllerSize,
+    borderColor,
+    headerCellBackgroundColor,
+  } = { ...defaultTableStyleOptions, ...options };
+
+  const previewSelectionClass = css`
+    border-color: ${previewSelectionBorderColor};
+    border-width: 1px;
+    border-style: double; // Make the border-style 'double' instead of 'solid'. This works because 'double' has a higher priority than 'solid'.
+  `;
+
+  const previewSelectionControllerClass = css`
+    ${previewSelectionClass}
+    background-color: ${previewSelectionControllerBackgroundColor};
+  `;
+
+  const tableClass = css`
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    overflow: hidden;
+
+    & > tbody > tr:first-child {
+      height: ${controllerSize}px;
+      overflow: visible;
+
+      & > td.${ClassName.TABLE_CONTROLLER}, & > th.${ClassName.TABLE_CONTROLLER} {
+        height: ${controllerSize}px;
+        overflow: visible;
+
+        & > div {
+          height: ${controllerSize}px;
+          overflow: visible;
+        }
+      }
+    }
+
+    & > colgroup > col:first-child {
+      width: ${controllerSize + 1}px;
+      overflow: visible;
+    }
+
+    & > tbody > tr > {
+      th.${ClassName.SELECTED_CELL}.${ClassName.TABLE_CONTROLLER} {
+        background-color: ${selectionControllerBackgroundColor} !important;
+      }
+      th.${ClassName.SELECTED_CELL}, td.${ClassName.SELECTED_CELL} {
+        ${previewSelectionClass};
+        background-color: ${selectionBackgroundColor};
+      }
+    }
+
+    & td,
+    & th {
+      vertical-align: top;
+      box-sizing: border-box;
+      position: relative;
+
+      border: solid 1px ${borderColor};
+    }
+
+    & th {
+      background-color: ${headerCellBackgroundColor};
+    }
+
+    & .${ClassName.COLUMN_RESIZE_HANDLE} {
+      position: absolute;
+      right: -2px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      z-index: 20;
+      background-color: #adf;
+      pointer-events: none;
+    }
+  `;
+
+  const getStyle = (attrs: TableNodeAttrs) => {
+    let tableWithPreviewSelection = '';
+
+    if (attrs.previewSelectionColumn !== -1) {
+      tableWithPreviewSelection = css`
+        & > tbody > tr > {
+          td:nth-child(${attrs.previewSelectionColumn + 1}) {
+            ${previewSelectionClass};
+          }
+          th.${ClassName.TABLE_CONTROLLER}:nth-child(${attrs.previewSelectionColumn + 1}) {
+            ${previewSelectionControllerClass}
+          }
+        }
+      `;
+    } else if (attrs.previewSelectionRow !== -1) {
+      tableWithPreviewSelection = css`
+        & > tbody > tr:nth-child(${attrs.previewSelectionRow + 1}) > {
+          td {
+            ${previewSelectionClass};
+          }
+          th.${ClassName.TABLE_CONTROLLER} {
+            ${previewSelectionControllerClass}
+          }
+        }
+      `;
+    } else if (attrs.previewSelectionTable) {
+      tableWithPreviewSelection = css`
+        & > tbody > tr > {
+          td {
+            ${previewSelectionClass};
+          }
+          th.${ClassName.TABLE_CONTROLLER} {
+            ${previewSelectionControllerClass}
+          }
+        }
+      `;
+    }
+
+    return tableWithPreviewSelection ? `${tableClass} ${tableWithPreviewSelection}` : tableClass;
+  };
+
+  return getStyle;
+}
+
 export class TableView implements NodeView {
   readonly root: HTMLElement;
   readonly table: HTMLElement;
@@ -17,10 +164,9 @@ export class TableView implements NodeView {
   readonly tbody: HTMLElement;
   readonly insertionButtonWrapper: HTMLElement;
   readonly deleteButtonWrapper: HTMLElement;
+
   map: TableMap;
-  tableClass: string;
-  previewSelectionClass: string;
-  previewSelectionControllerClass: string;
+  getTableStyle: (attrs: TableNodeAttrs) => string;
 
   get dom() {
     return this.root;
@@ -36,17 +182,8 @@ export class TableView implements NodeView {
     public decorations: Decoration[],
     public view: EditorView,
     public getPos: () => number,
-
-    public previewSelectionBorderColor: string = '#0067ce',
-    public selectionBackgroundColor: string = '#edf4ff',
-    public previewSelectionControllerBackgroundColor: string = '#5ab1ef',
-    public selectionControllerBackgroundColor: string = '#5ab1ef',
-    public controllerSize: number = 12,
-    public borderColor: string = '#ced3d8',
-    public headerCellBackgroundColor: string = 'rgba(220, 222, 224, 0.5)',
+    public styleOption?: TableStyleOptions,
   ) {
-    console.debug(`[TableView] constructor`);
-
     this.map = TableMap.get(this.node);
 
     this.tbody = h('tbody', { className: 'remirror-table-tbody' });
@@ -72,76 +209,7 @@ export class TableView implements NodeView {
       // see also: https://davidwalsh.name/detect-node-insertion
     }
 
-    this.previewSelectionClass = css`
-      border-color: ${this.previewSelectionBorderColor};
-      border-width: 1px;
-      border-style: double; // Make the border-style 'double' instead of 'solid'. This works because 'double' has a higher priority than 'solid'.
-    `;
-
-    this.previewSelectionControllerClass = css`
-      background-color: ${this.previewSelectionControllerBackgroundColor};
-    `;
-
-    this.tableClass = css`
-      border-collapse: collapse;
-      table-layout: fixed;
-      width: 100%;
-      overflow: hidden;
-
-      & > tbody > tr:first-child {
-        height: ${this.controllerSize}px;
-        overflow: visible;
-
-        & > td.${ClassName.TABLE_CONTROLLER}, & > th.${ClassName.TABLE_CONTROLLER} {
-          height: ${this.controllerSize}px;
-          overflow: visible;
-
-          & > div {
-            height: ${this.controllerSize}px;
-            overflow: visible;
-          }
-        }
-      }
-
-      & > colgroup > col:first-child {
-        width: ${this.controllerSize + 1}px;
-        overflow: visible;
-      }
-
-      & > tbody > tr > {
-        th.${ClassName.SELECTED_CELL}.${ClassName.TABLE_CONTROLLER} {
-          background-color: ${this.selectionControllerBackgroundColor} !important;
-        }
-        th.${ClassName.SELECTED_CELL}, td.${ClassName.SELECTED_CELL} {
-          ${this.previewSelectionClass};
-          background-color: ${this.selectionBackgroundColor};
-        }
-      }
-
-      & td,
-      & th {
-        vertical-align: top;
-        box-sizing: border-box;
-        position: relative;
-
-        border: solid 1px ${this.borderColor};
-      }
-
-      & th {
-        background-color: ${headerCellBackgroundColor};
-      }
-
-      & .${ClassName.COLUMN_RESIZE_HANDLE} {
-        position: absolute;
-        right: -2px;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        z-index: 20;
-        background-color: #adf;
-        pointer-events: none;
-      }
-    `;
+    this.getTableStyle = buildTableStyle(this.styleOption);
 
     this.render();
   }
@@ -172,54 +240,12 @@ export class TableView implements NodeView {
   }
 
   private renderTable() {
-    let previewSelectionClass = '';
-
-    if (this.attrs().previewSelectionColumn !== -1) {
-      previewSelectionClass = css`
-        & > tbody > tr > {
-          td:nth-child(${this.attrs().previewSelectionColumn + 1}) {
-            ${this.previewSelectionClass};
-          }
-          th.${ClassName.TABLE_CONTROLLER}:nth-child(${this.attrs().previewSelectionColumn + 1}) {
-            ${this.previewSelectionClass};
-            ${this.previewSelectionControllerClass}
-          }
-        }
-      `;
-    } else if (this.attrs().previewSelectionRow !== -1) {
-      previewSelectionClass = css`
-        & > tbody > tr:nth-child(${this.attrs().previewSelectionRow + 1}) > {
-          td {
-            ${this.previewSelectionClass};
-          }
-          th.${ClassName.TABLE_CONTROLLER} {
-            ${this.previewSelectionClass};
-            ${this.previewSelectionControllerClass}
-          }
-        }
-      `;
-    } else if (this.attrs().previewSelectionTable) {
-      previewSelectionClass = css`
-        & > tbody > tr > {
-          td {
-            ${this.previewSelectionClass};
-          }
-          th.${ClassName.TABLE_CONTROLLER} {
-            ${this.previewSelectionClass};
-            ${this.previewSelectionControllerClass}
-          }
-        }
-      `;
-    }
-
-    let tableClass = this.attrs().isControllersInjected ? this.tableClass : '';
-
     if (this.colgroup.children.length !== this.map.width) {
       const cols = range(this.map.width).map(() => h('col'));
       replaceChildren(this.colgroup, cols);
     }
-
-    this.table.className = `remirror-table ${previewSelectionClass} ${tableClass}`;
+    const tableClass = this.getTableStyle(this.attrs());
+    this.table.className = `remirror-table ${tableClass}`;
     updateColumnsOnResize(this.node, this.colgroup, this.table, this.cellMinWidth);
   }
 
