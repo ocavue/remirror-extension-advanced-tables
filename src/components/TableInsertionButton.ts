@@ -1,8 +1,10 @@
+import { css, cx } from '@emotion/css';
 import { EditorView, throttle } from '@remirror/core';
 import { addColumn, addRow, TableRect } from '@remirror/pm/tables';
 import { h } from 'jsx-dom/min';
 import { TableNodeAttrs } from '../table-extension';
 import { setNodeAttrs } from '../utils/prosemirror';
+import { controllerAutoHide } from '../utils/style';
 
 type MouseMoveListener = (e: MouseEvent) => void;
 const mouseMoveListeners: MouseMoveListener[] = [];
@@ -33,17 +35,19 @@ export type TableInsertionButtonProps = {
 function InnerTableInsertionButton(attrs: InsertionButtonAttrs): HTMLElement {
   let size = 24;
 
+  let className = css`
+    position: fixed;
+    width: ${size}px;
+    height: ${size}px;
+    top: ${attrs.y - size / 2}px;
+    left: ${attrs.x - size / 2}px;
+    zindex: 105;
+  `;
+
   return h(
     'button',
     {
-      style: {
-        position: 'fixed',
-        width: `${size}px`,
-        height: `${size}px`,
-        top: `${attrs.y - size / 2}px`,
-        left: `${attrs.x - size / 2}px`,
-        zIndex: 105,
-      },
+      className: cx(className, controllerAutoHide),
     },
     '+',
   );
