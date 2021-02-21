@@ -104,7 +104,7 @@ export class TableView implements NodeView {
       }
 
       & > colgroup > col:first-child {
-        width: ${this.controllerSize}px;
+        width: ${this.controllerSize + 1}px;
         overflow: visible;
       }
 
