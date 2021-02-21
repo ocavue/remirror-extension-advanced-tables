@@ -53,6 +53,15 @@ export function buildTableStyle(options?: TableStyleOptions) {
   `;
 
   const tableClass = css`
+    // spec for marks
+    margin-top: 40px;
+
+    // To show marks
+    overflow: visible !important;
+
+    // To let controller's height:100% works, table must set its height.
+    height: 1px;
+
     border-collapse: collapse;
     table-layout: fixed;
     width: 100%;
@@ -186,9 +195,9 @@ export class TableView implements NodeView {
   ) {
     this.map = TableMap.get(this.node);
 
-    this.tbody = h('tbody', { className: 'remirror-table-tbody' });
-    this.colgroup = h('colgroup', { class: 'remirror-table-colgroup' }, ...range(this.map.width).map(() => h('col')));
-    this.table = h('table', { class: 'remirror-table' }, this.colgroup, this.tbody);
+    this.tbody = h('tbody', { className: ClassName.TBODY });
+    this.colgroup = h('colgroup', { className: ClassName.COL_GROUP }, ...range(this.map.width).map(() => h('col')));
+    this.table = h('table', { className: ClassName.TABLE }, this.colgroup, this.tbody);
     this.insertionButtonWrapper = h('div');
     this.deleteButtonWrapper = h('div');
     this.root = h(

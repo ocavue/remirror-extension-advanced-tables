@@ -5,6 +5,11 @@ export const enum ControllerType {
 }
 
 export const enum ClassName {
+  TABLE = 'remirror-table',
+  TABLE_SHOW_CONTROLLERS = 'remirror-table--show-controllers',
+  TBODY = 'remirror-table-tbody',
+  COL_GROUP = 'remirror-table-colgroup',
+
   TABLE_CONTROLLER = 'remirror-table-controller',
 
   // provided by prosemirror-tables

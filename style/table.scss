@@ -6,29 +6,12 @@
     --table-preview-selection-background-color: rgba(169, 200, 231, 0.5);
 }
 
-$add-column-mark-width: 4px;
-
 .ProseMirror {
     border: 1px solid red;
     min-height: 300px;
     padding: 32px;
 }
 
-
-.remirror-table-controller-wrapper {
-    position: relative;
-    padding: 0px;
-    margin: 0px;
-}
-
-.remirror-table-controller {
-    background-color: var(--table-dark-background-color);
-    visibility: hidden;
-}
-
-.remirror-table-controller-wrapper--show-controllers .remirror-table-controller {
-    visibility: visible;
-}
 
 .remirror-table-wrapper {
     padding: 0px;
@@ -43,18 +26,6 @@ $add-column-mark-width: 4px;
     padding: 0;
     cursor: pointer;
 }
-
-.ProseMirror table {
-    // spec for marks
-    margin-top: 40px;
-
-    // To let `.ProseMirror table .remirror-table-row-controller`'s `height: 100%` works, `table` must set its `height`.
-    height: 1px;
-
-    // To show the .remirror-table-controller__mark
-    overflow: visible !important;
-}
-
 
 .ProseMirror.resize-cursor {
     cursor: ew-resize;

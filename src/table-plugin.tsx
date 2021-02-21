@@ -2,6 +2,7 @@ import { CreatePluginReturn, EditorState, findParentNodeOfType, Transaction } fr
 import { Plugin, PluginKey } from '@remirror/pm/state';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
 import { CellSelection } from 'prosemirror-tables';
+import { ClassName } from './const';
 import { TableNodeAttrs } from './table-extension';
 import { getCellSelectionType } from './utils/controller';
 import { cellSelectionToSelection, setNodeAttrs } from './utils/prosemirror';
@@ -18,7 +19,7 @@ export function newTableDecorationPlugin(): CreatePluginReturn {
         if (tableNodeResult) {
           const decorations = [
             Decoration.node(tableNodeResult.pos, tableNodeResult.end, {
-              class: 'remirror-table-controller-wrapper--show-controllers',
+              class: ClassName.TABLE_SHOW_CONTROLLERS,
             }),
           ];
           return DecorationSet.create(state.doc, decorations);

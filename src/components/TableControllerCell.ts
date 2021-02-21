@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { EditorView, findParentNodeOfType, FindProsemirrorNodeResult } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
@@ -59,6 +59,14 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     `;
   }
 
+  let baseClass = css`
+    visibility: hidden;
+
+    .${ClassName.TABLE_SHOW_CONTROLLERS} & {
+      visibility: visible !important;
+    }
+  `;
+
   const findTable = (): FindProsemirrorNodeResult | undefined => {
     return findParentNodeOfType({
       types: 'table',
@@ -77,7 +85,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     ...TableInsertionMark({ controllerType }),
   );
 
-  return h('th', { contentEditable: 'false', className: ClassName.TABLE_CONTROLLER, ...events }, wrapper);
+  return h('th', { contentEditable: 'false', className: cx(ClassName.TABLE_CONTROLLER, baseClass), ...events }, wrapper);
 };
 
 export default TableControllerCell;
