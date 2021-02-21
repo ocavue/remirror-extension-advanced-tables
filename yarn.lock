@@ -6252,12 +6252,12 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"jsx-dom@npm:^7.0.0-beta.0":
-  version: 7.0.0-beta.0
-  resolution: "jsx-dom@npm:7.0.0-beta.0"
+"jsx-dom@npm:^7.0.0-beta.1":
+  version: 7.0.0-beta.1
+  resolution: "jsx-dom@npm:7.0.0-beta.1"
   dependencies:
     csstype: ^3.0.6
-  checksum: 81cc46f9d18dd802a141b7ae22f116edb42ef0e3d54b31e954fe4086ef7696c4e34e07c2582f366e77f1f2188aefd040507049d01de89dbda4a5622e6d582fdc
+  checksum: 91d6994186ee671eefef05eb580e82d3d2c14af4c40af16c1746c3b9965b41d2e3c750a6f3abb684c77f5d7b5ef401c066be4f02983529c79389e5ef2d40a921
   languageName: node
   linkType: hard
 
@@ -8629,7 +8629,7 @@ fsevents@~2.3.1:
     eslint-plugin-prettier: ^3.3.1
     eslint-plugin-react: ^7.22.0
     eslint-plugin-react-hooks: ^4.2.0
-    jsx-dom: ^7.0.0-beta.0
+    jsx-dom: ^7.0.0-beta.1
     parcel: ^1.12.4
     prettier: ^2.2.1
     prosemirror-tables: ^1.1.1
