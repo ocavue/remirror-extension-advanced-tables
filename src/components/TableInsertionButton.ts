@@ -41,7 +41,7 @@ function InnerTableInsertionButton(attrs: InsertionButtonAttrs): HTMLElement {
     height: ${size}px;
     top: ${attrs.y - size / 2}px;
     left: ${attrs.x - size / 2}px;
-    zindex: 105;
+    z-index: 105;
   `;
 
   return h(

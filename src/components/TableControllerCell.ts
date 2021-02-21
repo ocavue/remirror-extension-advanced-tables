@@ -39,7 +39,6 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
       flex-direction: column;
       justify-content: flex-end;
       align-items: flex-end;
-      z-index: 101;
     `;
   } else if (controllerType === ControllerType.COLUMN_CONTROLLER) {
     controllerWrapperClass = css`
@@ -52,7 +51,6 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
       flex-direction: row;
       justify-content: flex-end;
       align-items: flex-end;
-      z-index: 101;
     `;
   }
 
@@ -67,6 +65,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     padding: 0;
     overflow: visible;
     cursor: pointer;
+    z-index: 101;
   `;
 
   // TODO: controllerType maybe wrong
