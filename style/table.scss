@@ -1,30 +1,7 @@
-:root {
-    --table-border-color: rgba(171, 175, 179, 1);
-    --table-hightlight-border-color: rgba(0, 103, 206, 1);
-    --table-hightlight-background-color: rgba(50, 128, 206, 1);
-    --table-dark-background-color: rgba(220, 222, 224, 0.5);
-    --table-preview-selection-background-color: rgba(169, 200, 231, 0.5);
-}
-
 .ProseMirror {
     border: 1px solid red;
     min-height: 300px;
     padding: 32px;
-}
-
-
-.remirror-table-wrapper {
-    padding: 0px;
-}
-
-
-.selectedCell.remirror-table-controller {
-    background-color: var(--table-hightlight-background-color);
-}
-
-.remirror-table-controller {
-    padding: 0;
-    cursor: pointer;
 }
 
 .ProseMirror.resize-cursor {

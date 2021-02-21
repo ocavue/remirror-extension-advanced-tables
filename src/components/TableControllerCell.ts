@@ -54,10 +54,6 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
       align-items: flex-end;
       z-index: 101;
     `;
-  } else if (controllerType === ControllerType.CORNER_CONTROLLER) {
-    controllerWrapperClass = css`
-      overflow: visible;
-    `;
   }
 
   const findTable = (): FindProsemirrorNodeResult | undefined => {
@@ -66,6 +62,12 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
       selection: view.state.doc.resolve(getPos()),
     });
   };
+
+  const baseClass = css`
+    padding: 0;
+    overflow: visible;
+    cursor: pointer;
+  `;
 
   // TODO: controllerType maybe wrong
   const events = newControllerEvents({ controllerType, view, getAxis, findTable });
@@ -78,7 +80,11 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     ...TableInsertionMark({ controllerType }),
   );
 
-  return h('th', { contentEditable: 'false', className: cx(ClassName.TABLE_CONTROLLER, controllerAutoHide), ...events }, wrapper);
+  return h(
+    'th',
+    { contentEditable: 'false', className: cx(ClassName.TABLE_CONTROLLER, baseClass, controllerAutoHide), ...events },
+    wrapper,
+  );
 };
 
 export default TableControllerCell;
