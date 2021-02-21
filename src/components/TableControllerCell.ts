@@ -8,6 +8,7 @@ import { getCellAxis, getControllerType, newControllerEvents } from '../utils/co
 import { CellAxis } from '../utils/types';
 import TableInsertionButtonTrigger from './TableInsertionButtonTrigger';
 import TableInsertionMark from './TableInsertionMark';
+import { controllerAutoHide } from '../utils/style';
 
 export type TableControllerCellProps = {
   node: ProsemirrorNode;
@@ -59,14 +60,6 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     `;
   }
 
-  let baseClass = css`
-    visibility: hidden;
-
-    .${ClassName.TABLE_SHOW_CONTROLLERS} & {
-      visibility: visible !important;
-    }
-  `;
-
   const findTable = (): FindProsemirrorNodeResult | undefined => {
     return findParentNodeOfType({
       types: 'table',
@@ -85,7 +78,7 @@ const TableControllerCell = ({ node, view, getPos, decorations, contentDOM }: Ta
     ...TableInsertionMark({ controllerType }),
   );
 
-  return h('th', { contentEditable: 'false', className: cx(ClassName.TABLE_CONTROLLER, baseClass), ...events }, wrapper);
+  return h('th', { contentEditable: 'false', className: cx(ClassName.TABLE_CONTROLLER, controllerAutoHide), ...events }, wrapper);
 };
 
 export default TableControllerCell;
