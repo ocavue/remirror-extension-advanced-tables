@@ -12,10 +12,22 @@
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
         "jsx": "react-jsx",
+        "types": [
+            "jest-playwright-preset",
+            "expect-playwright",
+            "jest"
+        ],
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
     },
     "include": [
         "src",
-        "example"
+        "example",
+        "./*.ts",
+        "./*.js",
     ],
     "exclude": [
         "node_modules",

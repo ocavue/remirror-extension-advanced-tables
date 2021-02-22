@@ -1,5 +1,3 @@
-/** @jsxImportSource react */
-
 import { useEvents, usePositioner } from '@remirror/react-hooks';
 import React, { useState } from 'react';
 import { cellPositioner } from '../block-positioner';
