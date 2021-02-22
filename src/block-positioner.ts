@@ -1,5 +1,5 @@
 import { findParentNodeOfType, FindProsemirrorNodeResult, Selection } from '@remirror/core';
-import { useRemirror } from '@remirror/react';
+import { useRemirror, useRemirrorContext } from '@remirror/react';
 import { CellSelection } from 'prosemirror-tables';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -44,7 +44,7 @@ function findTableCell(selection: Selection, blockTypes: string[]): FindProsemir
 }
 
 export function useBlockPositioner<RefType extends HTMLDivElement>(blockTypes: string[]): TablePosWithRef<RefType> {
-  const { addHandler } = useRemirror();
+  const { addHandler } = useRemirrorContext();
   const [tablePos, setTablePos] = useState<TablePos>(defaultPositionState);
   const ref = useRef<RefType>(null);
 

@@ -59,6 +59,8 @@ function TableInsertionButton({ view, tableRect, attrs }: TableInsertionButtonPr
   const insertRolOrColumn = () => {
     let tr = view.state.tr;
     if (attrs.col !== -1) {
+      console.debug('insert col', { tableRect, col: attrs.col });
+
       tr = addColumn(tr, tableRect, attrs.col);
     } else if (attrs.row !== -1) {
       tr = addRow(tr, tableRect, attrs.row);

@@ -3,9 +3,8 @@ import '../node_modules/prosemirror-view/style/prosemirror.css';
 // import '../node_modules/prosemirror-tables/style/tables.css';
 
 import React, { FC } from 'react';
-import { RemirrorProvider, useManager, useRemirror } from '@remirror/react';
+import { Remirror, useRemirror, useRemirrorContext } from '@remirror/react';
 import Menu from './Menu';
-import { CorePreset } from '@remirror/preset-core';
 import { ProsemirrorDevTools } from '@remirror/dev';
 import { ReactComponentExtension } from '@remirror/extension-react-component';
 import {
@@ -18,7 +17,6 @@ import {
 } from '../src';
 
 const EXTENSIONS = () => [
-  new CorePreset(),
   new ReactComponentExtension(),
   new TableExtension(),
   new TableRowExtension(),
@@ -31,7 +29,7 @@ const EXTENSIONS = () => [
  * This component contains the editor and any toolbars/chrome it requires.
  */
 const SmallEditor: FC = () => {
-  const { getRootProps, commands } = useRemirror();
+  const { getRootProps, commands } = useRemirrorContext();
 
   return (
     <div>
@@ -42,14 +40,14 @@ const SmallEditor: FC = () => {
 };
 
 const SmallEditorContainer: FC = () => {
-  const extensionManager = useManager(EXTENSIONS);
+  const { manager } = useRemirror({ extensions: EXTENSIONS });
 
   return (
-    <RemirrorProvider manager={extensionManager}>
+    <Remirror manager={manager}>
       <SmallEditor />
       <ProsemirrorDevTools />
       <TableCellMenu />
-    </RemirrorProvider>
+    </Remirror>
   );
 };
 
