@@ -2760,7 +2760,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^26.0.20":
+"@types/jest-image-snapshot@npm:^4.1.3":
+  version: 4.1.3
+  resolution: "@types/jest-image-snapshot@npm:4.1.3"
+  dependencies:
+    "@types/jest": "*"
+    "@types/pixelmatch": "*"
+    ssim.js: ^3.1.0
+  checksum: 7b1020bcd71f9ab6b5474aa4d5747147d9576a69de1655487d75a7f0664a35675b6bc88189e82402650227100617f4fcaac2c1f4525f008c30ee9f348cff27d9
+  languageName: node
+  linkType: hard
+
+"@types/jest@npm:*, @types/jest@npm:^26.0.20":
   version: 26.0.20
   resolution: "@types/jest@npm:26.0.20"
   dependencies:
@@ -2823,6 +2834,15 @@ __metadata:
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: 4a8f720afac47b474d3f2eece312340e72bc31bc9561cda37b596ce2ed218c0099765d302625bb67d659a8452a1f93d514f4863c11c7ebaf65430428687dc426
+  languageName: node
+  linkType: hard
+
+"@types/pixelmatch@npm:*":
+  version: 5.2.2
+  resolution: "@types/pixelmatch@npm:5.2.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: 1880b8b2be30835504f52111ad8374c0796ea90f11a8dc1568bae57557a2e3ffaeb0671d127c0d23c45311002868e2e5de8b7fbaf0bb97f98dc1321934a0a23c
   languageName: node
   linkType: hard
 
@@ -6555,6 +6575,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"get-stdin@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "get-stdin@npm:5.0.1"
+  checksum: a355ad406d78cb1d5bf297c8c8b8648ceb6ff52c8deb9c582f6f7bab3ff0619b5a86defbb0c286ff1e556cd2324dc4416b81f09d339d1763b7c970696f55cc42
+  languageName: node
+  linkType: hard
+
 "get-stream@npm:^4.0.0":
   version: 4.1.0
   resolution: "get-stream@npm:4.1.0"
@@ -6678,6 +6705,13 @@ fsevents@^1.2.7:
     merge2: ^1.3.0
     slash: ^3.0.0
   checksum: d23f2a6b8897b97fb27422cde243e0fd406ebbaa821929293b27c977d169884f8112494cda4f456a51d0ec1e133e3ac703ec24bfed484e327305ea34a665eb06
+  languageName: node
+  linkType: hard
+
+"glur@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "glur@npm:1.1.2"
+  checksum: ac352bfd525af750aeee602b776ff48fae75f96086f9c50d7197faa9e93bef78c94d4fe0e56b06a10046bc5ae19255121b122888849708efd1872d7b1d0fb217
   languageName: node
   linkType: hard
 
@@ -7898,6 +7932,25 @@ fsevents@^1.2.7:
     fsevents:
       optional: true
   checksum: 5c9e3a1e3feee8cf6e06aec5ddc28703d75d484c398802469ec881a922591a2c94b1bc86ce9510dec854b363740781f9eb2d76b224fdd560ecb8fa2436b35432
+  languageName: node
+  linkType: hard
+
+"jest-image-snapshot@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "jest-image-snapshot@npm:4.3.0"
+  dependencies:
+    chalk: ^1.1.3
+    get-stdin: ^5.0.1
+    glur: ^1.1.2
+    lodash: ^4.17.4
+    mkdirp: ^0.5.1
+    pixelmatch: ^5.1.0
+    pngjs: ^3.4.0
+    rimraf: ^2.6.2
+    ssim.js: ^3.1.1
+  peerDependencies:
+    jest: ">=20 <=26"
+  checksum: 561f6b0c3eb5fb5d3d6015fb44df3e609d8420651944a6326be18eae9696ecc35845d3393cd48c340eeb50bb8dfa5361afb376347d46afb88781457dc1711e12
   languageName: node
   linkType: hard
 
@@ -9921,6 +9974,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"pixelmatch@npm:^5.1.0":
+  version: 5.2.1
+  resolution: "pixelmatch@npm:5.2.1"
+  dependencies:
+    pngjs: ^4.0.1
+  bin:
+    pixelmatch: bin/pixelmatch
+  checksum: 6cdfc967c03e41e2350c8669d8b3f37dad1106de5f43f0537c3a3fd1c557e28cd9e8039f445591efdc52372ab50592ed696acc1183106239ec2b19b5bfd10345
+  languageName: node
+  linkType: hard
+
 "pkg-dir@npm:^4.1.0, pkg-dir@npm:^4.2.0":
   version: 4.2.0
   resolution: "pkg-dir@npm:4.2.0"
@@ -9978,6 +10042,20 @@ fsevents@^1.2.7:
   version: 1.1.0
   resolution: "pn@npm:1.1.0"
   checksum: 7df19be13c86dfab22e8484590480e49d496b270430a731be0bb40cea8a16c29e45188a7303d7c57b7140754f807877b0c10aa95400ad30a7ad4fb3f7d132381
+  languageName: node
+  linkType: hard
+
+"pngjs@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "pngjs@npm:3.4.0"
+  checksum: aa6d2cb4dd770cab9b06d9169aa94f134d7ff7dae3a73310709f0f0b4cdbcca2a8bfa7fa6f4d610719d5a3aa848447e6a755730e5dc911a38e8ec4d7a64dc214
+  languageName: node
+  linkType: hard
+
+"pngjs@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "pngjs@npm:4.0.1"
+  checksum: 69b86799d85d2788a9418683a1477443cf92e7d0b3697c88fa2bb261b407e80ff52df20e69ace534d0c9e633ef862426ba1270e5c5b1dec59137820ffb75cad5
   languageName: node
   linkType: hard
 
@@ -11378,6 +11456,7 @@ fsevents@^1.2.7:
     "@remirror/react": 0.0.0-pr706.4
     "@remirror/react-hooks": 0.0.0-pr706.4
     "@types/jest": ^26.0.20
+    "@types/jest-image-snapshot": ^4.1.3
     "@types/node": ^14.14.22
     "@types/react": "*"
     "@types/react-dom": ^17.0.0
@@ -11390,6 +11469,7 @@ fsevents@^1.2.7:
     eslint-plugin-react: ^7.22.0
     eslint-plugin-react-hooks: ^4.2.0
     jest: ^26.6.3
+    jest-image-snapshot: ^4.3.0
     jest-playwright-preset: ^1.4.7
     jest-transform-stub: ^2.0.0
     jsx-dom: ^7.0.0-beta.1
@@ -12241,6 +12321,13 @@ fsevents@^1.2.7:
     sshpk-sign: bin/sshpk-sign
     sshpk-verify: bin/sshpk-verify
   checksum: 4bd7422634ec3730404186179e5d9ba913accc64449f18d594b3a757a3b81000719adc94cf0c93a7b3da42487ae42404a1f37bfaa7908a60743d4478382b9d78
+  languageName: node
+  linkType: hard
+
+"ssim.js@npm:^3.1.0, ssim.js@npm:^3.1.1":
+  version: 3.5.0
+  resolution: "ssim.js@npm:3.5.0"
+  checksum: 6545f9e86059b3a74b6f5f9a14f2e265c1209d3f1f8ad2a076ef11b708397afd9ab924b8844303ad8de3fd3bb3886e78e3efedc0f83d53d7f1cb57a5dc2e2356
   languageName: node
   linkType: hard
 

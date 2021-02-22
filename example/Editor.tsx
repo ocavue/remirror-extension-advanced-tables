@@ -32,7 +32,7 @@ const SmallEditor: FC = () => {
   const { getRootProps, commands } = useRemirrorContext();
 
   return (
-    <div>
+    <div id='example-editor'>
       <Menu createTable={commands.createTable} />
       <div {...getRootProps()} />
     </div>
