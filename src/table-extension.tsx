@@ -1,9 +1,9 @@
 import {
   ApplySchemaAttributes,
-  CreatePluginReturn,
   Decoration,
   EditorView,
   NodeExtension,
+  NodeSpecOverride,
   NodeViewMethod,
   ProsemirrorNode,
   ProsemirrorPlugin,
@@ -13,8 +13,8 @@ import {
   TableExtension as RemirrorTableExtension,
   TableHeaderCellExtension as RemirrorTableHeaderCellExtension,
   TableRowExtension as RemirrorTableRowExtension,
-} from '@remirror/preset-table';
-import { TableSchemaSpec } from '@remirror/preset-table/dist/declarations/src/table-utils';
+} from '@remirror/extension-tables';
+import type { TableSchemaSpec } from '@remirror/extension-tables/dist/declarations/src/table-utils';
 import { tableEditing } from 'prosemirror-tables';
 import { DeleteButtonAttrs } from './components/TableDeleteButton';
 import { InsertionButtonAttrs } from './components/TableInsertionButton';
@@ -47,7 +47,7 @@ export class TableExtension extends RemirrorTableExtension {
     };
   }
 
-  createPlugin(): CreatePluginReturn {
+  createPlugin() {
     return newTableDecorationPlugin();
   }
 
@@ -86,6 +86,10 @@ export class TableExtension extends RemirrorTableExtension {
     console.debug(`[TableView.createNodeSpec]`, spec);
     return spec;
   }
+
+  createExtensions() {
+    return [];
+  }
 }
 
 export class TableRowExtension extends RemirrorTableRowExtension {
@@ -93,13 +97,17 @@ export class TableRowExtension extends RemirrorTableRowExtension {
     return 'tableRow' as const;
   }
 
-  createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
-    const spec = super.createNodeSpec(extra);
+  createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): TableSchemaSpec {
+    const spec = super.createNodeSpec(extra, override);
     spec.content = '(tableCell | tableHeaderCell | tableControllerCell)*';
     spec.toDOM = (node) => {
       return ['tr', extra.dom(node), 0];
     };
     return spec;
+  }
+
+  createExtensions() {
+    return [];
   }
 }
 
@@ -108,12 +116,16 @@ export class TableHeaderCellExtension extends RemirrorTableHeaderCellExtension {
     return 'tableHeaderCell' as const;
   }
 
-  createNodeSpec(extra: ApplySchemaAttributes): TableSchemaSpec {
-    const spec = super.createNodeSpec(extra);
+  createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): TableSchemaSpec {
+    const spec = super.createNodeSpec(extra, override);
     spec.attrs = {
       ...spec.attrs,
     };
     return spec;
+  }
+
+  createExtensions() {
+    return [];
   }
 }
 
@@ -161,5 +173,9 @@ export class TableControllerCellExtension extends NodeExtension {
     return (node: ProsemirrorNode, view: EditorView, getPos: boolean | (() => number), decorations: Decoration[]) => {
       return new TableControllerCellView(node, view, getPos as () => number, decorations);
     };
+  }
+
+  createExtensions() {
+    return [];
   }
 }

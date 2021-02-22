@@ -1,5 +1,5 @@
-import { css, cx } from '@emotion/css';
-import { EditorView, NodeView, range } from '@remirror/core';
+import { css } from '@emotion/css';
+import { EditorSchema, EditorView, NodeView, range } from '@remirror/core';
 import { Node as ProsemirrorNode } from '@remirror/pm/model';
 import { Decoration } from '@remirror/pm/view';
 import { h } from 'jsx-dom/min';
@@ -166,7 +166,7 @@ export function buildTableStyle(options?: TableStyleOptions) {
   return getStyle;
 }
 
-export class TableView implements NodeView {
+export class TableView<Schema extends EditorSchema = EditorSchema> implements NodeView<Schema> {
   readonly root: HTMLElement;
   readonly table: HTMLElement;
   readonly colgroup: HTMLElement;
