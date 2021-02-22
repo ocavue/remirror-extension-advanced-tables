@@ -1,6 +1,8 @@
+/** @jsxImportSource react */
+
 import { useEvents, usePositioner } from '@remirror/react-hooks';
 import React, { useState } from 'react';
-import { blockNodePositioner, useBlockPositioner } from '../block-positioner';
+import { cellPositioner } from '../block-positioner';
 
 export type TableCellMenuButtonProps = {
   setPopupOpen: (open: boolean) => void;
@@ -25,9 +27,7 @@ export const DefaultTableCellMenuPopup: React.FC<TableCellMenuPapperProps> = () 
 export type TableCellMenuProps = { Button?: TableCellMenuButton; Popup?: TableCellMenuPopup };
 
 const TableCellMenu: React.FC<TableCellMenuProps> = ({ Button = DefaultTableCellMenuButton, Popup = DefaultTableCellMenuPopup }) => {
-  // const { ref, bottom, right, top } = useBlockPositioner(['tableCell', 'tableHeaderCell']);
-
-  const position = usePositioner(blockNodePositioner, []);
+  const position = usePositioner(cellPositioner, []);
   const { ref, width, height, x, y } = position;
 
   const [popupOpen, setPopupOpen] = useState(false);

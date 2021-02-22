@@ -1,4 +1,4 @@
-import { CreatePluginReturn, EditorState, findParentNodeOfType, Transaction } from '@remirror/core';
+import { CreateExtensionPlugin, EditorState, findParentNodeOfType, Transaction } from '@remirror/core';
 import { Plugin, PluginKey } from '@remirror/pm/state';
 import { Decoration, DecorationSet } from '@remirror/pm/view';
 import { CellSelection } from 'prosemirror-tables';
@@ -7,7 +7,7 @@ import { TableNodeAttrs } from './table-extension';
 import { getCellSelectionType } from './utils/controller';
 import { cellSelectionToSelection, setNodeAttrs } from './utils/prosemirror';
 
-export function newTableDecorationPlugin(): CreatePluginReturn {
+export function newTableDecorationPlugin(): CreateExtensionPlugin {
   return {
     props: {
       decorations: (state: EditorState) => {
