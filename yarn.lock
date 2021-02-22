@@ -8972,6 +8972,7 @@ fsevents@~2.3.1:
     "@remirror/extension-mention": 0.0.0-pr706.4
     "@remirror/extension-mention-atom": 0.0.0-pr706.4
     "@remirror/extension-paragraph": 0.0.0-pr706.4
+    "@remirror/extension-positioner": 0.0.0-pr706.4
     "@remirror/extension-react-component": 0.0.0-pr706.4
     "@remirror/extension-tables": 0.0.0-pr706.4
     "@remirror/extension-text": 0.0.0-pr706.4
