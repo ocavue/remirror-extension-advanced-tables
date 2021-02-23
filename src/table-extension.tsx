@@ -11,6 +11,7 @@ import {
   ProsemirrorPlugin,
   command,
   CommandFunction,
+  NodeExtensionSpec,
 } from '@remirror/core';
 import {
   TableCellExtension as RemirrorTableCellExtension,
@@ -30,6 +31,12 @@ import { ExtensionTablesMessages as Messages } from '@remirror/messages';
 import { createTable, CreateTableCommand } from './utils/table';
 import { TextSelection } from '@remirror/pm/state';
 
+const createTableCommand: Remirror.CommandDecoratorOptions = {
+  icon: 'table2',
+  description: ({ t }) => t(Messages.CREATE_COMMAND_DESCRIPTION),
+  label: ({ t }) => t(Messages.CREATE_COMMAND_LABEL),
+};
+
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;
   previewSelectionTable: boolean;
@@ -41,12 +48,6 @@ export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>>
 
   // if and only if `deleteButtonAttrs` exists, DeleteButton will show.
   deleteButtonAttrs: DeleteButtonAttrs | null;
-};
-
-const createTableCommand: Remirror.CommandDecoratorOptions = {
-  icon: 'table2',
-  description: ({ t }) => t(Messages.CREATE_COMMAND_DESCRIPTION),
-  label: ({ t }) => t(Messages.CREATE_COMMAND_LABEL),
 };
 
 @extension({ defaultPriority: ExtensionPriority.Low })
@@ -163,11 +164,11 @@ export class TableControllerRowExtension extends NodeExtension {
     return [];
   }
 
-  createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): TableSchemaSpec {
+  createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): NodeExtensionSpec {
     return {
       attrs: extra.defaults(),
       content: '(tableControllerCell)*',
-      tableRole: 'row',
+      // tableRole: 'controllerRow',
       parseDOM: [{ tag: 'tr', getAttrs: extra.parse }],
       toDOM(node) {
         return ['tr', extra.dom(node), 0];
