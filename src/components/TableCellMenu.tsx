@@ -1,6 +1,7 @@
 import { useEvents, usePositioner } from '@remirror/react-hooks';
 import React, { useState } from 'react';
 import { cellPositioner } from '../block-positioner';
+import { borderWidth } from '../const';
 
 export type TableCellMenuButtonProps = {
   setPopupOpen: (open: boolean) => void;
@@ -44,7 +45,7 @@ const TableCellMenu: React.FC<TableCellMenuProps> = ({ Button = DefaultTableCell
         position: 'absolute',
         left: x,
         top: y,
-        width: width + 1, // +1 is for the table cell border
+        width: width + borderWidth,
         height: height + 1,
         minHeight: 40,
         minWidth: 40,

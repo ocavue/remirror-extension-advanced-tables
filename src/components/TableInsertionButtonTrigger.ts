@@ -1,13 +1,11 @@
 import { EditorView } from '@remirror/pm';
 import { CSSProperties, h } from 'jsx-dom/min';
-import { ControllerType } from '../const';
+import { borderWidth, ControllerType } from '../const';
 import type { TableNodeAttrs } from '../table-extension';
 import { CellAxis, FindTable } from '../utils/types';
 import { InsertionButtonAttrs } from './TableInsertionButton';
 
 type TriggerAreaType = 'add_column_left' | 'add_column_right' | 'add_row_up' | 'add_row_buttom'; // TODO: use enum
-
-const borderWidth = 1; // We could change it to a paramter instead of a constant if we want to support more border width values.
 
 function buildInsertionButtonAttrs(type: TriggerAreaType, rect: DOMRect, cellAxis: CellAxis): InsertionButtonAttrs {
   let { row, col } = cellAxis;

@@ -16,3 +16,5 @@ export const enum ClassName {
   SELECTED_CELL = 'selectedCell',
   COLUMN_RESIZE_HANDLE = 'column-resize-handle',
 }
+
+export const borderWidth = 1; // We could change it to a paramter instead of a constant if we want to support more border width values.
