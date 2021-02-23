@@ -29,11 +29,11 @@ const EXTENSIONS = () => [
  * This component contains the editor and any toolbars/chrome it requires.
  */
 const SmallEditor: FC = () => {
-  const { getRootProps, commands } = useRemirrorContext();
+  const { getRootProps } = useRemirrorContext();
 
   return (
     <div id='example-editor'>
-      <Menu createTable={commands.createTable} />
+      <Menu />
       <div {...getRootProps()} />
     </div>
   );

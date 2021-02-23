@@ -1,10 +1,10 @@
+import { useRemirrorContext } from '@remirror/react';
 import React from 'react';
 
-interface MenuProps {
-  createTable: (params: { columnsCount: number; rowsCount: number; withHeaderRow?: boolean }) => void;
-}
+const Menu: React.FC = () => {
+  const { commands } = useRemirrorContext();
+  const createTable = commands.createTable;
 
-const Menu: React.FC<MenuProps> = ({ createTable }) => {
   return (
     <div>
       <button data-testid='btn-3-3' onClick={() => createTable({ rowsCount: 3, columnsCount: 3, withHeaderRow: false })}>
