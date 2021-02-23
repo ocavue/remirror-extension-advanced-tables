@@ -22,6 +22,7 @@
             "dom.iterable",
             "esnext"
         ],
+        "experimentalDecorators": true,
     },
     "include": [
         "src",

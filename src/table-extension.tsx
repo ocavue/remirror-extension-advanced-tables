@@ -2,11 +2,15 @@ import {
   ApplySchemaAttributes,
   Decoration,
   EditorView,
+  extension,
+  ExtensionPriority,
   NodeExtension,
   NodeSpecOverride,
   NodeViewMethod,
   ProsemirrorNode,
   ProsemirrorPlugin,
+  command,
+  CommandFunction,
 } from '@remirror/core';
 import {
   TableCellExtension as RemirrorTableCellExtension,
@@ -22,6 +26,9 @@ import { columnResizing } from './table-column-resizing';
 import { newTableDecorationPlugin, newTableDeleteStatePlugin } from './table-plugin';
 import { TableControllerCellView } from './views/table-controller-cell-view';
 import { TableView } from './views/table-view';
+import { ExtensionTablesMessages as Messages } from '@remirror/messages';
+import { createTable, CreateTableCommand } from './utils/table';
+import { TextSelection } from '@remirror/pm/state';
 
 export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>> = T & {
   isControllersInjected: boolean;
@@ -36,6 +43,13 @@ export type TableNodeAttrs<T extends Record<string, any> = Record<never, never>>
   deleteButtonAttrs: DeleteButtonAttrs | null;
 };
 
+const createTableCommand: Remirror.CommandDecoratorOptions = {
+  icon: 'table2',
+  description: ({ t }) => t(Messages.CREATE_COMMAND_DESCRIPTION),
+  label: ({ t }) => t(Messages.CREATE_COMMAND_LABEL),
+};
+
+@extension({ defaultPriority: ExtensionPriority.Low })
 export class TableExtension extends RemirrorTableExtension {
   get name() {
     return 'table' as const;
@@ -76,7 +90,7 @@ export class TableExtension extends RemirrorTableExtension {
         insertionButtonAttrs: { default: null },
         deleteButtonAttrs: { default: null },
       },
-      content: 'tableRow+',
+      content: 'tableControllerRow? tableRow+',
       tableRole: 'table',
       parseDOM: [{ tag: 'table', getAttrs: extra.parse }],
       toDOM(node) {
@@ -90,8 +104,35 @@ export class TableExtension extends RemirrorTableExtension {
   createExtensions() {
     return [];
   }
+
+  /**
+   * Create a table in the editor at the current selection point.
+   */
+  @command(createTableCommand)
+  createTable(options: CreateTableCommand = {}): CommandFunction {
+    return (props) => {
+      const { tr, dispatch, state } = props;
+
+      if (!tr.selection.empty) {
+        return false;
+      }
+
+      const offset = tr.selection.anchor + 1;
+      const nodes = createTable({ schema: state.schema, ...options });
+
+      dispatch?.(
+        tr
+          .replaceSelectionWith(nodes)
+          .scrollIntoView()
+          .setSelection(TextSelection.near(tr.doc.resolve(offset))),
+      );
+
+      return true;
+    };
+  }
 }
 
+@extension({ defaultPriority: ExtensionPriority.Low })
 export class TableRowExtension extends RemirrorTableRowExtension {
   get name() {
     return 'tableRow' as const;
@@ -99,7 +140,8 @@ export class TableRowExtension extends RemirrorTableRowExtension {
 
   createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): TableSchemaSpec {
     const spec = super.createNodeSpec(extra, override);
-    spec.content = '(tableCell | tableHeaderCell | tableControllerCell)*';
+    console.log('spec:', spec);
+    spec.content = 'tableControllerCell? (tableCell | tableHeaderCell)*';
     spec.toDOM = (node) => {
       return ['tr', extra.dom(node), 0];
     };
@@ -111,6 +153,30 @@ export class TableRowExtension extends RemirrorTableRowExtension {
   }
 }
 
+@extension({ defaultPriority: ExtensionPriority.Low })
+export class TableControllerRowExtension extends NodeExtension {
+  get name() {
+    return 'tableControllerRow' as const;
+  }
+
+  createExtensions() {
+    return [];
+  }
+
+  createNodeSpec(extra: ApplySchemaAttributes, override: NodeSpecOverride): TableSchemaSpec {
+    return {
+      attrs: extra.defaults(),
+      content: '(tableControllerCell)*',
+      tableRole: 'row',
+      parseDOM: [{ tag: 'tr', getAttrs: extra.parse }],
+      toDOM(node) {
+        return ['tr', extra.dom(node), 0];
+      },
+    };
+  }
+}
+
+@extension({ defaultPriority: ExtensionPriority.Low })
 export class TableHeaderCellExtension extends RemirrorTableHeaderCellExtension {
   get name() {
     return 'tableHeaderCell' as const;
@@ -129,6 +195,7 @@ export class TableHeaderCellExtension extends RemirrorTableHeaderCellExtension {
   }
 }
 
+@extension({ defaultPriority: ExtensionPriority.Low })
 export class TableCellExtension extends RemirrorTableCellExtension {
   get name() {
     return 'tableCell' as const;
@@ -142,6 +209,7 @@ export type TableControllerCellAttrs = {
   background: null | string;
 };
 
+@extension({ defaultPriority: ExtensionPriority.Low })
 export class TableControllerCellExtension extends NodeExtension {
   get name() {
     return 'tableControllerCell' as const;

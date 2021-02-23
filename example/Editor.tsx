@@ -14,6 +14,7 @@ import {
   TableCellExtension,
   TableControllerCellExtension,
   TableCellMenu,
+  TableControllerRowExtension,
 } from '../src';
 
 const EXTENSIONS = () => [
@@ -23,6 +24,7 @@ const EXTENSIONS = () => [
   new TableHeaderCellExtension(),
   new TableCellExtension(),
   new TableControllerCellExtension(),
+  new TableControllerRowExtension(),
 ];
 
 /**
