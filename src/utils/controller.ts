@@ -25,7 +25,7 @@ export function injectControllers({
   let controllerCell = view.state.schema.nodes.tableControllerCell.create();
   const headerControllerCells: ProsemirrorNode[] = repeat(controllerCell, getMap().width + 1);
 
-  const crotrollerRow: ProsemirrorNode = schema.nodes.tableControllerRow.create({}, headerControllerCells);
+  const crotrollerRow: ProsemirrorNode = schema.nodes.tableRow.create({}, headerControllerCells);
   const newRowsArray: ProsemirrorNode[] = [crotrollerRow];
 
   const oldRows = oldTable.content;
