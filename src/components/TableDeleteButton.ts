@@ -1,4 +1,4 @@
-import { EditorView } from '@remirror/core';
+import { EditorView, isElementDomNode } from '@remirror/core';
 import { h } from 'jsx-dom/min';
 import { deleteColumn, deleteRow, TableMap } from 'prosemirror-tables';
 import { CellSelectionType } from '../utils/controller';
@@ -58,9 +58,10 @@ function TableDeleteButton({ view, map, attrs }: { view: EditorView; map: TableM
   if (attrs.selectionType === CellSelectionType.col && map.width <= 2) return;
   if (attrs.selectionType === CellSelectionType.row && map.height <= 2) return;
 
-  let anchorCellDOM = view.nodeDOM(attrs.selectionAnchorCellPos) as HTMLElement | null | undefined;
-  let headCellDOM = view.nodeDOM(attrs.selectionHeadCellPos) as HTMLElement | null | undefined;
-  if (!anchorCellDOM || !headCellDOM) return;
+  let anchorCellDOM = view.nodeDOM(attrs.selectionAnchorCellPos);
+  let headCellDOM = view.nodeDOM(attrs.selectionHeadCellPos);
+
+  if (!(anchorCellDOM && headCellDOM && isElementDomNode(anchorCellDOM) && isElementDomNode(headCellDOM))) return;
 
   let anchorCellRect = anchorCellDOM.getBoundingClientRect();
   let headCellRect = headCellDOM.getBoundingClientRect();
@@ -76,7 +77,8 @@ function TableDeleteButton({ view, map, attrs }: { view: EditorView; map: TableM
     } else {
       deleteColumn(view.state, view.dispatch);
     }
-    view.dispatch(view.state.tr.deleteSelection());
+    // TODO: set an empty selection
+    // view.dispatch(view.state.tr.setSelection( Selection.em ));
   };
 
   let button = InnerTableDeleteButton({
