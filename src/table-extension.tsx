@@ -90,6 +90,16 @@ export class TableExtension extends RemirrorTableExtension {
   createExtensions() {
     return [];
   }
+
+  onView() {
+    let schema = this.store.schema;
+    schema.cached.tableNodeTypes = {
+      cell: schema.nodes.tableCell,
+      row: schema.nodes.tableRow,
+      table: schema.nodes.table,
+      header_cell: schema.nodes.tableHeaderCell,
+    };
+  }
 }
 
 export class TableRowExtension extends RemirrorTableRowExtension {
